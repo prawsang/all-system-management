@@ -1,0 +1,8 @@
+.env
+dist
+data
+nginx-data
+public
+
+.vscode
+.DS_Store
