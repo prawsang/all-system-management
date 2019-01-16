@@ -14,8 +14,7 @@ const app = express();
 // Index route
 app.get("/", (req, res) => res.sendStatus(200));
 
-// Gig routes
-app.use("/api", require("./routes/models"));
+app.use("/api", require("./routes"));
 
 const PORT = process.env.PORT || 5000;
 
