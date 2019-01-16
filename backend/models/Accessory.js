@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Model = require("./Model");
+const ServiceReport = require("./ServiceReport");
 
 const Accessory = db.define(
 	"accessories_stock",
@@ -24,9 +25,7 @@ const Accessory = db.define(
 		freezeTableName: "accessories_stock"
 	}
 );
-
 Accessory.belongsTo(Model, {
 	foreignKey: "model_no"
-})
-
+});
 module.exports = Accessory;

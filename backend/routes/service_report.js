@@ -4,7 +4,10 @@ const db = require("../config/database");
 const ServiceReport = require("../models/ServiceReport");
 const Location = require("../models/Location");
 const Accessory = require("../models/Accessory");
+const Job = require("../models/Job");
+const Customer = require("../models/Customer");
 const Model = require("../models/Model");
+const User = require("../models/User");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
@@ -14,7 +17,15 @@ router.get("/get-all", (req, res) =>
 		include: [
 			{
 				model: Location,
-				as: "location"
+				as: "location",
+				include: {
+					model: Job,
+					as: "job",
+					include: {
+						model: Customer,
+						as: "customer"
+					}
+				}
 			}
 		]
 	})
@@ -28,23 +39,33 @@ router.get("/single/:id", (req, res) => {
 	ServiceReport.findOne({
 		where: {
 			id: { [Op.eq]: id }
-		}
+        },
+        include: [
+			{
+				model: Location,
+				as: "location",
+				include: {
+					model: Job,
+					as: "job",
+					include: {
+						model: Customer,
+						as: "customer"
+					}
+				}
+			}, {
+                model: User,
+                as: 'user'
+            }, {
+				model: Accessory,
+				as: 'accessories',
+				include: {
+					model: Model,
+					as: 'model'
+				}
+			}
+		]
 	})
 		.then(serviceReport => res.send(serviceReport))
-		.catch(err => console.log(err));
-});
-
-// Get accessories for a service report
-router.get("/acc/:id", (req, res) => {
-	const { id } = req.params;
-	Accessory.findAll({
-        include: {
-            model: Model,
-            as: 'model'
-        },
-		where: { service_report: { [Op.eq]: id } }
-	})
-		.then(accs => res.send(accs))
 		.catch(err => console.log(err));
 });
 

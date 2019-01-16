@@ -17,4 +17,21 @@ router.get("/get-all", (req, res) =>
 		.catch(err => console.log(err))
 );
 
+router.get("/single/:serial_no", (req, res) => {
+    const { serial_no } = req.params;
+	Accessory.findAll({
+        include: {
+            model: Model,
+            as: 'model'
+        },
+        where: {
+            serial_no: {
+                [Op.eq]: serial_no
+            }
+        }
+    })
+		.then(acc => res.send(acc))
+		.catch(err => console.log(err))
+});
+
 module.exports = router;
