@@ -10,5 +10,6 @@ router.use("/customer", require("./customer"));
 router.use("/item", require("./item"));
 router.use("/withdrawal", require("./withdrawal"));
 router.use("/po", require("./purchase_order"));
+router.use("/store-type", require("./store_type"));
 
 module.exports = router;

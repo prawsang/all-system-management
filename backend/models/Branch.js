@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Customer = require("./Customer");
 const Job = require("./Job");
+const StoreType = require("./StoreType");
 
 const Branch = db.define('branches', {
 	id: {
@@ -28,6 +29,10 @@ const Branch = db.define('branches', {
 Branch.belongsTo(Customer,{
     foreignKey: 'customer_code',
     as: 'customer'
+});
+Branch.belongsTo(StoreType,{
+    foreignKey: 'store_type_id',
+    as: 'store_type'
 });
 Job.belongsToMany(Branch,{
 	through: 'branch_job',

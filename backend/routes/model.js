@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/database");
 const Model = require("../models/Model");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
