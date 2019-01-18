@@ -1,6 +1,8 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Model = require("./Model");
+const Job = require("./Job");
+const Branch = require("./Branch");
 
 const Item = db.define(
 	"stock",
@@ -21,6 +23,12 @@ const Item = db.define(
 		install_date: {
 			type: Sequelize.DATE
 		},
+		reserve_job_code: {
+			type: Sequelize.STRING,
+		},
+		reserve_branch_id: {
+			type: Sequelize.INTEGER
+		},
 		status: {
 			type: Sequelize.ENUM,
 			values: ["IN_STOCK", "BROKEN", "INSTALLED", "IN_SERVICE_STOCK"]
@@ -33,4 +41,13 @@ const Item = db.define(
 Item.belongsTo(Model, {
 	foreignKey: "model_id"
 });
+Item.belongsTo(Job, {
+	foreignKey: "reserve_job_code",
+	as: "reserve_job"
+})
+Item.belongsTo(Branch, {
+	foreignKey: "reserve_branch_id",
+	as: "reserve_branch"
+})
+
 module.exports = Item;

@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
-router.get('/', (req, res) => res.sendStatus(200));
-router.use("/model", require('./model'));
+router.get("/", (req, res) => res.sendStatus(200));
+router.use("/model", require("./model"));
 router.use("/user", require("./user"));
 router.use("/branch", require("./branch"));
 router.use("/job", require("./job"));
 router.use("/customer", require("./customer"));
-
+router.use("/item", require("./item"));
+router.use("/withdrawal", require("./withdrawal"));
+router.use("/po", require("./purchase_order"));
 
 module.exports = router;
