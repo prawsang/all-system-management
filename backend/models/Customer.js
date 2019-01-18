@@ -6,7 +6,7 @@ const Customer = db.define('customers', {
         type: Sequelize.STRING,
         primaryKey: true
     },
-    customer_name: {
+    name: {
         type: Sequelize.STRING
     },
 });

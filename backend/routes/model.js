@@ -13,9 +13,9 @@ router.route("/get-all").get((req, res) =>
 		.catch(err => console.log(err))
 );
 
-router.route("/:model_no").get((req, res) => {
-	const { model_no } = req.params;
-	Model.findAll({ where: { model_no: { [Op.eq]: model_no } } })
+router.route("/single/:id").get((req, res) => {
+	const { id } = req.params;
+	Model.findOne({ where: { id: { [Op.eq]: id } } })
 		.then(models => {
 			res.send(models);
 		})

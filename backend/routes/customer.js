@@ -17,10 +17,6 @@ router.get('/single/:customer_code', (req,res) => {
             customer_code: {
                 [Op.eq]: customer_code
             }
-        },
-        include: {
-            model: Job,
-            as: 'jobs'
         }
     })
         .then(customer => res.send(customer))

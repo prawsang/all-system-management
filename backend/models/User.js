@@ -2,14 +2,11 @@ const Sequelize = require("sequelize");
 const db = require('../config/database');
 
 const User = db.define('users',{
-    staff_id: {
+    staff_code: {
         type: Sequelize.STRING,
         primaryKey: true
     },
     name: {
-        type: Sequelize.STRING
-    },
-    username: {
         type: Sequelize.STRING
     },
     password: {
