@@ -2,11 +2,11 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 
 const Model = db.define("models", {
-	model_no: {
+	id: {
 		type: Sequelize.INTEGER,
 		primaryKey: true
 	},
-	model_name: {
+	name: {
 		type: Sequelize.STRING
 	},
 	type: {
