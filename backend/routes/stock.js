@@ -10,6 +10,8 @@ const Withdrawal = require("../models/Withdrawal");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
+router.use("/", require("./stock_status"));
+
 router.route("/get-all").get((req, res) =>
 	Item.findAll({
 		include: {
@@ -148,93 +150,10 @@ router.post("/add", async (req, res) => {
 			}).catch(err => errors.push(err.errors[0]));
 		})
 	);
-	if (errors.length >= 0) {
-		res.status(500).send(errors);
-	} else {
-		res.sendStatus(200);
-	}
+	if (errors.length > 0) res.status(500).send(errors);
+	else res.sendStatus(200);
 });
 
-// Amend Status
-changeStatus = (serial_no, status, otherInfo) => {
-	return Item.update(
-		{
-			status,
-			...otherInfo
-		},
-		{
-			where: {
-				serial_no: {
-					[Op.eq]: serial_no
-				}
-			}
-		}
-	)
-		.then(rows => rows)
-		.catch(err => err);
-};
-// Check if status is valid
-checkStatus = (serial_no, status) => {
-	return Item.findOne({
-		where: {
-			serial_no: {
-				[Op.eq]: serial_no
-			}
-		}
-	}).then(item => (item.status != status ? false : true))
-	.catch(err => false)
-}
-// Check if withdrawal is of a correct type
-checkWithdrawalType = (withdrawal_id, type) => {
-	return Withdrawal.findOne({
-		where: {
-			id: {
-				[Op.eq]: withdrawal_id
-			}
-		}
-	}).then(withdrawal => (withdrawal.type != type ? false : true))
-	.catch(err => false)
-}
-// Transfer
-router.put("/:serial_no/transfer", async (req, res) => {
-	const { serial_no } = req.params;
-	const { withdrawal_id } = req.query;
-	if (!withdrawal_id) {
-		res.status(400).send([{message: 'A withdrawal must be provided.'}]);
-		return
-	}
-	const validWithdrawal = await checkWithdrawalType(withdrawal_id, 'TRANSFER');
-	if (!validWithdrawal) {
-		res.status(400).send([{message: 'The withdrawal must be of type TRANSFER.'}]);
-		return
-	}
-
-	let valid = await checkStatus(serial_no, 'IN_STOCK');
-	if (valid) {
-		const results = await changeStatus(serial_no, "TRANSFERRED", { withdrawal_id });
-		if (results.errors) res.status(500).send(results.errors);
-		else res.sendStatus(200);
-	} else {
-		res.send([{message: "This item is not in stock."}])
-	}
-});
-// Reserve
-router.put("/:serial_no/reserve", async (req, res) => {
-	const { serial_no } = req.params;
-	const { reserve_branch_id, reserve_job_code } = req.query;
-	if (!reserve_job_code) {
-		res.status(400).send([{message: 'A job code must be provided.'}]);
-		return
-	}
-	let valid = await checkStatus(serial_no, 'IN_STOCK');
-	if (valid) {
-		const results = await changeStatus(serial_no, "RESERVED", { reserve_branch_id, reserve_job_code });
-		if (results.errors) res.status(500).send(results.errors);
-		else res.sendStatus(200);
-	} else {
-		res.send([{message: "This item is not in stock."}])
-	}
-});
 
 // Delete Item from Stock (superadmins only)
 // router.delete("/:serial_no", (req, res) => {
