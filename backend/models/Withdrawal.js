@@ -7,10 +7,6 @@ const Branch = require("./Branch");
 const Item = require("./Item");
 
 const Withdrawal = db.define("withdrawals", {
-	id: {
-		type: Sequelize.INTEGER,
-		primaryKey: true
-	},
 	branch_id: {
 		type: Sequelize.INTEGER
 	},
