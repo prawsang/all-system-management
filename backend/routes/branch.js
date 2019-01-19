@@ -77,6 +77,21 @@ router.get("/:id/get-po-number", (req, res) => {
 		.catch(err => res.status(500).send(err));
 });
 
+// Add New Branch
+router.post("/add", (req, res) => {
+	const { branch_code, customer_code, name, store_type_id, address, province } = req.query;
+	Branch.create({
+		branch_code,
+		customer_code,
+		name,
+		store_type_id,
+		address,
+		province
+	})
+		.then(rows => res.send(rows))
+		.catch(err => res.status(400).send(err));
+});
+
 // Edit Branch
 router.put("/:id/edit", (req, res) => {
 	const { id } = req.params;
@@ -190,8 +205,8 @@ router.delete("/:id", (req, res) => {
 			}
 		}
 	})
-		.then(rows => res.send(rows))
-		.catch(err => res.status(400).send({ details: "There are PO's, withdrawals, or jobs referenced to this branch and therefore cannot be deleted." }));
+		.then(rows => res.send({ rows }))
+		.catch(err => res.status(400).send(err));
 });
 
 module.exports = router;
