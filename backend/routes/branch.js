@@ -17,7 +17,7 @@ router.get("/get-all", (req, res) =>
 		}
 	})
 		.then(branches => res.send(branches))
-		.catch(err => res.status(500).send(err))
+		.catch(err => res.status(500).send(err.errors))
 );
 router.get("/:id", (req, res) => {
 	const { id } = req.params;
@@ -47,7 +47,7 @@ router.get("/:id", (req, res) => {
 		]
 	})
 		.then(branch => res.send(branch))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // List of branches with po but po has installed = false
@@ -64,7 +64,7 @@ router.get("/no-install", (req, res) => {
 		}
 	})
 		.then(branches => res.send(branches))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // List of po_number of a branch
@@ -74,7 +74,7 @@ router.get("/:id/get-po-number", (req, res) => {
 		FROM branch_po\
 		WHERE branch_po.branch_id = " + id, { type: db.QueryTypes.SELECT })
 		.then(po => res.send(po))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Add New Branch
@@ -89,7 +89,7 @@ router.post("/add", (req, res) => {
 		province
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Edit Branch
@@ -113,7 +113,7 @@ router.put("/:id/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Remove Job from branch
@@ -123,7 +123,7 @@ router.delete("/:id/remove-job", (req, res) => {
 	db.query("DELETE FROM branch_job \
     WHERE branch_id = " + id + "AND job_code = '" + job_code + "'", { type: db.QueryTypes.DELETE })
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Add Job to branch if Job doesn't exist for that branch
@@ -150,10 +150,10 @@ router.post("/:id/add-job", (req, res) => {
 				db.query("INSERT INTO branch_job (branch_id, job_code)\
                         VALUES (" + `${id},'${job_code}'` + ")", { type: db.QueryTypes.INSERT })
 					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err));
-			} else res.status(400).send({details: "Job exists for this branch"});
+					.catch(err => res.status(500).send(err.errors));
+			} else res.status(400).send([{message: "Job exists for this branch"}]);
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Remove PO from branch
@@ -163,7 +163,7 @@ router.delete("/:id/remove-po", (req, res) => {
 	db.query("DELETE FROM branch_po \
     WHERE branch_id = " + id + "AND po_number = '" + po_number + "'", { type: db.QueryTypes.DELETE })
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 // Add PO to branch if PO doesn't exist for that branch
 router.post("/:id/add-po", (req, res) => {
@@ -189,10 +189,10 @@ router.post("/:id/add-po", (req, res) => {
 				db.query("INSERT INTO branch_po (branch_id, po_number)\
                         VALUES (" + `${id},'${po_number}'` + ")", { type: db.QueryTypes.INSERT })
 					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err));
-			} else res.status(400).send({details: "PO exists for this branch"});
+					.catch(err => res.status(500).send(err.errors));
+			} else res.status(400).send([{message: "PO exists for this branch"}]);
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Delete branch
@@ -206,7 +206,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 module.exports = router;

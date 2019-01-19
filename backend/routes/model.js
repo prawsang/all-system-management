@@ -9,7 +9,7 @@ router.route("/get-all").get((req, res) =>
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => res.status(500).send(err))
+		.catch(err => res.status(500).send(err.errors))
 );
 
 router.route("/:id").get((req, res) => {
@@ -18,7 +18,7 @@ router.route("/:id").get((req, res) => {
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Add New Model
@@ -29,7 +29,7 @@ router.post("/add", (req, res) => {
 		type
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Edit Model
@@ -48,7 +48,7 @@ router.put("/:id/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Delete Model
@@ -62,7 +62,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 module.exports = router;

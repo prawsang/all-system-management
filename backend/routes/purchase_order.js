@@ -30,7 +30,7 @@ router.get("/:po_number", (req, res) => {
 		]
 	})
 		.then(po => res.send(po))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Edit PO information (date and job_code cannot be edited)
@@ -51,7 +51,7 @@ router.put("/:po_number/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Remove Branch from PO
@@ -61,7 +61,7 @@ router.delete("/:po_number/remove-branch", (req, res) => {
 	db.query("DELETE FROM branch_po \
     WHERE branch_id = " + branch_id + "AND po_number = '" + po_number + "'", { type: db.QueryTypes.DELETE })
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Add Branch to PO (if doesn't exist)
@@ -88,10 +88,10 @@ router.post("/:po_number/add-branch", (req, res) => {
 				db.query("INSERT INTO branch_po (branch_id, po_number)\
                         VALUES (" + `${branch_id},'${po_number}'` + ")", { type: db.QueryTypes.INSERT })
 					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err));
-			} else res.status(400).send({details: "Branch exists for this PO"});
+					.catch(err => res.status(500).send(err.errors));
+			} else res.status(400).send([{message: "Branch exists for this PO"}]);
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Delete PO (Superadmins Only)
@@ -105,7 +105,7 @@ router.post("/:po_number/add-branch", (req, res) => {
 // 		}
 // 	})
 // 		.then(rows => res.sendStatus(200))
-// 		.catch(err => res.status(500).send(err));
+// 		.catch(err => res.status(500).send(err.errors));
 // });
 
 module.exports = router;

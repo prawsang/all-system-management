@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 router.get("/get-all", (req, res) =>
 	User.findAll()
 		.then(users => res.send(users))
-		.catch(err => res.status(500).send(err))
+		.catch(err => res.status(500).send(err.errors))
 );
 router.get("/:staff_code", (req, res) => {
 	const { staff_code } = req.params;
@@ -20,7 +20,7 @@ router.get("/:staff_code", (req, res) => {
 		}
 	})
 		.then(user => res.send(user))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 // Add New User
@@ -36,9 +36,9 @@ router.post("/add", (req, res) => {
                 password: hashedPassword
             })
                 .then(rows => res.sendStatus(200))
-                .catch(err => console.log(err));
+                .catch(err => console.log(err.errors));
         })
-        .catch(err => res.status(500).send(err));
+        .catch(err => res.status(500).send(err.errors));
 });
 
 // Edit User
@@ -61,9 +61,9 @@ router.put("/:staff_code/edit", (req, res) => {
                 }
             })
                 .then(rows => res.sendStatus(200))
-                .catch(err => res.status(500).send(err));
+                .catch(err => res.status(500).send(err.errors));
         })
-        .catch(err => res.status(500).send(err));
+        .catch(err => res.status(500).send(err.errors));
 });
 
 // Delete user
@@ -77,7 +77,7 @@ router.delete("/:staff_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 module.exports = router;

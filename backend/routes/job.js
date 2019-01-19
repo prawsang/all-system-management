@@ -14,7 +14,7 @@ router.get("/get-all", (req, res) => {
 		}
 	})
 		.then(jobs => res.send(jobs))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 router.get("/:job_code", (req, res) => {
@@ -30,7 +30,7 @@ router.get("/:job_code", (req, res) => {
 		}
 	})
 		.then(job => res.send(job))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 module.exports = router;

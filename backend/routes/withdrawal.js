@@ -63,7 +63,7 @@ router.get("/without-po", (req, res) => {
 		}
 	})
 		.then(withdrawals => res.send(withdrawals))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send(err.errors));
 });
 
 module.exports = router;
