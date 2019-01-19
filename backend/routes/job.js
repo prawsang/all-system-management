@@ -17,7 +17,7 @@ router.get("/get-all", (req, res) => {
 		.catch(err => res.status(500).send(err));
 });
 
-router.get("/single/:job_code", (req, res) => {
+router.get("/:job_code", (req, res) => {
 	const { job_code } = req.params;
 	Job.findOne({
 		where: {

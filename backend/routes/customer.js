@@ -10,7 +10,7 @@ router.get("/get-all", (req, res) => {
 		.then(customers => res.send(customers))
 		.catch(err => res.status(500).send(err));
 });
-router.get("/single/:customer_code", (req, res) => {
+router.get("/:customer_code", (req, res) => {
 	const { customer_code } = req.params;
 	Customer.findOne({
 		where: {

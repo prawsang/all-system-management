@@ -9,7 +9,7 @@ router.get("/get-all", (req, res) =>
 		.then(users => res.send(users))
 		.catch(err => res.status(500).send(err))
 );
-router.get("/single/:staff_code", (req, res) => {
+router.get("/:staff_code", (req, res) => {
 	const { staff_code } = req.params;
 	User.findOne({
 		where: {

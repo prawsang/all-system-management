@@ -16,7 +16,7 @@ router.get("/get-all", (req, res) => {
 		.catch(err => err);
 });
 
-router.get("/single/:id", (req, res) => {
+router.get("/:id", (req, res) => {
 	const { id } = req.params;
 	Withdrawal.findOne({
 		where: { id: { [Op.eq]: id } },

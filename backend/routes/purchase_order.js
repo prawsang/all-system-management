@@ -14,7 +14,7 @@ router.get("/get-all", (req, res) => {
 		.catch(err => err);
 });
 
-router.get("/single/:po_number", (req, res) => {
+router.get("/:po_number", (req, res) => {
 	const { po_number } = req.params;
 	PurchaseOrder.findOne({
 		where: { po_number: { [Op.eq]: po_number } },

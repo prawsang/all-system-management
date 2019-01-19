@@ -23,7 +23,7 @@ router.route("/get-all").get((req, res) =>
 		.catch(err => res.status(500).send(err))
 );
 
-router.route("/single/:serial_no").get((req, res) => {
+router.route("/:serial_no").get((req, res) => {
 	const { serial_no } = req.params;
 	Item.findOne({
 		where: { serial_no: { [Op.eq]: serial_no } },

@@ -12,7 +12,7 @@ router.route("/get-all").get((req, res) =>
 		.catch(err => res.status(500).send(err))
 );
 
-router.route("/single/:id").get((req, res) => {
+router.route("/:id").get((req, res) => {
 	const { id } = req.params;
 	Model.findOne({ where: { id: { [Op.eq]: id } } })
 		.then(models => {
