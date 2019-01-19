@@ -6,6 +6,7 @@ const Model = require("../models/Model");
 const PurchaseOrder = require("../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+const db = require('../config/database');
 
 router.get("/get-all", (req, res) => {
 	PurchaseOrder.findAll()

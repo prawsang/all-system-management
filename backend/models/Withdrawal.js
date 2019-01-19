@@ -27,7 +27,8 @@ const Withdrawal = db.define("withdrawals", {
 		type: Sequelize.STRING
 	},
 	type: {
-		type: Sequelize.STRING
+		type: Sequelize.ENUM,
+		values: ["INSTALLATION","BORROW","TRANSFER"]
 	},
 	print_date: {
 		type: Sequelize.DATE

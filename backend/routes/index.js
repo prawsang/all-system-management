@@ -7,7 +7,7 @@ router.use("/user", require("./user"));
 router.use("/branch", require("./branch"));
 router.use("/job", require("./job"));
 router.use("/customer", require("./customer"));
-router.use("/item", require("./item"));
+router.use("/stock", require("./stock"));
 router.use("/withdrawal", require("./withdrawal"));
 router.use("/po", require("./purchase_order"));
 router.use("/store-type", require("./store_type"));
