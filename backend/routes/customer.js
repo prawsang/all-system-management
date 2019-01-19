@@ -31,7 +31,7 @@ router.post("/add", (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(400).send(err));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit Customer

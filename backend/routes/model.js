@@ -21,4 +21,48 @@ router.route("/:id").get((req, res) => {
 		.catch(err => res.status(500).send(err));
 });
 
+// Add New Model
+router.post("/add", (req, res) => {
+	const { name, type } = req.query;
+	Model.create({
+		name,
+		type
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err));
+});
+
+// Edit Model
+router.put("/:id/edit", (req, res) => {
+	const { id } = req.params;
+	const { name, type } = req.query;
+	Model.update({
+			name,
+			type
+		},{
+			where: {
+				id: {
+					[Op.eq]: id
+				}
+			}
+		}
+	)
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err));
+});
+
+// Delete Model
+router.delete("/:id", (req, res) => {
+	const { id } = req.params;
+	Model.destroy({
+		where: {
+			id: {
+				[Op.eq]: id
+			}
+		}
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err));
+});
+
 module.exports = router;

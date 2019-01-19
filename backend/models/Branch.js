@@ -5,6 +5,11 @@ const Job = require("./Job");
 const StoreType = require("./StoreType");
 
 const Branch = db.define('branches', {
+	id: {
+		type: Sequelize.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
+	},
 	branch_code: {
 		type: Sequelize.STRING,
 	},
