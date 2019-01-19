@@ -9,7 +9,7 @@ router.route("/get-all").get((req, res) =>
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => console.log(err))
+		.catch(err => res.status(500).send(err))
 );
 
 router.route("/single/:id").get((req, res) => {
@@ -18,7 +18,7 @@ router.route("/single/:id").get((req, res) => {
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => console.log(err));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

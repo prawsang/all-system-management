@@ -51,19 +51,19 @@ router.get("/single/:id", (req, res) => {
 		.catch(err => err);
 });
 
-router.get('/without-po', (req,res) => {
+router.get("/without-po", (req, res) => {
 	Withdrawal.findAll({
 		where: {
 			po_number: {
-				[Op.eq]: null,
+				[Op.eq]: null
 			},
 			type: {
-				[Op.eq]: 'INSTALLATION'
+				[Op.eq]: "INSTALLATION"
 			}
 		}
 	})
 		.then(withdrawals => res.send(withdrawals))
-		.catch(err => console.log(err));
-})
+		.catch(err => res.status(500).send(err));
+});
 
 module.exports = router;

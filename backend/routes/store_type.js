@@ -3,11 +3,11 @@ const router = express.Router();
 const StoreType = require("../models/StoreType");
 
 router.route("/get-all").get((req, res) =>
-    StoreType.findAll()
+	StoreType.findAll()
 		.then(types => {
 			res.send(types);
 		})
-		.catch(err => console.log(err))
+		.catch(err => res.status(500).send(err))
 );
 
 module.exports = router;

@@ -20,7 +20,7 @@ router.route("/get-all").get((req, res) =>
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => console.log(err))
+		.catch(err => res.status(500).send(err))
 );
 
 router.route("/single/:serial_no").get((req, res) => {
@@ -63,30 +63,31 @@ router.route("/single/:serial_no").get((req, res) => {
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => console.log(err));
+		.catch(err => res.status(500).send(err));
 });
 
 router.get("/status/:status", (req, res) => {
 	const { status } = req.params;
 
 	// Show return_by if borrowed
-	const include = (status == "borrowed"
-		? [
-				{
-					model: Model,
-					as: "model"
-				},
-				{
-					model: Withdrawal,
-					as: "withdrawal"
-				}
-		  ]
-		: [
-				{
-					model: Model,
-					as: "model"
-				}
-		  ]);
+	const include =
+		status == "borrowed"
+			? [
+					{
+						model: Model,
+						as: "model"
+					},
+					{
+						model: Withdrawal,
+						as: "withdrawal"
+					}
+			  ]
+			: [
+					{
+						model: Model,
+						as: "model"
+					}
+			  ];
 
 	Item.findAll({
 		include,
@@ -99,11 +100,11 @@ router.get("/status/:status", (req, res) => {
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => console.log(err));
+		.catch(err => res.status(500).send(err));
 });
 
-router.get('/reserve-branch-id/:branch_id', (req,res) => {
-	const {branch_id} = req.params;
+router.get("/reserve-branch-id/:branch_id", (req, res) => {
+	const { branch_id } = req.params;
 	Item.findAll({
 		where: {
 			reserve_branch_id: {
@@ -112,10 +113,10 @@ router.get('/reserve-branch-id/:branch_id', (req,res) => {
 		}
 	})
 		.then(items => res.send(items))
-		.catch(err => console.log(err));
-})
+		.catch(err => res.status(500).send(err));
+});
 
-router.get('/reserve-job-code/:job_code', (req,res) => {
+router.get("/reserve-job-code/:job_code", (req, res) => {
 	const { job_code } = req.params;
 	Item.findAll({
 		where: {
@@ -125,7 +126,7 @@ router.get('/reserve-job-code/:job_code', (req,res) => {
 		}
 	})
 		.then(items => res.send(items))
-		.catch(err => console.log(err));
-})
+		.catch(err => res.status(500).send(err));
+});
 
 module.exports = router;
