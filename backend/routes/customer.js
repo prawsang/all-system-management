@@ -30,7 +30,7 @@ router.post("/add", (req, res) => {
 		customer_code,
 		name
 	})
-		.then(rows => res.send(rows))
+		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(400).send(err));
 });
 
@@ -50,8 +50,8 @@ router.put("/:customer_code/edit", (req, res) => {
 			}
 		}
 	)
-		.then(rows => res.send(rows))
-		.catch(err => res.status(400).send(err));
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err));
 });
 
 
@@ -65,8 +65,8 @@ router.delete("/:customer_code", (req, res) => {
 			}
 		}
 	})
-		.then(rows => res.send(rows))
-		.catch(err => res.status(400).send(err));
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;
