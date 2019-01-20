@@ -20,18 +20,15 @@ const Item = db.define(
 		remarks: {
 			type: Sequelize.STRING
 		},
-		install_date: {
-			type: Sequelize.DATE
-		},
 		reserve_job_code: {
-			type: Sequelize.STRING,
+			type: Sequelize.STRING
 		},
 		reserve_branch_id: {
 			type: Sequelize.INTEGER
 		},
 		status: {
 			type: Sequelize.ENUM,
-			values: ["IN_STOCK", "BROKEN", "INSTALLED", "IN_SERVICE_STOCK"]
+			values: ["IN_STOCK", "BROKEN", "INSTALLED", "RESERVED", "BORROWED", "TRANSFERRED", "PENDING"]
 		}
 	},
 	{
@@ -44,10 +41,10 @@ Item.belongsTo(Model, {
 Item.belongsTo(Job, {
 	foreignKey: "reserve_job_code",
 	as: "reserve_job"
-})
+});
 Item.belongsTo(Branch, {
 	foreignKey: "reserve_branch_id",
 	as: "reserve_branch"
-})
+});
 
 module.exports = Item;

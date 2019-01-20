@@ -31,8 +31,18 @@ const Withdrawal = db.define("withdrawals", {
 		type: Sequelize.ENUM,
 		values: ["INSTALLATION","BORROW","TRANSFER"]
 	},
-	print_date: {
+	date: {
 		type: Sequelize.DATE
+	},
+	install_date: {
+		type: Sequelize.DATE
+	},
+	status: {
+		type: Sequelize.ENUM,
+		values: ["PENDING","PRINTED","CANCELLED"]
+	},
+	remarks: {
+		type: Sequelize.STRING
 	},
 	return_by: {
 		type: Sequelize.DATE

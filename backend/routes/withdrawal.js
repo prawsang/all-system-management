@@ -86,7 +86,7 @@ checkBranchInPo = (branch_id, po_number) => {
 	})
 		.then(count => (count == 0 ? false : true))
 		.catch(err => res.status(500).send(err.errors));
-}
+};
 checkBranchInJob = (branch_id, job_code) => {
 	return Job.count({
 		where: {
@@ -105,22 +105,24 @@ checkBranchInJob = (branch_id, job_code) => {
 	})
 		.then(count => (count == 0 ? false : true))
 		.catch(err => res.status(500).send(err.errors));
-}
-checkRequiredFields = (values) => {
-	const { job_code, branch_id, po_number, staff_code, type, return_by } = values;
-	let errors = []
-	if ( !job_code && !po_number) errors.push({message: "Job code or PO number is required."});
-	if ( !branch_id ) errors.push({message: "Branch is required."});
-	if ( !type ) errors.push({message: "Withdrawal type is required."})
-	if ( !staff_code ) errors.push({message: "Staff code is required."})
-	if ( type == 'BORROW' && !return_by ) errors.push({message: "Please specify return date."});
+};
+checkRequiredFields = values => {
+	const { job_code, branch_id, po_number, staff_code, type, return_by, install_date, date } = values;
+	let errors = [];
+	if (!job_code && !po_number) errors.push({ message: "Job code or PO number is required." });
+	if (!branch_id) errors.push({ message: "Branch is required." });
+	if (!type) errors.push({ message: "Withdrawal type is required." });
+	if (!staff_code) errors.push({ message: "Staff code is required." });
+	if (!date) errors.push({ message: "Date is required." });
+	if (type == "INSTALLATION" && !install_date) errors.push({ message: "Installation date is required." });
+	if (type == "BORROW" && !return_by) errors.push({ message: "Please specify return date." });
 	if (errors.length > 0) return errors;
 	else return null;
-}
+};
 
 // Add Withdrawal
 router.post("/add", async (req, res) => {
-	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, print_date } = req.query;
+	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, install_date, date, remarks } = req.query;
 	// Check required fields
 	const requirementErrors = checkRequiredFields({
 		job_code,
@@ -128,7 +130,9 @@ router.post("/add", async (req, res) => {
 		po_number,
 		staff_code,
 		type,
-		return_by
+		return_by,
+		install_date,
+		date
 	});
 	if (requirementErrors) {
 		res.status(400).send(requirementErrors);
@@ -139,7 +143,7 @@ router.post("/add", async (req, res) => {
 	if (po_number) {
 		const branchInPO = await checkBranchInPo(branch_id, po_number);
 		if (!branchInPO) {
-			res.status(400).send([{message: "This branch is not associated with this PO"}])
+			res.status(400).send([{ message: "This branch is not associated with this PO" }]);
 			return;
 		}
 	}
@@ -147,7 +151,7 @@ router.post("/add", async (req, res) => {
 	if (job_code) {
 		const branchInJob = await checkBranchInPo(branch_id, job_code);
 		if (!branchInJob) {
-			res.status(400).send([{message: "This branch is not associated with this job code"}])
+			res.status(400).send([{ message: "This branch is not associated with this job code" }]);
 			return;
 		}
 	}
@@ -162,8 +166,11 @@ router.post("/add", async (req, res) => {
 			do_number,
 			staff_code,
 			type,
-			print_date,
-			return_by
+			install_date,
+			return_by,
+			status: "PENDING",
+			remarks,
+			date
 		},
 		{
 			where: {
@@ -177,10 +184,10 @@ router.post("/add", async (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
-// Edit Withdrawal (only if it hasn't been printed)
+// Edit Withdrawal (only if it is pending)
 router.put("/:id/edit", async (req, res) => {
 	const { id } = req.params;
-	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, print_date } = req.query;
+	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, date, install_date } = req.query;
 	// Check required fields
 	const requirementErrors = checkRequiredFields({
 		job_code,
@@ -188,35 +195,38 @@ router.put("/:id/edit", async (req, res) => {
 		po_number,
 		staff_code,
 		type,
-		return_by
+		return_by,
+		install_date,
+		date
 	});
 	if (requirementErrors) {
 		res.status(400).send(requirementErrors);
 		return;
 	}
 
-	// Check if the withdrawal has been printed
-	let printed = false
+	// Check if the withdrawal is pending
+	let pending = true;
 	await Withdrawal.findOne({
 		where: {
 			id: {
 				[Op.eq]: id
 			}
-		}})
+		}
+	})
 		.then(withdrawal => {
-			if (withdrawal.print_date != null) {
-				res.status(400).send([{message: "This withdrawal/service report/DO has been printed and cannot be edited."}])
-				printed = true;
+			if (withdrawal.status != "PENDING") {
+				res.status(400).send([{ message: "This withdrawal/service report/DO is printed and cannot be edited." }]);
+				pending = false;
 			}
 		})
 		.catch(err => res.status(500).send(err.errors));
-	if (printed) return;
-	
+	if (!pending) return;
+
 	// check if branch is in the specified PO (if any)
 	if (po_number) {
 		const branchInPO = await checkBranchInPo(branch_id, po_number);
 		if (!branchInPO) {
-			res.status(400).send([{message: "This branch is not associated with this PO"}])
+			res.status(400).send([{ message: "This branch is not associated with this PO." }]);
 			return;
 		}
 	}
@@ -224,7 +234,7 @@ router.put("/:id/edit", async (req, res) => {
 	if (job_code) {
 		const branchInJob = await checkBranchInPo(branch_id, job_code);
 		if (!branchInJob) {
-			res.status(400).send([{message: "This branch is not associated with this job code"}])
+			res.status(400).send([{ message: "This branch is not associated with this job code." }]);
 			return;
 		}
 	}
@@ -239,8 +249,9 @@ router.put("/:id/edit", async (req, res) => {
 			do_number,
 			staff_code,
 			type,
-			print_date,
-			return_by
+			return_by,
+			install_date,
+			date
 		},
 		{
 			where: {
@@ -254,26 +265,15 @@ router.put("/:id/edit", async (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
-// Delete Withdrawal (only if it hasn't been delete)
-router.delete("/:id", async (req, res) => {
+// Edit remarks
+router.put("/:id/edit-remarks", (req, res) => {
 	const { id } = req.params;
-	// Check if the withdrawal has been printed
-	await Withdrawal.findOne({
-		where: {
-			id: {
-				[Op.eq]: id
-			}
-		}
-	})
-		.then(withdrawal => {
-			if (withdrawal.print_date != null) {
-				res.status(400).send([{message: "This withdrawal/service report/DO has been printed and cannot be deleted."}])
-				return;
-			}
-		})
-		.catch(err => res.status(500).send(err.errors));
+	const { remarks } = req.query;
 
-	Withdrawal.destroy(
+	Withdrawal.update(
+		{
+			remarks
+		},
 		{
 			where: {
 				id: {
@@ -286,10 +286,12 @@ router.delete("/:id", async (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
-// Force delete withdrawal (superadmins only)
-router.delete('/:id/force-delete', (req,res) => {
-	const { id } = req.params;
-	Withdrawal.destroy(
+// Change Status
+changeStatus = (id, status) => {
+	Withdrawal.update(
+		{
+			status
+		},
 		{
 			where: {
 				id: {
@@ -298,6 +300,79 @@ router.delete('/:id/force-delete', (req,res) => {
 			}
 		}
 	)
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+};
+
+router.put("/:id/change-status", async (req, res) => {
+	const { id } = req.params;
+	const { status } = req.query;
+
+	//Check current status
+	let currentStatus = "";
+	await Withdrawal.findOne({
+		where: {
+			id: {
+				[Op.eq]: id
+			}
+		}
+	})
+		.then(withdrawal => (currentStatus = withdrawal.status))
+		.catch(err => res.status(500).send(err.errors));
+
+	if (status == "PRINTED") {
+		if (currentStatus != "PENDING") {
+			res.status(400).send([{ message: "This withdrawal is not pending." }]);
+		} else {
+			await changeStatus(id, status);
+		}
+	} else if (status == "CANCELLED") {
+		await changeStatus(id, status);
+	}
+});
+
+// Delete Withdrawal (only if it is pending)
+router.delete("/:id", async (req, res) => {
+	const { id } = req.params;
+	// Check if the withdrawal has been printed
+	let pending = false;
+	await Withdrawal.findOne({
+		where: {
+			id: {
+				[Op.eq]: id
+			}
+		}
+	})
+		.then(withdrawal => {
+			if (withdrawal.status != "PENDING") {
+				res.status(400).send([{ message: "This withdrawal/service report/DO is printed and cannot be deleted." }]);
+				pending = true;
+			}
+		})
+		.catch(err => res.status(500).send(err.errors));
+	if (pending) return;
+
+	Withdrawal.destroy({
+		where: {
+			id: {
+				[Op.eq]: id
+			}
+		}
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+});
+
+// Force delete withdrawal (superadmins only)
+router.delete("/:id/force-delete", (req, res) => {
+	const { id } = req.params;
+	Withdrawal.destroy({
+		where: {
+			id: {
+				[Op.eq]: id
+			}
+		}
+	})
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err.errors));
 });
