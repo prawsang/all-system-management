@@ -156,17 +156,17 @@ router.post("/add", async (req, res) => {
 
 
 // Delete Item from Stock (superadmins only)
-// router.delete("/:serial_no", (req, res) => {
-// 	const { serial_no } = req.params;
-// 	Item.destroy({
-// 		where: {
-// 			serial_no: {
-// 				[Op.eq]: serial_no
-// 			}
-// 		}
-// 	})
-// 		.then(rows => res.sendStatus(200))
-// 		.catch(err => res.status(500).send(err.errors));
-// });
+router.delete("/:serial_no", (req, res) => {
+	const { serial_no } = req.params;
+	Item.destroy({
+		where: {
+			serial_no: {
+				[Op.eq]: serial_no
+			}
+		}
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+});
 
 module.exports = router;

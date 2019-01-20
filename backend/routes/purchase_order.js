@@ -95,17 +95,17 @@ router.post("/:po_number/add-branch", (req, res) => {
 });
 
 // Delete PO (Superadmins Only)
-// router.delete("/:po_number", (req, res) => {
-// 	const { po_number } = req.params;
-// 	PurchaseOrder.destroy({
-// 		where: {
-// 			po_number: {
-// 				[Op.eq]: po_number
-// 			}
-// 		}
-// 	})
-// 		.then(rows => res.sendStatus(200))
-// 		.catch(err => res.status(500).send(err.errors));
-// });
+router.delete("/:po_number", (req, res) => {
+	const { po_number } = req.params;
+	PurchaseOrder.destroy({
+		where: {
+			po_number: {
+				[Op.eq]: po_number
+			}
+		}
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+});
 
 module.exports = router;

@@ -10,7 +10,7 @@ const Withdrawal = require("../models/Withdrawal");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-// Amend Status
+// Change Status
 changeStatus = (serial_no, status, otherInfo) => {
 	return Item.update(
 		{
@@ -52,6 +52,9 @@ checkWithdrawalType = (withdrawal_id, type) => {
 }
 
 // Install
+// Withdrawal of type INSTALLATION is required
+// IN_STOCK/RESERVED -> INSTALLED
+// Removes the reserve_job_code and reserve_branch_id of the items
 router.put("/install", async (req, res) => {
 	// Check if there is a valid withdrawal
 	const { withdrawal_id } = req.query;
@@ -92,6 +95,8 @@ router.put("/install", async (req, res) => {
 });
 
 // Transfer
+// Withdrawal of type TRANSFER is required
+// IN_STOCK -> TRANSFERRED
 router.put("/transfer", async (req, res) => {
 	// Check if there is a valid withdrawal
 	const { withdrawal_id } = req.query;
@@ -123,6 +128,8 @@ router.put("/transfer", async (req, res) => {
 });
 
 // Borrow
+// Withdrawal of type BORROW is required
+// IN_STOCK -> BORROWED
 router.put("/transfer", async (req, res) => {
 	// Check if there is a valid withdrawal
 	const { withdrawal_id } = req.query;
@@ -154,11 +161,37 @@ router.put("/transfer", async (req, res) => {
 });
 
 // Reserve
+// reserve_job_code is required
+// IN_STOCK -> RESERVED
 router.put("/reserve", async (req, res) => {
 	const { reserve_branch_id, reserve_job_code } = req.query;
 	if (!reserve_job_code) {
 		res.status(400).send([{message: 'A job code must be provided.'}]);
 		return
+	}
+	if (reserve_branch_id) {
+		// Check if the branch is associated to the job
+		await Branch.count({
+			where: {
+				id: {
+					[Op.eq]: reserve_branch_id
+				}
+			},
+			include: {
+				model: Job,
+				where: {
+					job_code: {
+						[Op.eq]: reserve_job_code
+					}
+				}
+			}
+		})
+			.then(count => {
+				if (count == 0) {
+					res.status(400).send([{ message: "Branch is not associated to the job code." }]);
+					return;
+				}
+			})
 	}
 
 	let { serial_no } = req.query;
@@ -178,6 +211,8 @@ router.put("/reserve", async (req, res) => {
 	else res.sendStatus(200)
 });
 // Return
+// BORROWED -> RETURNED
+// Removes the withdrawal_id of the items
 router.put("/return", async (req, res) => {
 	let { serial_no } = req.query;
 	if (typeof serial_no == "string") serial_no = [serial_no];
@@ -197,6 +232,7 @@ router.put("/return", async (req, res) => {
 });
 
 // Mark Broken
+// Any Status -> BROKEN
 router.put("/broken", async (req, res) => {
 	let { serial_no } = req.query;
 	if (typeof serial_no == "string") serial_no = [serial_no];

@@ -33,4 +33,78 @@ router.get("/:job_code", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
+// Edit Job
+router.put("/:job_code/edit", (req, res) => {
+	const { job_code } = req.params;
+	const { name } = req.query;
+	Branch.update(
+		{
+			name
+		},
+		{
+			where: {
+				job_code: {
+					[Op.eq]: job_code
+				}
+			}
+		}
+	)
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+});
+
+// Remove Branch from job
+router.delete("/:job_code/remove-branch", (req, res) => {
+	const { job_code } = req.params;
+	const { branch_id } = req.query;
+	db.query("DELETE FROM branch_job \
+    WHERE branch_id = " + branch_id + "AND job_code = '" + job_code + "'", { type: db.QueryTypes.DELETE })
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+});
+
+// Add branch to job if branch doesn't exist for that job
+router.post("/:job_code/add-branch", (req, res) => {
+	const { job_code } = req.params;
+	const { branch_id } = req.query;
+	Job.count({
+		where: {
+			job_code: {
+				[Op.eq]: job_code
+			}
+		},
+		include: {
+			model: Branch,
+			where: {
+				id: {
+					[Op.eq]: branch_id
+				}
+			}
+		}
+	})
+		.then(count => {
+			if (count == 0) {
+				db.query("INSERT INTO branch_job (branch_id, job_code)\
+                        VALUES (" + `${branch_id},'${job_code}'` + ")", { type: db.QueryTypes.INSERT })
+					.then(rows => res.sendStatus(200))
+					.catch(err => res.status(500).send(err.errors));
+			} else res.status(400).send([{message: "Branch exists for this job"}]);
+		})
+		.catch(err => res.status(500).send(err.errors));
+});
+
+// Delete job
+router.delete("/:job_code", (req, res) => {
+	const { job_code } = req.params;
+	Branch.destroy({
+		where: {
+			job_code: {
+				[Op.eq]: job_code
+			}
+		}
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+});
+
 module.exports = router;
