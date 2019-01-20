@@ -23,10 +23,31 @@ router.get("/:staff_code", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
+checkRequiredFields = (values) => {
+    const { name, staff_code, department, password } = values;
+    let errors = [];
+    if (!name) errors.push({message: "Name is required."});
+    if (!staff_code) errors.push({message: "Staff Code is required."});
+    if (!department) errors.push({message: "Department is required."});
+    if (!password) errors.push({message: "Password is required."});
+    if (errors.length > 0) return errors;
+    else return null;
+}
+
 // Add New User
 router.post("/add", (req, res) => {
     const { name, staff_code, department } = req.query;
     let { password } = req.query;
+    const validationErrors = checkRequiredFields({
+        name,
+        staff_code,
+        department,
+        password
+    });
+    if (validationErrors) {
+        res.status(400).send(validationErrors);
+        return;
+    }
     bcrypt.hash(password, 12)
         .then(hashedPassword => {
             User.create({
@@ -46,6 +67,16 @@ router.put("/:staff_code/edit", (req, res) => {
 	const { staff_code } = req.params;
     const { name, department } = req.query;
     let { password } = req.query;
+    const validationErrors = checkRequiredFields({
+        name,
+        staff_code,
+        department,
+        password
+    });
+    if (validationErrors) {
+        res.status(400).send(validationErrors);
+        return;
+    }
     bcrypt.hash(password, 12)
         .then(hashedPassword => {
             console.log(password)

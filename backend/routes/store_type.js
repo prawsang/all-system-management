@@ -15,6 +15,10 @@ router.route("/get-all").get((req, res) =>
 // Add New Store Type
 router.post("/add", (req, res) => {
 	const { name } = req.query;
+	if (!name) {
+		res.status(400).send([{message: "Name is required."}]);
+		return;
+	}
 	StoreType.create({
 		name
 	})
@@ -26,6 +30,10 @@ router.post("/add", (req, res) => {
 router.put("/:id/edit", (req, res) => {
 	const { id } = req.params;
 	const { name } = req.query;
+	if (!name) {
+		res.status(400).send([{message: "Name is required."}]);
+		return;
+	}
 	StoreType.update({
 			name,
 		},{

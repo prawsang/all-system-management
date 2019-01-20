@@ -77,9 +77,28 @@ router.get("/:id/get-po-number", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
+checkRequiredFields = (values) => {
+	const { customer_code, name, store_type_id } = values;
+	let errors = [];
+	if (!customer_code) errors.push({message: "Customer is required"});
+	if (!name) errors.push({message: "Branch name is required"});
+	if (!store_type_id) errors.push({message: "Store type is required"});
+	if (errors.length > 0) return errors;
+	else return null;
+}
+
 // Add New Branch
 router.post("/add", (req, res) => {
 	const { branch_code, customer_code, name, store_type_id, address, province } = req.query;
+	const validationErrors = checkRequiredFields({
+		customer_code,
+		name,
+		store_type_id
+	});
+	if (validationErrors) {
+		res.status(400).send(validationErrors);
+		return;
+	}
 	Branch.create({
 		branch_code,
 		customer_code,
@@ -96,6 +115,15 @@ router.post("/add", (req, res) => {
 router.put("/:id/edit", (req, res) => {
 	const { id } = req.params;
 	const { branch_code, name, store_type_id, address, province } = req.query;
+	const validationErrors = checkRequiredFields({
+		customer_code,
+		name,
+		store_type_id
+	});
+	if (validationErrors) {
+		res.status(400).send(validationErrors);
+		return;
+	}
 	Branch.update(
 		{
 			branch_code,
@@ -120,6 +148,9 @@ router.put("/:id/edit", (req, res) => {
 router.delete("/:id/remove-job", (req, res) => {
 	const { id } = req.params;
 	const { job_code } = req.query;
+	if (!job_code) {
+		res.status(400).send([{message: "Job code is required"}]);
+	}
 	db.query("DELETE FROM branch_job \
     WHERE branch_id = " + id + "AND job_code = '" + job_code + "'", { type: db.QueryTypes.DELETE })
 		.then(rows => res.sendStatus(200))
@@ -130,6 +161,9 @@ router.delete("/:id/remove-job", (req, res) => {
 router.post("/:id/add-job", (req, res) => {
 	const { id } = req.params;
 	const { job_code } = req.query;
+	if (!job_code) {
+		res.status(400).send([{message: "Job code is required"}]);
+	}
 	Branch.count({
 		where: {
 			id: {

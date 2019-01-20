@@ -71,7 +71,6 @@ router.route("/:serial_no").get((req, res) => {
 // Get item by status
 router.get("/status/:status", (req, res) => {
 	const { status } = req.params;
-
 	// Show return_by if borrowed
 	const include =
 		status == "borrowed"
@@ -137,6 +136,10 @@ router.get("/reserve-job-code/:job_code", (req, res) => {
 // Add items to stock
 router.post("/add", async (req, res) => {
 	const { model_id, remarks } = req.query;
+	if (!model_id) {
+		res.status(400).send([{message: "Model is required."}]);
+		return;
+	}
 	let { serial_no } = req.query;
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
@@ -152,6 +155,28 @@ router.post("/add", async (req, res) => {
 	);
 	if (errors.length > 0) res.status(500).send(errors);
 	else res.sendStatus(200);
+});
+
+// Edit Item
+router.put("/:serial_no/edit", (req, res) => {
+	const { serial_no } = req.params;
+	const { model_id, remarks } = req.query;
+	if (!model_id) {
+		res.status(400).send([{message: "Model is required."}]);
+		return;
+	}
+	Item.update({
+		model_id,
+		remarks
+	},{
+		where: {
+			serial_no: {
+				[Op.eq]: serial_no
+			}
+		}
+	})
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
 });
 
 

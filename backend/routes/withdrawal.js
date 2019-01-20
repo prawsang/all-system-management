@@ -68,33 +68,88 @@ router.get("/without-po", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
+checkBranchInPo = (branch_id, po_number) => {
+	return PurchaseOrder.count({
+		where: {
+			po_number: {
+				[Op.eq]: po_number
+			}
+		},
+		include: {
+			model: Branch,
+			where: {
+				id: {
+					[Op.eq]: branch_id
+				}
+			}
+		}
+	})
+		.then(count => (count == 0 ? false : true))
+		.catch(err => res.status(500).send(err.errors));
+}
+checkBranchInJob = (branch_id, job_code) => {
+	return Job.count({
+		where: {
+			job_code: {
+				[Op.eq]: job_code
+			}
+		},
+		include: {
+			model: Branch,
+			where: {
+				id: {
+					[Op.eq]: branch_id
+				}
+			}
+		}
+	})
+		.then(count => (count == 0 ? false : true))
+		.catch(err => res.status(500).send(err.errors));
+}
+checkRequiredFields = (values) => {
+	const { job_code, branch_id, po_number, staff_code, type, return_by } = values;
+	let errors = []
+	if ( !job_code && !po_number) errors.push({message: "Job code or PO number is required."});
+	if ( !branch_id ) errors.push({message: "Branch is required."});
+	if ( !type ) errors.push({message: "Withdrawal type is required."})
+	if ( !staff_code ) errors.push({message: "Staff code is required."})
+	if ( type == 'BORROW' && !return_by ) errors.push({message: "Please specify return date."});
+	if (errors.length > 0) return errors;
+	else return null;
+}
+
 // Add Withdrawal
 router.post("/add", async (req, res) => {
 	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, print_date } = req.query;
+	// Check required fields
+	const requirementErrors = checkRequiredFields({
+		job_code,
+		branch_id,
+		po_number,
+		staff_code,
+		type,
+		return_by
+	});
+	if (requirementErrors) {
+		res.status(400).send(requirementErrors);
+		return;
+	}
+
 	// check if branch is in the specified PO (if any)
 	if (po_number) {
-		await PurchaseOrder.count({
-			where: {
-				po_number: {
-					[Op.eq]: po_number
-				}
-			},
-			include: {
-				model: Branch,
-				where: {
-					id: {
-						[Op.eq]: branch_od
-					}
-				}
-			}
-		})
-			.then(count => {
-				if (count == 0) {
-					res.status(400).send([{ message: "This branch is not associated with this PO."}]);
-					return;
-				}
-			})
-			.catch(err => res.status(500).send(err.errors));
+		const branchInPO = await checkBranchInPo(branch_id, po_number);
+		if (!branchInPO) {
+			res.status(400).send([{message: "This branch is not associated with this PO"}])
+			return;
+		}
+	}
+	// check if branch is in the specified job (if any)
+	if (job_code) {
+		const branchInJob = await checkBranchInPo(branch_id, job_code);
+		if (!branchInJob) {
+			res.status(400).send([{message: "This branch is not associated with this job code"}])
+			return;
+		}
 	}
 
 	// po_number and job_code cannot coexist
@@ -125,48 +180,53 @@ router.post("/add", async (req, res) => {
 // Edit Withdrawal (only if it hasn't been printed)
 router.put("/:id/edit", async (req, res) => {
 	const { id } = req.params;
+	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, print_date } = req.query;
+	// Check required fields
+	const requirementErrors = checkRequiredFields({
+		job_code,
+		branch_id,
+		po_number,
+		staff_code,
+		type,
+		return_by
+	});
+	if (requirementErrors) {
+		res.status(400).send(requirementErrors);
+		return;
+	}
 
 	// Check if the withdrawal has been printed
+	let printed = false
 	await Withdrawal.findOne({
 		where: {
 			id: {
 				[Op.eq]: id
 			}
-		}
-	})
+		}})
 		.then(withdrawal => {
 			if (withdrawal.print_date != null) {
 				res.status(400).send([{message: "This withdrawal/service report/DO has been printed and cannot be edited."}])
-				return;
+				printed = true;
 			}
 		})
 		.catch(err => res.status(500).send(err.errors));
+	if (printed) return;
 	
-	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, print_date } = req.query;
 	// check if branch is in the specified PO (if any)
 	if (po_number) {
-		await PurchaseOrder.count({
-			where: {
-				po_number: {
-					[Op.eq]: po_number
-				}
-			},
-			include: {
-				model: Branch,
-				where: {
-					id: {
-						[Op.eq]: branch_od
-					}
-				}
-			}
-		})
-			.then(count => {
-				if (count == 0) {
-					res.status(400).send([{ message: "This branch is not associated with this PO."}]);
-					return;
-				}
-			})
-			.catch(err => res.status(500).send(err.errors));
+		const branchInPO = await checkBranchInPo(branch_id, po_number);
+		if (!branchInPO) {
+			res.status(400).send([{message: "This branch is not associated with this PO"}])
+			return;
+		}
+	}
+	// check if branch is in the specified job (if any)
+	if (job_code) {
+		const branchInJob = await checkBranchInPo(branch_id, job_code);
+		if (!branchInJob) {
+			res.status(400).send([{message: "This branch is not associated with this job code"}])
+			return;
+		}
 	}
 
 	// po_number and job_code cannot coexist
@@ -197,7 +257,6 @@ router.put("/:id/edit", async (req, res) => {
 // Delete Withdrawal (only if it hasn't been delete)
 router.delete("/:id", async (req, res) => {
 	const { id } = req.params;
-
 	// Check if the withdrawal has been printed
 	await Withdrawal.findOne({
 		where: {

@@ -33,10 +33,40 @@ router.get("/:job_code", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
+// Add Job
+router.post("/add", (req, res) => {
+	const { name, job_code, customer_code } = req.query;
+	if (!job_code) {
+		res.status(400).send([{message: "Job Code is required."}]);
+		return;
+	}
+	if (!name) {
+		res.status(400).send([{message: "Name is required."}]);
+		return;
+	}
+	if (!customer_code) {
+		res.status(400).send([{message: "Customer Code is required."}]);
+		return;
+	}
+	Branch.create(
+		{
+			job_code,
+			name,
+			customer_code
+		}
+	)
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+});
+
 // Edit Job
 router.put("/:job_code/edit", (req, res) => {
 	const { job_code } = req.params;
 	const { name } = req.query;
+	if (!name) {
+		res.status(400).send([{message: "Name is required."}]);
+		return;
+	}
 	Branch.update(
 		{
 			name

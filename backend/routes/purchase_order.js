@@ -33,10 +33,55 @@ router.get("/:po_number", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
+checkRequiredFields = (values) => {
+	const { po_number, description, installed, date } = values;
+	let errors = [];
+	if (!po_number) errors.push({message: "PO Number is required."});
+	if (!description) errors.push({message: "Description is required."});
+	if (!installed) errors.push({message: "Please specify if this PO has been installed."});
+	if (!date) errors.push({message: "PO date is required."});
+	if (errors.length > 0) return errors;
+	else return null;
+}
+// Add PO information
+router.post("/add", (req, res) => {
+	const { po_number, description, installed, date } = req.query;
+	const validationErrors = checkRequiredFields({
+		po_number,
+		description,
+		installed,
+		date
+	});
+	if (validationErrors) {
+		res.status(400).send(validationErrors);
+		return;
+	}
+	PurchaseOrder.create(
+		{
+			po_number,
+			description,
+			installed,
+			date
+		}
+	)
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err.errors));
+});
+
 // Edit PO information (date and job_code cannot be edited)
 router.put("/:po_number/edit", (req, res) => {
 	const { po_number } = req.params;
-	const { description, installed } = req.query;
+	const { description, installed, date } = req.query;
+	const validationErrors = checkRequiredFields({
+		po_number,
+		description,
+		installed,
+		date
+	});
+	if (validationErrors) {
+		res.status(400).send(validationErrors);
+		return;
+	}
 	PurchaseOrder.update(
 		{
 			description,

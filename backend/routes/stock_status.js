@@ -169,6 +169,7 @@ router.put("/reserve", async (req, res) => {
 		res.status(400).send([{message: 'A job code must be provided.'}]);
 		return
 	}
+	let branchInJob = true;
 	if (reserve_branch_id) {
 		// Check if the branch is associated to the job
 		await Branch.count({
@@ -189,10 +190,11 @@ router.put("/reserve", async (req, res) => {
 			.then(count => {
 				if (count == 0) {
 					res.status(400).send([{ message: "Branch is not associated to the job code." }]);
-					return;
+					branchInJob = false;
 				}
 			})
 	}
+	if (!branchInJob) return;
 
 	let { serial_no } = req.query;
 	if (typeof serial_no == "string") serial_no = [serial_no];

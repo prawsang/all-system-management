@@ -26,6 +26,14 @@ router.get("/:customer_code", (req, res) => {
 // Add New Customer
 router.post("/add", (req, res) => {
 	const { customer_code, name } = req.query;
+	if (!customer_code) {
+		res.status(400).send([{message: "Customer Code is required."}]);
+		return;
+	}
+	if (!name) {
+		res.status(400).send([{message: "Name is required."}]);
+		return;
+	}
 	Customer.create({
 		customer_code,
 		name
@@ -38,6 +46,10 @@ router.post("/add", (req, res) => {
 router.put("/:customer_code/edit", (req, res) => {
 	const { customer_code } = req.params;
 	const { name } = req.query;
+	if (!name) {
+		res.status(400).send([{message: "Name is required."}]);
+		return;
+	}
 	Customer.update(
 		{
 			name,

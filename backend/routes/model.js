@@ -24,6 +24,14 @@ router.route("/:id").get((req, res) => {
 // Add New Model
 router.post("/add", (req, res) => {
 	const { name, type } = req.query;
+	if (!name) {
+		res.status(400).send([{message: "Name is required."}]);
+		return;
+	}
+	if (!type) {
+		res.status(400).send([{message: "Model type is required."}]);
+		return;
+	}
 	Model.create({
 		name,
 		type
@@ -36,6 +44,14 @@ router.post("/add", (req, res) => {
 router.put("/:id/edit", (req, res) => {
 	const { id } = req.params;
 	const { name, type } = req.query;
+	if (!name) {
+		res.status(400).send([{message: "Name is required."}]);
+		return;
+	}
+	if (!type) {
+		res.status(400).send([{message: "Model type is required."}]);
+		return;
+	}
 	Model.update({
 			name,
 			type
