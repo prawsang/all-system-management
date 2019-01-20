@@ -33,7 +33,7 @@ router.get("/:po_number", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
-checkRequiredFields = (values) => {
+checkPOFields = (values) => {
 	const { po_number, description, installed, date } = values;
 	let errors = [];
 	if (!po_number) errors.push({message: "PO Number is required."});
@@ -46,7 +46,7 @@ checkRequiredFields = (values) => {
 // Add PO information
 router.post("/add", (req, res) => {
 	const { po_number, description, installed, date } = req.query;
-	const validationErrors = checkRequiredFields({
+	const validationErrors = checkPOFields({
 		po_number,
 		description,
 		installed,
@@ -72,7 +72,7 @@ router.post("/add", (req, res) => {
 router.put("/:po_number/edit", (req, res) => {
 	const { po_number } = req.params;
 	const { description, installed, date } = req.query;
-	const validationErrors = checkRequiredFields({
+	const validationErrors = checkPOFields({
 		po_number,
 		description,
 		installed,

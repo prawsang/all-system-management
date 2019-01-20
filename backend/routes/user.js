@@ -23,7 +23,7 @@ router.get("/:staff_code", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
-checkRequiredFields = (values) => {
+checkUserFields = (values) => {
     const { name, staff_code, department, password } = values;
     let errors = [];
     if (!name) errors.push({message: "Name is required."});
@@ -38,7 +38,7 @@ checkRequiredFields = (values) => {
 router.post("/add", (req, res) => {
     const { name, staff_code, department } = req.query;
     let { password } = req.query;
-    const validationErrors = checkRequiredFields({
+    const validationErrors = checkUserFields({
         name,
         staff_code,
         department,
@@ -67,7 +67,7 @@ router.put("/:staff_code/edit", (req, res) => {
 	const { staff_code } = req.params;
     const { name, department } = req.query;
     let { password } = req.query;
-    const validationErrors = checkRequiredFields({
+    const validationErrors = checkUserFields({
         name,
         staff_code,
         department,

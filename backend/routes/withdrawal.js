@@ -106,7 +106,7 @@ checkBranchInJob = (branch_id, job_code) => {
 		.then(count => (count == 0 ? false : true))
 		.catch(err => res.status(500).send(err.errors));
 };
-checkRequiredFields = values => {
+checkWithdrawalFields = values => {
 	const { job_code, branch_id, po_number, staff_code, type, return_by, install_date, date } = values;
 	let errors = [];
 	if (!job_code && !po_number) errors.push({ message: "Job code or PO number is required." });
@@ -124,7 +124,7 @@ checkRequiredFields = values => {
 router.post("/add", async (req, res) => {
 	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, install_date, date, remarks } = req.query;
 	// Check required fields
-	const requirementErrors = checkRequiredFields({
+	const validationErrors = checkWithdrawalFields({
 		job_code,
 		branch_id,
 		po_number,
@@ -134,8 +134,8 @@ router.post("/add", async (req, res) => {
 		install_date,
 		date
 	});
-	if (requirementErrors) {
-		res.status(400).send(requirementErrors);
+	if (validationErrors) {
+		res.status(400).send(validationErrors);
 		return;
 	}
 
@@ -189,7 +189,7 @@ router.put("/:id/edit", async (req, res) => {
 	const { id } = req.params;
 	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, date, install_date } = req.query;
 	// Check required fields
-	const requirementErrors = checkRequiredFields({
+	const validationErrors = checkWithdrawalFields({
 		job_code,
 		branch_id,
 		po_number,
@@ -199,8 +199,9 @@ router.put("/:id/edit", async (req, res) => {
 		install_date,
 		date
 	});
-	if (requirementErrors) {
-		res.status(400).send(requirementErrors);
+	if (validationErrors) {
+		res.status(400).send(validationErrors);
+		console.log(validationErrors);
 		return;
 	}
 
@@ -288,7 +289,7 @@ router.put("/:id/edit-remarks", (req, res) => {
 
 // Change Status
 changeStatus = (id, status) => {
-	Withdrawal.update(
+	return Withdrawal.update(
 		{
 			status
 		},
@@ -300,8 +301,8 @@ changeStatus = (id, status) => {
 			}
 		}
 	)
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.then(rows => null)
+		.catch(err => err.errors);
 };
 
 router.put("/:id/change-status", async (req, res) => {
@@ -323,11 +324,27 @@ router.put("/:id/change-status", async (req, res) => {
 	if (status == "PRINTED") {
 		if (currentStatus != "PENDING") {
 			res.status(400).send([{ message: "This withdrawal is not pending." }]);
+			return;
 		} else {
-			await changeStatus(id, status);
+			const changeStatusErrors = await changeStatus(id, status);
+			if (changeStatusErrors) {
+				res.status(500).send(changeStatusErrors);
+				return;
+			} else {
+				res.sendStatus(200);
+			}
 		}
 	} else if (status == "CANCELLED") {
-		await changeStatus(id, status);
+		const changeStatusErrors = await changeStatus(id, status);
+		if (changeStatusErrors) {
+			res.status(500).send(changeStatusErrors);
+			return;
+		} else {
+			res.sendStatus(200);
+		}
+	} else if (status == "PENDING") {
+		res.status(400).send([{ message: "Cannot change status to PENDING." }]);
+		return;
 	}
 });
 

@@ -11,7 +11,7 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 // Change Status
-changeStatus = (serial_no, status, otherInfo) => {
+changeStockStatus = (serial_no, status, otherInfo) => {
 	return Item.update(
 		{
 			status,
@@ -29,7 +29,7 @@ changeStatus = (serial_no, status, otherInfo) => {
 		.catch(err => err);
 };
 // Check if status is valid
-checkStatus = (serial_no, status) => {
+checkStockStatus = (serial_no, status) => {
 	return Item.findOne({
 		where: {
 			serial_no: {
@@ -84,7 +84,7 @@ router.put("/install", async (req, res) => {
 		.catch(err => false);
 
 		if (valid) {
-			const results = await changeStatus(no, "INSTALLED", { withdrawal_id, reserve_branch_id: null, reserve_job_code: null });
+			const results = await changeStockStatus(no, "INSTALLED", { withdrawal_id, reserve_branch_id: null, reserve_job_code: null });
 			if (results.errors) errors.push(results.errors);
 		} else {
 			errors.push({message: "This item is not in stock nor reserved.", value: no})
@@ -115,9 +115,9 @@ router.put("/transfer", async (req, res) => {
 	let errors = [];
 
 	await Promise.all(serial_no.map( async no => {
-		let valid = await checkStatus(no, 'IN_STOCK');
+		let valid = await checkStockStatus(no, 'IN_STOCK');
 		if (valid) {
-			const results = await changeStatus(no, "TRANSFERRED", { withdrawal_id });
+			const results = await changeStockStatus(no, "TRANSFERRED", { withdrawal_id });
 			if (results.errors) errors.push(results.errors);
 		} else {
 			errors.push({message: "This item is not in stock.", value: no})
@@ -148,9 +148,9 @@ router.put("/transfer", async (req, res) => {
 	let errors = [];
 
 	await Promise.all(serial_no.map( async no => {
-		let valid = await checkStatus(no, 'IN_STOCK');
+		let valid = await checkStockStatus(no, 'IN_STOCK');
 		if (valid) {
-			const results = await changeStatus(no, "BORROWED", { withdrawal_id });
+			const results = await changeStockStatus(no, "BORROWED", { withdrawal_id });
 			if (results.errors) errors.push(results.errors);
 		} else {
 			errors.push({message: "This item is not in stock.", value: no})
@@ -201,9 +201,9 @@ router.put("/reserve", async (req, res) => {
 	let errors = [];
 
 	await Promise.all(serial_no.map( async no => {
-		let valid = await checkStatus(no, 'IN_STOCK');
+		let valid = await checkStockStatus(no, 'IN_STOCK');
 		if (valid) {
-			const results = await changeStatus(no, "RESERVED", { reserve_branch_id, reserve_job_code });
+			const results = await changeStockStatus(no, "RESERVED", { reserve_branch_id, reserve_job_code });
 			if (results.errors) errors.push(results.errors);
 		} else {
 			errors.push({message: "This item is not in stock.", value: no})
@@ -221,9 +221,9 @@ router.put("/return", async (req, res) => {
 	let errors = [];
 
 	await Promise.all(serial_no.map( async no => {
-		let valid = await checkStatus(no, 'BORROWED');
+		let valid = await checkStockStatus(no, 'BORROWED');
 		if (valid) {
-			const results = await changeStatus(no, "IN_STOCK", { withdrawal_id: null });
+			const results = await changeStockStatus(no, "IN_STOCK", { withdrawal_id: null });
 			if (results.errors) errors.push(results.errors);
 		} else {
 			errors.push({message: "This item is not borrowed.", value: no})
@@ -241,7 +241,7 @@ router.put("/broken", async (req, res) => {
 	let errors = [];
 
 	await Promise.all(serial_no.map( async no => {
-		const results = await changeStatus(no, "BROKEN");
+		const results = await changeStockStatus(no, "BROKEN");
 		if (results.errors) errors.push(results.errors);
 	}));
 	if (errors.length > 0) res.status(400).send(errors)

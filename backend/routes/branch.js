@@ -77,7 +77,7 @@ router.get("/:id/get-po-number", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
-checkRequiredFields = (values) => {
+checkBranchFields = (values) => {
 	const { customer_code, name, store_type_id } = values;
 	let errors = [];
 	if (!customer_code) errors.push({message: "Customer is required"});
@@ -90,7 +90,7 @@ checkRequiredFields = (values) => {
 // Add New Branch
 router.post("/add", (req, res) => {
 	const { branch_code, customer_code, name, store_type_id, address, province } = req.query;
-	const validationErrors = checkRequiredFields({
+	const validationErrors = checkBranchFields({
 		customer_code,
 		name,
 		store_type_id
@@ -114,8 +114,8 @@ router.post("/add", (req, res) => {
 // Edit Branch
 router.put("/:id/edit", (req, res) => {
 	const { id } = req.params;
-	const { branch_code, name, store_type_id, address, province } = req.query;
-	const validationErrors = checkRequiredFields({
+	const { branch_code, name, store_type_id, address, province, customer_code } = req.query;
+	const validationErrors = checkBranchFields({
 		customer_code,
 		name,
 		store_type_id
