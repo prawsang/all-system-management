@@ -1,0 +1,94 @@
+@import "reset";
+@import "variables";
+@import "typography";
+@import "nav";
+
+body {
+	background-color: $gray-5;
+}
+
+.container {
+	margin: auto;
+	width: 90%;
+	&.main {
+		margin-top: 60px;
+		&.with-side-bar {
+			margin-left: 200px;
+			margin-top: 80px;
+			padding: 0 40px;
+			width: auto;
+		}
+	}
+}
+
+/* Modifiers */
+.is-clickable {
+	cursor: pointer;
+}
+
+/* Typography */
+/* Text alignment */
+.is-ta-center {
+	text-align: center;
+}
+/* Color */
+.accent {
+	color: $primary;
+}
+.is-light {
+	color: $gray-3;
+}
+/* Weight */
+.is-bold {
+	font-weight: bold;
+}
+.is-normal {
+	font-weight: normal;
+}
+/* Size */
+/* headers */
+.is-1 {
+	font-size: 3em;
+}
+.is-2 {
+	font-size: 2.5em;
+}
+.is-3 {
+	font-size: 2em;
+}
+.is-4 {
+	font-size: 1.5em;
+}
+.is-5 {
+	font-size: 1.25em;
+}
+.is-6 {
+	font-size: 0.75em;
+}
+
+
+/* Flex */
+.is-flex {
+	display: flex;
+}
+.is-flex-fullwidth {
+	flex-basis: 100%;
+}
+.is-ai-center {
+	align-items: center;
+}
+.is-ai-flex-end {
+	align-items: flex-end;
+}
+.is-ai-stretch {
+	align-items: stretch;
+}
+.is-jc-center {
+	justify-content: center;
+}
+.is-jc-space-between {
+	justify-content: space-between
+}
+.is-jc-flex-end {
+	justify-content: flex-end;
+}

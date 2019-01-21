@@ -10,12 +10,14 @@ class AppRouter extends React.Component {
             <React.Fragment>
                 <Nav />
                 <Menu />
-                <Router>
-                    <Switch>
-                        <Route path="/report" component={Report} />
-                        <Route path="/" component={Home} />
-                    </Switch>
-                </Router>
+                <div className="container main with-side-bar">
+                    <Router>
+                        <Switch>
+                            <Route path="/report" component={Report} />
+                            <Route path="/" component={Home} />
+                        </Switch>
+                    </Router>
+                </div>
             </React.Fragment>
         );
     }
@@ -24,5 +26,7 @@ export default AppRouter;
 
 
 const Home = () => (
-    <h2>Home</h2>
+    <div className="content">
+        <p>Please select a menu.</p>
+    </div>
 );
