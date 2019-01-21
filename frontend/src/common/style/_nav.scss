@@ -11,7 +11,6 @@ nav {
         transition: all 0.1s ease-in-out;
         &.is-clickable:hover {
             background-color: $primary;
-            box-shadow: 0 0 10px $primary-fade;
             color:white;
         }
     }
@@ -36,10 +35,8 @@ nav {
             width: 100%;
             &.is-clickable:hover {
                 background-color: $primary;
-                box-shadow: 0 0 10px $primary-fade;
                 color:white;
                 padding-left: 40px;
-                width: calc( 100% + 10px );
             }
             &.is-active {
                 border-left: 3px solid $primary;
