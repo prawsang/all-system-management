@@ -46,6 +46,7 @@ body {
 	cursor: pointer;
 }
 .is-fullwidth {
+	box-sizing: border-box;
 	width: 100%;
 }
 .is-hidden {

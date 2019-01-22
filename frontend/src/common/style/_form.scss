@@ -1,3 +1,35 @@
+.field {
+    position: relative;
+    &:not(:last-child) {
+        margin-bottom:1em;
+    }
+    .panel.input-menu {
+        border-radius: 10px;
+        color: $gray-2;
+        margin-top: 5px;
+        min-width: 200px;
+        position:absolute;
+        left: 0;
+        z-index: 999;
+        .list-item {
+            &:first-child {
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+            }
+            &:last-child {
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+        }
+    }
+}
+
+.form {
+    &:not(:last-child) {
+        margin-bottom: 1.5em;
+    }
+}
+
 .input {
     border-width: 0 0 2px 0;
     color: $gray-2;
@@ -26,10 +58,17 @@
     border-radius: 999px;
     color:white;
     font-size: 1em;
-    margin-bottom: 0.5em;
-    margin-right: 0.5em;
     padding: 10px 15px;
-    .is-rectangle {
+
+    &:focus {
+        outline: none;
+    }
+    &:not(:last-child) {
+        margin-bottom: 0.5em;
+        margin-right: 0.5em;
+    }
+
+    &.is-rectangle {
         border-radius: 0;
     }
     &.is-after {
@@ -76,6 +115,14 @@
     }
 }
 
+.is-flex {
+    .button {
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
 .buttons {
     align-items: center;
     display: flex;
@@ -83,7 +130,13 @@
     .button {
         margin-bottom: 0;
         &:last-child {
-            margin-left: 0;
+            margin-right: 0;
         }
+    }
+    &.is-after {
+        margin-left: 0.5em;
+    }
+    &.is-before {
+        margin-right: 0.5em;
     }
 }
