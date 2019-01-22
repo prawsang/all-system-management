@@ -2,7 +2,7 @@
 @import "variables";
 @import "typography";
 @import "nav";
-@import "table";
+@import "data";
 @import "form";
 
 body {
@@ -19,7 +19,7 @@ body {
 			margin-top: 80px;
 		}
 		&.with-side-bar {
-			margin-left: 200px;
+			margin-left: 250px;
 			padding: 0 40px;
 			width: auto;
 		}
@@ -48,6 +48,9 @@ body {
 .is-fullwidth {
 	width: 100%;
 }
+.is-hidden {
+	display: none;
+}
 
 /* Margin */
 .no-mt {
@@ -61,6 +64,9 @@ body {
 }
 .no-mr {
 	margin-right: 0 !important;
+}
+.no-margin {
+	margin: 0 !important;
 }
 
 /* Flex */

@@ -31,3 +31,19 @@ table {
         }
     }
 }
+
+.list-item {
+    display: block;
+    padding: 10px;
+    &.is-clickable {
+        transition: all 0.1s ease-in-out;
+    }
+    &.is-clickable:hover {
+        background-color: $primary;
+        color: white;
+    }
+    &.is-disabled {
+        transition: none;
+        color: $gray-4;
+    }
+}

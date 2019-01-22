@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faUser } from '@fortawesome/free-solid-svg-icons';
 
 class Nav extends React.Component {
     state = {
@@ -12,10 +12,15 @@ class Nav extends React.Component {
             <nav>
                 <div className="container is-flex is-jc-flex-end">
                     <div className="nav-item is-clickable">
-                        <p>
+                        <p onClick={() => this.setState({ showUserMenu: !showUserMenu })}>
+                            <FontAwesomeIcon className="icon is-before" icon={faUser} />
                             Prawsang
-                            <FontAwesomeIcon className="icon is-after" icon={faAngleDown} />
+                            <FontAwesomeIcon className="icon is-after" icon={showUserMenu ? faAngleUp : faAngleDown} />
                         </p>
+                        <div className={`nav-menu panel ${showUserMenu || 'is-hidden'}`}>
+                            <span className="list-item is-clickable">ข้อมูลผู้ใช้</span>
+                            <span className="list-item is-clickable">Log out</span>
+                        </div>
                     </div>
                 </div>
             </nav>
