@@ -34,6 +34,7 @@
     border-width: 0 0 2px 0;
     color: $gray-2;
     font-size: 1em;
+    font-family: $base-fonts;
     padding: 10px;
     -webkit-appearance: none;
     &::placeholder {
@@ -59,6 +60,7 @@
     border: none;
     border-radius: 999px;
     color:white;
+    font-family: $base-fonts;
     font-size: 1em;
     padding: 10px 15px;
 
