@@ -1,13 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-	faTable,
-	faReceipt, 
-	faListUl, 
-	faArrowAltCircleUp, 
-	faArrowAltCircleDown,
-	faEdit
-} from "@fortawesome/free-solid-svg-icons";
+import { faTable, faReceipt, faListUl, faArrowAltCircleUp, faArrowAltCircleDown, faEdit } from "@fortawesome/free-solid-svg-icons";
 
 class Menu extends React.Component {
 	render() {
@@ -18,27 +11,27 @@ class Menu extends React.Component {
 				</div>
 				<ul className="side-bar-menu">
 					<li className="side-bar-menu-item is-clickable is-active">
-						<FontAwesomeIcon className="icon is-before" icon={faTable} />
+						<FontAwesomeIcon className="icon has-mr-05" icon={faTable} />
 						รายงาน
 					</li>
 					<li className="side-bar-menu-item is-clickable">
-						<FontAwesomeIcon className="icon is-before" icon={faListUl} />
+						<FontAwesomeIcon className="icon has-mr-05" icon={faListUl} />
 						ปรับปรุงรายการ
 					</li>
 					<li className="side-bar-menu-item is-clickable">
-						<FontAwesomeIcon className="icon is-before" icon={faReceipt} />
+						<FontAwesomeIcon className="icon has-mr-05" icon={faReceipt} />
 						บันทึกใบสั่งซื้อ (PO)
 					</li>
 					<li className="side-bar-menu-item is-clickable">
-						<FontAwesomeIcon className="icon is-before" icon={faArrowAltCircleUp} />
+						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleUp} />
 						เบิกสินค้า
 					</li>
 					<li className="side-bar-menu-item is-clickable">
-						<FontAwesomeIcon className="icon is-before" icon={faArrowAltCircleDown} />
+						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleDown} />
 						รับของเข้า Stock
 					</li>
 					<li className="side-bar-menu-item is-clickable">
-						<FontAwesomeIcon className="icon is-before" icon={faEdit} />
+						<FontAwesomeIcon className="icon has-mr-05" icon={faEdit} />
 						ดู/แก้ไขข้อมูล
 					</li>
 				</ul>

@@ -4,15 +4,6 @@ body {
 	font-size: 13pt;
 }
 
-.icon {
-	&.is-before {
-		margin-right: 0.5em;
-	}
-	&.is-after {
-		margin-left: 0.5em;
-	}
-}
-
 /* Modifiers */
 /* Text alignment */
 .is-ta-center {
@@ -22,6 +13,30 @@ body {
 .accent {
 	color: $primary;
 }
+.warning {
+    color: $warning;
+}
+.danger {
+    color: $danger;
+}
+.success {
+    color: $success;
+}
+.is-clickable:hover, .is-hoverable:hover {
+    &.accent {
+        color: $primary-dark;
+    }
+    &.warning {
+        color: $warning-dark;
+    }
+    &.danger {
+        color: $danger-dark;
+    }
+    &.success {
+        color: $success-dark;
+    }
+}
+
 .is-gray-1 {
 	color: $gray-1;
 }

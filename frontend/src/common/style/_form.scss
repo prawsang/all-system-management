@@ -36,7 +36,9 @@
     font-size: 1em;
     padding: 10px;
     -webkit-appearance: none;
-
+    &::placeholder {
+        color: $gray-3;
+    }
     &:focus {
         background-color: $gray-5;
         border-bottom-color: $primary;
@@ -70,9 +72,6 @@
 
     &.is-rectangle {
         border-radius: 0;
-    }
-    &.is-after {
-        margin-left: 0.5em;
     }
     &:hover {
         background-color: $primary-dark;
@@ -132,11 +131,5 @@
         &:last-child {
             margin-right: 0;
         }
-    }
-    &.is-after {
-        margin-left: 0.5em;
-    }
-    &.is-before {
-        margin-right: 0.5em;
     }
 }

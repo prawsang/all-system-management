@@ -1,73 +1,75 @@
-nav {	
-    width: 100%;
+nav {
+	width: 100%;
 
-    .nav-item {
-        border-radius: 999px;
-        margin: 5px;
-        position: relative;
-        transition: all 0.1s ease-in-out;
-        p,a,span {
-            padding: 10px;
-        }
-        &.is-clickable:hover {
-            background-color: $primary;
-            color: white;
-        }
+	.nav-item {
+		border-radius: 999px;
+		margin: 5px;
+		position: relative;
+		transition: all 0.1s ease-in-out;
+		p,
+		a,
+		span {
+			padding: 10px;
+		}
+		&.is-clickable:hover {
+			background-color: $primary;
+			color: white;
+		}
 
-        .panel.nav-menu {
-            border-radius: 10px;
-            color: $gray-2;
-            margin-top: 5px;
-            min-width: 200px;
-            position:absolute;
-            right: 0;
-            .list-item {
-                &:first-child {
-                    border-top-left-radius: 10px;
-                    border-top-right-radius: 10px;
-                }
-                &:last-child {
-                    border-bottom-left-radius: 10px;
-                    border-bottom-right-radius: 10px;
-                }
-            }
-        }
-    }
+		.panel.nav-menu {
+			border-radius: 10px;
+			color: $gray-2;
+			margin-top: 5px;
+			min-width: 200px;
+			position: absolute;
+			right: 0;
+			.list-item {
+				&:first-child {
+					border-top-left-radius: 10px;
+					border-top-right-radius: 10px;
+				}
+				&:last-child {
+					border-bottom-left-radius: 10px;
+					border-bottom-right-radius: 10px;
+				}
+			}
+		}
+	}
 }
 .side-bar {
-    background-color: white;
-    bottom: 0;
-    // box-shadow: -2px 0 10px $gray-4;
-    left: 0;
-    position: fixed;
-    top:0;
-    width: 250px;
+	background-color: white;
+	bottom: 0;
+	// box-shadow: -2px 0 10px $gray-4;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 250px;
 
-    .side-bar-head {
-        margin-bottom: 20px;
-        padding:20px;
-    }
-    .side-bar-menu {
-        .side-bar-menu-item {
-            box-sizing: border-box;
-            padding: 10px 10px 10px 30px;
-            transition: all 0.1s ease-in-out;
-            width: 100%;
-            &.is-clickable:hover {
-                background-color: $gray-5;
-                border-left: 3px solid $primary;
-                color: $primary;
-                padding-left: 37px;
-            }
-            &.is-active {
-                border-left: 3px solid $primary;
-                color: $primary;
-                font-weight: bold;
-                padding-left: 37px;
-            }
-            .icon.is-before {
-                margin-right: 1em;
-            }
-        }
-    }
+	.side-bar-head {
+		margin-bottom: 20px;
+		padding: 20px;
+	}
+	.side-bar-menu {
+		.side-bar-menu-item {
+			box-sizing: border-box;
+			padding: 10px 10px 10px 30px;
+			transition: all 0.1s ease-in-out;
+			width: 100%;
+			&.is-clickable:hover {
+				background-color: $gray-5;
+				border-left: 3px solid $primary;
+				color: $primary;
+				padding-left: 37px;
+			}
+			&.is-active {
+				border-left: 3px solid $primary;
+				color: $primary;
+				font-weight: bold;
+				padding-left: 37px;
+			}
+			.icon.has-mr-05 {
+				margin-right: 1em;
+			}
+		}
+	}
 }

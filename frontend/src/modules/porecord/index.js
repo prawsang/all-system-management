@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 class PORecord extends React.Component {
     render() {
@@ -16,7 +16,7 @@ class PORecord extends React.Component {
                             <div className="field">
                                 <div className="is-flex">
                                     <input className="input is-flex-fullwidth" placeholder="Customer Name"/>
-                                    <button className="button is-after" type="button">
+                                    <button className="button has-ml-05" type="button">
                                         <FontAwesomeIcon icon={faSearch} />
                                     </button>
                                 </div>
@@ -29,7 +29,7 @@ class PORecord extends React.Component {
                             <div className="field">
                                 <div className="is-flex">
                                     <input className="input is-flex-fullwidth" placeholder="Job Code"/>
-                                    <button className="button is-after" type="button">
+                                    <button className="button has-ml-05" type="button">
                                         <FontAwesomeIcon icon={faSearch} />
                                     </button>
                                 </div>
@@ -37,7 +37,7 @@ class PORecord extends React.Component {
                             <div className="field">
                                 <div className="is-flex">
                                     <input className="input is-flex-fullwidth" placeholder="Branch Name"/>
-                                    <div className="buttons is-after">
+                                    <div className="buttons has-ml-05">
                                         <button className="button" type="button">
                                             <FontAwesomeIcon icon={faSearch} />
                                         </button>
@@ -48,7 +48,23 @@ class PORecord extends React.Component {
                                 </div>
                             </div>
                             <h6>สาขาที่เลือกไว้</h6>
-                            <p className="is-gray-3">ยังไม่ได้เลือกสาขา</p>
+                            <div>
+                                {/* <p className="is-gray-3">ยังไม่ได้เลือกสาขา</p> */}
+                                <ul className="no-mt">
+                                    <li>
+                                        Big C Mahachai
+                                        <span className="danger has-ml-05 is-clickable">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </span>
+                                    </li>
+                                    <li>
+                                        Big C Tiwanon
+                                        <span className="danger has-ml-05 is-clickable">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
                             <div className="field">
                                 <button className="button">บันทึกใบสั่งซื้อ</button>
                             </div>
