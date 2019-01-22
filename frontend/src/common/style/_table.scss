@@ -1,0 +1,33 @@
+table {
+    thead {
+        border-bottom: 3px solid $gray-4;
+        td {
+            font-weight: bold;
+            padding: 20px;
+        }
+    }
+    tbody {
+        &.is-hoverable:hover {
+            background-color: $gray-5;
+            transition: background-color 0.1s ease-in;
+        }
+        tr {
+            border-bottom: 1px solid $gray-4;
+            &.is-hoverable:hover {
+                background-color:white;
+                box-shadow: 0 0 10px 2px $gray-4;
+            }
+            td {
+                padding: 20px;
+            }
+        }
+    }
+    a {
+        color: $primary;
+        font-weight: bold;
+        text-decoration: none;
+        &:hover {
+            color: $primary-dark;
+        }
+    }
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTable, faListUl } from "@fortawesome/free-solid-svg-icons";
+import { faReceipt, faListUl } from "@fortawesome/free-solid-svg-icons";
 
 class Menu extends React.Component {
 	render() {
@@ -11,7 +11,7 @@ class Menu extends React.Component {
                 </div>
 				<ul className="side-bar-menu">
 					<li className="side-bar-menu-item is-active">
-						<FontAwesomeIcon className="icon is-before" icon={faTable} />
+						<FontAwesomeIcon className="icon is-before" icon={faReceipt} />
 						รายงาน
 					</li>
                     <li className="side-bar-menu-item is-clickable">

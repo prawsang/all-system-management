@@ -1,0 +1,89 @@
+.input {
+    border-width: 0 0 2px 0;
+    color: $gray-2;
+    font-size: 1em;
+    padding: 10px;
+    -webkit-appearance: none;
+
+    &:focus {
+        background-color: $gray-5;
+        border-bottom-color: $primary;
+        box-shadow: none;
+        outline: none;
+    }
+
+    &.is-danger {
+        border-bottom-color: $danger;
+        &:focus {
+            border-bottom-color: $danger-dark;
+        }
+    }
+}
+
+.button {
+    background-color: $primary;
+    border: none;
+    border-radius: 999px;
+    color:white;
+    font-size: 1em;
+    margin-bottom: 0.5em;
+    margin-right: 0.5em;
+    padding: 10px 15px;
+    .is-rectangle {
+        border-radius: 0;
+    }
+    &.is-after {
+        margin-left: 0.5em;
+    }
+    &:hover {
+        background-color: $primary-dark;
+        cursor: pointer;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    &.is-danger {
+        background-color: $danger;
+        &:hover {
+            background-color: $danger-dark;
+        }
+    }
+
+    &.is-warning {
+        background-color: $warning;
+        &:hover {
+            background-color: $warning-dark;
+        }
+    }
+
+    &.is-success {
+        background-color: $success;
+        &:hover {
+            background-color: $success-dark;
+        }
+    }
+
+    &.is-light {
+        background-color: white;
+        border: 1px solid $gray-4;
+        color: $gray-2;
+        &:hover {
+            background-color: $gray-5;
+        }
+    }
+}
+
+.buttons {
+    align-items: center;
+    display: flex;
+    margin-bottom: 0.5em;
+    .button {
+        margin-bottom: 0;
+        &:last-child {
+            margin-left: 0;
+        }
+    }
+}

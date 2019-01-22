@@ -2,6 +2,8 @@
 @import "variables";
 @import "typography";
 @import "nav";
+@import "table";
+@import "form";
 
 body {
 	background-color: $gray-5;
@@ -11,13 +13,31 @@ body {
 	margin: auto;
 	width: 90%;
 	&.main {
-		margin-top: 60px;
+		margin-top: 20px;
+		margin-bottom: 40px;
+		&.fixed-nav {
+			margin-top: 80px;
+		}
 		&.with-side-bar {
 			margin-left: 200px;
-			margin-top: 80px;
 			padding: 0 40px;
 			width: auto;
 		}
+	}
+}
+
+.panel {
+	box-shadow: 0 3px 12px $gray-4;
+	background-color: white;
+	border-radius: 15px;
+	margin-top: 20px;
+	.panel-head {
+		background-color: $primary;
+		color:white;
+		border-radius: 15px 15px 0 0;
+	}
+	.panel-content {
+		padding: 30px;
 	}
 }
 
@@ -25,47 +45,23 @@ body {
 .is-clickable {
 	cursor: pointer;
 }
-
-/* Typography */
-/* Text alignment */
-.is-ta-center {
-	text-align: center;
-}
-/* Color */
-.accent {
-	color: $primary;
-}
-.is-light {
-	color: $gray-3;
-}
-/* Weight */
-.is-bold {
-	font-weight: bold;
-}
-.is-normal {
-	font-weight: normal;
-}
-/* Size */
-/* headers */
-.is-1 {
-	font-size: 3em;
-}
-.is-2 {
-	font-size: 2.5em;
-}
-.is-3 {
-	font-size: 2em;
-}
-.is-4 {
-	font-size: 1.5em;
-}
-.is-5 {
-	font-size: 1.25em;
-}
-.is-6 {
-	font-size: 0.75em;
+.is-fullwidth {
+	width: 100%;
 }
 
+/* Margin */
+.no-mt {
+	margin-top: 0 !important;
+}
+.no-ml {
+	margin-left: 0 !important;
+}
+.no-mb {
+	margin-bottom: 0 !important;
+}
+.no-mr {
+	margin-right: 0 !important;
+}
 
 /* Flex */
 .is-flex {

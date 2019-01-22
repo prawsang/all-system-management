@@ -27,6 +27,6 @@ export default AppRouter;
 
 const Home = () => (
     <div className="content">
-        <p>Please select a menu.</p>
+        <p className="is-gray-3">Please select a menu.</p>
     </div>
 );

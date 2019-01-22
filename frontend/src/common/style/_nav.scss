@@ -1,30 +1,59 @@
-nav {
-	background-color: white;
-	box-shadow: 0px 2px 10px $gray-4;
-	left: 0;
-	position: fixed;
-	top: 0;
+nav {	
     width: 100%;
-    
+
     .nav-item {
-        padding: 15px;
+        border-radius: 999px;
+        margin: 5px;
         transition: all 0.1s ease-in-out;
+        p,a,span {
+            padding: 10px;
+        }
         &.is-clickable:hover {
             background-color: $primary;
-            color:white;
+            color: white;
+            position: relative;
+        }
+    }
+    
+    .light-bg {
+        background-color: white;
+        box-shadow: 0px 2px 10px $gray-4;
+        left: 0;
+        position: fixed;
+        top: 0;
+        .nav-item {
+            transition: none;
+            p, a, span {
+                padding: 15px;
+            }
+            &.is-clickable:hover {
+                background-color: $gray-5;
+                color: $primary;
+                position: relative;
+    
+                &::after {
+                    background-color: $primary;
+                    bottom: 0;
+                    content: '';
+                    height: 3px;
+                    position: absolute;
+                    width: 100%;
+                }
+            }
         }
     }
 }
 .side-bar {
     background-color: white;
     bottom: 0;
-    box-shadow: -2px 0 10px $gray-4;
+    // box-shadow: -2px 0 10px $gray-4;
     left: 0;
     position: fixed;
     top:0;
     width: 200px;
 
     .side-bar-head {
+        margin-bottom: 20px;
         padding:20px;
     }
     .side-bar-menu {
@@ -34,14 +63,19 @@ nav {
             transition: all 0.1s ease-in-out;
             width: 100%;
             &.is-clickable:hover {
-                background-color: $primary;
-                color:white;
-                padding-left: 40px;
+                background-color: $gray-5;
+                border-left: 3px solid $primary;
+                color: $primary;
+                padding-left: 37px;
             }
             &.is-active {
                 border-left: 3px solid $primary;
                 color: $primary;
+                font-weight: bold;
                 padding-left: 37px;
+            }
+            .icon.is-before {
+                margin-right: 1em;
             }
         }
     }
