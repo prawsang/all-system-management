@@ -17,7 +17,7 @@ class Nav extends React.Component {
 							Prawsang
 							<FontAwesomeIcon className="icon has-ml-05" icon={showUserMenu ? faAngleUp : faAngleDown} />
 						</p>
-						<div className={`nav-menu panel ${showUserMenu || "is-hidden"}`}>
+						<div className={`menu dropdown is-right panel ${showUserMenu || "is-hidden"}`}>
 							<span className="list-item is-clickable">ข้อมูลผู้ใช้</span>
 							<span className="list-item is-clickable">Log out</span>
 						</div>

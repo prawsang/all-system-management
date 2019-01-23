@@ -20,23 +20,23 @@ class PORecord extends React.Component {
                                         <FontAwesomeIcon icon={faSearch} />
                                     </button>
                                 </div>
-                                <div className="panel input-menu">
+                                <div className="panel menu dropdown is-hidden">
                                     <span className="list-item is-clickable">123</span>
                                     <span className="list-item is-clickable">456</span>
                                     <span className="list-item is-clickable">789</span>
                                 </div>
                             </div>
-                            <div className="field">
+                            <div className="field is-disabled">
                                 <div className="is-flex">
-                                    <input className="input is-flex-fullwidth" placeholder="Job Code"/>
+                                    <input className="input is-flex-fullwidth" placeholder="Job Code" disabled/>
                                     <button className="button has-ml-05" type="button">
                                         <FontAwesomeIcon icon={faSearch} />
                                     </button>
                                 </div>
                             </div>
-                            <div className="field">
+                            <div className="field is-disabled">
                                 <div className="is-flex">
-                                    <input className="input is-flex-fullwidth" placeholder="Branch Name"/>
+                                    <input className="input is-flex-fullwidth" placeholder="Branch Name" disabled/>
                                     <div className="buttons has-ml-05">
                                         <button className="button" type="button">
                                             <FontAwesomeIcon icon={faSearch} />

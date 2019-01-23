@@ -52,6 +52,10 @@ body {
 .is-hidden {
 	display: none;
 }
+.is-disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
 
 /* Margin */
 .no-mt {

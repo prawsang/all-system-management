@@ -1,6 +1,6 @@
 nav {
 	width: 100%;
-
+	z-index: 999;
 	.nav-item {
 		border-radius: 999px;
 		margin: 5px;
@@ -16,23 +16,45 @@ nav {
 			color: white;
 		}
 
-		.panel.nav-menu {
+		.panel.menu {
 			border-radius: 10px;
 			color: $gray-2;
 			margin-top: 5px;
 			min-width: 200px;
 			position: absolute;
 			right: 0;
-			.list-item {
-				&:first-child {
-					border-top-left-radius: 10px;
-					border-top-right-radius: 10px;
-				}
-				&:last-child {
-					border-bottom-left-radius: 10px;
-					border-bottom-right-radius: 10px;
-				}
-			}
+		}
+	}
+}
+.menu {
+	border-radius: 10px;
+	color: $gray-2;
+	font-weight: normal;
+	min-width: 200px;
+	position: absolute;
+	z-index: 999;
+	&.dropdown {
+		left: 0;
+		margin-top: 5px;
+		&.is-right {
+			left: initial;
+			right: 0;
+		}
+	}
+	&.dropright {
+		top: 0;
+		left: 100%;
+		margin-left: 5px;
+		margin-top: 0;
+	}
+	.list-item {
+		&:first-child {
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+		}
+		&:last-child {
+			border-bottom-left-radius: 10px;
+			border-bottom-right-radius: 10px;
 		}
 	}
 }
@@ -44,6 +66,7 @@ nav {
 	position: fixed;
 	top: 0;
 	width: 250px;
+	z-index: 999;
 
 	.side-bar-head {
 		margin-bottom: 20px;
@@ -53,6 +76,7 @@ nav {
 		.side-bar-menu-item {
 			box-sizing: border-box;
 			padding: 10px 10px 10px 30px;
+			position: relative;
 			transition: all 0.1s ease-in-out;
 			width: 100%;
 			&.is-clickable:hover {

@@ -3,7 +3,7 @@
     &:not(:last-child) {
         margin-bottom:1em;
     }
-    .panel.input-menu {
+    .panel.menu {
         border-radius: 10px;
         color: $gray-2;
         margin-top: 5px;
@@ -46,12 +46,22 @@
         box-shadow: none;
         outline: none;
     }
+    &:disabled {
+        opacity: 0.5;;
+        pointer-events: none;
+    }
 
     &.is-danger {
         border-bottom-color: $danger;
         &:focus {
             border-bottom-color: $danger-dark;
         }
+    }
+}
+
+.is-disabled {
+    .input:disabled {
+        opacity: 1;
     }
 }
 
