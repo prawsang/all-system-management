@@ -2,14 +2,25 @@ const express = require("express");
 const router = express.Router();
 const Branch = require("../models/Branch");
 const Job = require("../models/Job");
-const Model = require("../models/Model");
+const Customer = require("../models/Customer");
 const PurchaseOrder = require("../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
 
 router.get("/get-all", (req, res) => {
-	PurchaseOrder.findAll()
+	PurchaseOrder.findAll({
+		include: [
+			{
+				model:Job,
+				as: 'job',
+				include: {
+					model: Customer,
+					as: 'customer'
+				}
+			}
+		]
+	})
 		.then(po => res.send(po))
 		.catch(err => err);
 });
