@@ -8,8 +8,22 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
 
-router.get("/get-all", (req, res) => {
+router.get("/get-all/:page", async (req, res) => {
+	const { limit } = req.query; // records per page
+	let offset = 0;
+	let count = 0;
+	await PurchaseOrder.findAndCountAll()
+		.then(c => count = c.count)
+		.catch(err => res.status(500).send(err.errors));
+	if (count == 0) return;
+
+	const { page } = req.params;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
 	PurchaseOrder.findAll({
+		limit,
+		offset,
 		include: [
 			{
 				model:Job,
@@ -21,8 +35,12 @@ router.get("/get-all", (req, res) => {
 			}
 		]
 	})
-		.then(po => res.send(po))
-		.catch(err => err);
+		.then(po => res.send({
+			data: po,
+			count,
+			pagesCount
+		}))
+		.catch(err => res.status(500).send(err));
 });
 
 router.get("/:po_number", (req, res) => {
