@@ -49,7 +49,7 @@ router.get("/:id", (req, res) => {
 		]
 	})
 		.then(withdrawal => res.send(withdrawal))
-		.catch(err => err);
+		.catch(err => console.log(err));
 });
 
 // List of withdrawals of type INSTALLATION without a purchase order
@@ -107,7 +107,7 @@ checkBranchInJob = (branch_id, job_code) => {
 		.catch(err => res.status(500).send(err.errors));
 };
 checkWithdrawalFields = values => {
-	const { job_code, branch_id, po_number, staff_code, type, return_by, install_date, date } = values;
+	const { job_code, branch_id, po_number, staff_code, type, return_by, install_date, date, has_po } = values;
 	let errors = [];
 	if (!job_code && !po_number) errors.push({ message: "Job code or PO number is required." });
 	if (!branch_id) errors.push({ message: "Branch is required." });
@@ -116,13 +116,14 @@ checkWithdrawalFields = values => {
 	if (!date) errors.push({ message: "Date is required." });
 	if (type == "INSTALLATION" && !install_date) errors.push({ message: "Installation date is required." });
 	if (type == "BORROW" && !return_by) errors.push({ message: "Please specify return date." });
+	if (!has_po && po_number) errors.push({ message: "Cannot specify PO Number to withdrawals without a PO."})
 	if (errors.length > 0) return errors;
 	else return null;
 };
 
 // Add Withdrawal
 router.post("/add", async (req, res) => {
-	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, install_date, date, remarks } = req.query;
+	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, install_date, date, remarks, has_po } = req.query;
 	// Check required fields
 	const validationErrors = checkWithdrawalFields({
 		job_code,
@@ -132,7 +133,8 @@ router.post("/add", async (req, res) => {
 		type,
 		return_by,
 		install_date,
-		date
+		date,
+		has_po
 	});
 	if (validationErrors) {
 		res.status(400).send(validationErrors);
@@ -170,7 +172,8 @@ router.post("/add", async (req, res) => {
 			return_by,
 			status: "PENDING",
 			remarks,
-			date
+			date,
+			has_po
 		},
 		{
 			where: {
@@ -187,7 +190,7 @@ router.post("/add", async (req, res) => {
 // Edit Withdrawal (only if it is pending)
 router.put("/:id/edit", async (req, res) => {
 	const { id } = req.params;
-	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, date, install_date } = req.query;
+	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, date, install_date, has_po } = req.query;
 	// Check required fields
 	const validationErrors = checkWithdrawalFields({
 		job_code,
@@ -197,11 +200,11 @@ router.put("/:id/edit", async (req, res) => {
 		type,
 		return_by,
 		install_date,
-		date
+		date,
+		has_po
 	});
 	if (validationErrors) {
 		res.status(400).send(validationErrors);
-		console.log(validationErrors);
 		return;
 	}
 
@@ -252,7 +255,8 @@ router.put("/:id/edit", async (req, res) => {
 			type,
 			return_by,
 			install_date,
-			date
+			date,
+			has_po
 		},
 		{
 			where: {
@@ -289,6 +293,12 @@ router.put("/:id/edit-remarks", (req, res) => {
 
 // Change Status
 changeStatus = (id, status) => {
+	if (status !== "PENDING" 
+		&& status !== "PRINTED"
+		&& status !== "CANCELLED") {
+			res.status(400).send([{ message: "Status must be either PENDING, PRINTED, or CANCELLED"}]);
+			return;
+		}
 	return Withdrawal.update(
 		{
 			status
@@ -302,7 +312,7 @@ changeStatus = (id, status) => {
 		}
 	)
 		.then(rows => null)
-		.catch(err => err.errors);
+		.catch(err => res.status(500).send(err.errors));
 };
 
 router.put("/:id/change-status", async (req, res) => {

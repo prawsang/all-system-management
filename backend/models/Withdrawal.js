@@ -46,6 +46,9 @@ const Withdrawal = db.define("withdrawals", {
 	},
 	return_by: {
 		type: Sequelize.DATE
+	},
+	has_po: {
+		type: Sequelize.BOOLEAN
 	}
 });
 
@@ -65,13 +68,18 @@ Withdrawal.belongsTo(Branch, {
 	foreignKey: "branch_id",
 	as: "branch"
 });
-Withdrawal.hasMany(Item, {
-	foreignKey: "withdrawal_id",
-	as: "items"
+
+Withdrawal.belongsToMany(Item,{
+	through: 'item_withdrawal',
+	foreignKey: 'withdrawal_id',
+	otherKey: 'serial_no',
+	as: 'items'
 });
-Item.belongsTo(Withdrawal, {
-	foreignKey: "withdrawal_id",
-	as: "withdrawal"
+Item.belongsToMany(Withdrawal,{
+	through: 'item_withdrawal',
+	foreignKey: 'serial_no',
+	otherKey: 'withdrawal_id',
+	as: 'withdrawals'
 });
 
 module.exports = Withdrawal;

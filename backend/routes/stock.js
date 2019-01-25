@@ -36,7 +36,7 @@ router.route("/:serial_no").get((req, res) => {
 			},
 			{
 				model: Withdrawal,
-				as: "withdrawal",
+				as: "withdrawals",
 				include: [
 					{
 						model: Branch,
@@ -65,7 +65,7 @@ router.route("/:serial_no").get((req, res) => {
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => console.log(err));
 });
 
 // Get item by status

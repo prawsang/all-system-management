@@ -8,16 +8,17 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
 
-router.get("/get-all/:page", async (req, res) => {
-	const { limit } = req.query; // records per page
+router.get("/get-all", async (req, res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
 	let offset = 0;
 	let count = 0;
 	await PurchaseOrder.findAndCountAll()
-		.then(c => count = c.count)
+		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err.errors));
 	if (count == 0) return;
-
-	const { page } = req.params;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
@@ -26,20 +27,24 @@ router.get("/get-all/:page", async (req, res) => {
 		offset,
 		include: [
 			{
-				model:Job,
-				as: 'job',
+				model: Job,
+				as: "job",
 				include: {
 					model: Customer,
-					as: 'customer'
+					as: "customer"
 				}
 			}
 		]
 	})
-		.then(po => res.send({
-			data: po,
-			count,
-			pagesCount
-		}))
+		.then(po =>
+			res.send({
+				data: {
+					rows: po,
+					count,
+					pagesCount
+				}
+			})
+		)
 		.catch(err => res.status(500).send(err));
 });
 
@@ -62,16 +67,16 @@ router.get("/:po_number", (req, res) => {
 		.catch(err => res.status(500).send(err.errors));
 });
 
-checkPOFields = (values) => {
+checkPOFields = values => {
 	const { po_number, description, installed, date } = values;
 	let errors = [];
-	if (!po_number) errors.push({message: "PO Number is required."});
-	if (!description) errors.push({message: "Description is required."});
-	if (!installed) errors.push({message: "Please specify if this PO has been installed."});
-	if (!date) errors.push({message: "PO date is required."});
+	if (!po_number) errors.push({ message: "PO Number is required." });
+	if (!description) errors.push({ message: "Description is required." });
+	if (!installed) errors.push({ message: "Please specify if this PO has been installed." });
+	if (!date) errors.push({ message: "PO date is required." });
 	if (errors.length > 0) return errors;
 	else return null;
-}
+};
 // Add PO information
 router.post("/add", (req, res) => {
 	const { po_number, description, installed, date } = req.query;
@@ -85,14 +90,12 @@ router.post("/add", (req, res) => {
 		res.status(400).send(validationErrors);
 		return;
 	}
-	PurchaseOrder.create(
-		{
-			po_number,
-			description,
-			installed,
-			date
-		}
-	)
+	PurchaseOrder.create({
+		po_number,
+		description,
+		installed,
+		date
+	})
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err.errors));
 });
@@ -163,7 +166,7 @@ router.post("/:po_number/add-branch", (req, res) => {
                         VALUES (" + `${branch_id},'${po_number}'` + ")", { type: db.QueryTypes.INSERT })
 					.then(rows => res.sendStatus(200))
 					.catch(err => res.status(500).send(err.errors));
-			} else res.status(400).send([{message: "Branch exists for this PO"}]);
+			} else res.status(400).send([{ message: "Branch exists for this PO" }]);
 		})
 		.catch(err => res.status(500).send(err.errors));
 });

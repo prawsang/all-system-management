@@ -234,15 +234,22 @@ router.put("/return", async (req, res) => {
 });
 
 // Mark Broken
-// Any Status -> BROKEN
 router.put("/broken", async (req, res) => {
 	let { serial_no } = req.query;
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
 	await Promise.all(serial_no.map( async no => {
-		const results = await changeStockStatus(no, "BROKEN");
-		if (results.errors) errors.push(results.errors);
+		Item.update({
+			broken: true
+		},{
+			where: {
+				serial_no: {
+					[Op.eq]: no
+				}
+			}
+		})
+			.catch(err => errors.push(err.errors));
 	}));
 	if (errors.length > 0) res.status(400).send(errors)
 	else res.sendStatus(200)

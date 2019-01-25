@@ -14,9 +14,6 @@ const Item = db.define(
 		model_id: {
 			type: Sequelize.INTEGER
 		},
-		withdrawal_id: {
-			type: Sequelize.INTEGER
-		},
 		remarks: {
 			type: Sequelize.STRING
 		},
@@ -28,7 +25,10 @@ const Item = db.define(
 		},
 		status: {
 			type: Sequelize.ENUM,
-			values: ["IN_STOCK", "BROKEN", "INSTALLED", "RESERVED", "BORROWED", "TRANSFERRED", "PENDING"]
+			values: ["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "IN_SERVICE_STOCK"]
+		},
+		broken: {
+			type: Sequelize.BOOLEAN
 		}
 	},
 	{
