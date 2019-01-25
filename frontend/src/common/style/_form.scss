@@ -66,13 +66,15 @@
 }
 
 .button {
-    background-color: $primary;
-    border: none;
-    border-radius: 999px;
-    color:white;
-    font-family: $base-fonts;
-    font-size: 1em;
-    padding: 10px 15px;
+    &, &.is-primary {
+        background-color: $primary;
+        border: 1px solid $primary;
+        border-radius: 999px;
+        color:white;
+        font-family: $base-fonts;
+        font-size: 1em;
+        padding: 10px 15px;
+    }
 
     &:focus {
         outline: none;
@@ -85,8 +87,9 @@
     &.is-rectangle {
         border-radius: 0;
     }
-    &:hover {
+    &:hover, &.is-primary:hover {
         background-color: $primary-dark;
+        border: 1px solid $primary-dark;
         cursor: pointer;
     }
 
@@ -97,22 +100,28 @@
 
     &.is-danger {
         background-color: $danger;
+        border: 1px solid $danger;
         &:hover {
             background-color: $danger-dark;
+            border: 1px solid $danger-dark;
         }
     }
 
     &.is-warning {
         background-color: $warning;
+        border: 1px solid $warning;
         &:hover {
             background-color: $warning-dark;
+            border: 1px solid $warning-dark;
         }
     }
 
     &.is-success {
         background-color: $success;
+        border: 1px solid $success;
         &:hover {
             background-color: $success-dark;
+            border: 1px solid $success-dark;
         }
     }
 
