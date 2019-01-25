@@ -1,5 +1,6 @@
 import React from "react";
-import Table from './components/Table';
+import { Route, Switch } from 'react-router-dom';
+import AllPO from "./tables/AllPO";
 
 class Report extends React.Component {
     state = {
@@ -8,10 +9,9 @@ class Report extends React.Component {
 	render() {
 		return (
 			<div className="content">
-				<h3>สาขาที่ยังไม่ได้ติดตั้ง</h3>
-				<div className="panel">
-                    <Table/>
-				</div>
+				<Switch>
+					<Route path="/report/all-po" component={AllPO} />
+				</Switch>
 			</div>
 		);
 	}
