@@ -1,9 +1,20 @@
 import React from "react";
-import SearchBar from '@/common/components/SearchBar';
+import SearchBar from "@/common/components/SearchBar";
 import Pagination from "../components/Pagination";
+import { fetchData, setPage, setLimit } from "@/actions/report";
+import { connect } from "react-redux";
 
 class AllPO extends React.Component {
+	componentDidMount() {
+		this.props.fetchData(`/po/get-all?limit=${this.props.currentLimit}&page=${this.props.currentPage}`);
+	}
+	handleLimitChange(limit) {
+		this.props.setPage(1);
+		this.props.setLimit(limit);
+		this.props.fetchData(`/po/get-all?limit=${limit}&page=1`);
+	}
 	render() {
+		const { data, currentLimit } = this.props;
 		return (
 			<React.Fragment>
 				<h3>PO ทั้งหมด</h3>
@@ -11,7 +22,17 @@ class AllPO extends React.Component {
 					<div className="panel-content">
 						<div className="is-flex is-jc-space-between">
 							<SearchBar />
-							<Pagination totalPages={3} />
+							<div>
+								<select onChange={(e) => this.handleLimitChange(e.target.value)}>
+									<option>25</option>
+									<option>50</option>
+									<option>100</option>
+								</select>
+								<Pagination 
+									totalPages={data.pagesCount} 
+									url={`/po/get-all?limit=${currentLimit}`}
+								/>
+							</div>
 						</div>
 					</div>
 					<table className="is-fullwidth is-rounded">
@@ -25,17 +46,24 @@ class AllPO extends React.Component {
 							</tr>
 						</thead>
 						<tbody className="is-hoverable">
-							<tr className="is-hoverable is-clickable">
-								<td>1</td>
-								<td>2</td>
-								<td>3</td>
-								<td>4</td>
-								<td>5</td>
-							</tr>
+							{data.rows &&
+								(data.rows.length > 0 &&
+									data.rows.map((e, i) => (
+										<tr className="is-hoverable is-clickable" key={i + e.po_number}>
+											<td>{e.po_number}</td>
+											<td>{e.job.customer.name}</td>
+											<td>{e.job.job_code}</td>
+											<td>{e.description}</td>
+											<td>{e.date}</td>
+										</tr>
+									)))}
 						</tbody>
 					</table>
 					<div className="panel-content is-flex is-jc-flex-end">
-						<Pagination totalPages={3} />
+						<Pagination 
+							totalPages={data.pagesCount} 
+							url={`/po/get-all?limit=${currentLimit}`}
+						/>
 					</div>
 				</div>
 			</React.Fragment>
@@ -43,4 +71,18 @@ class AllPO extends React.Component {
 	}
 }
 
-export default AllPO;
+const mapStateToProps = state => ({
+	data: state.report.data,
+	currentPage: state.report.currentPage,
+	currentLimit: state.report.currentLimit
+});
+const mapDispatchToProps = {
+	fetchData,
+	setPage,
+	setLimit
+};
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(AllPO);

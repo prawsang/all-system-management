@@ -1,13 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
+import { createStore, applyMiddleware } from "redux";
 import * as serviceWorker from "./serviceWorker";
 import AppRouter from "./common/routes";
 import "./common/style/index.scss";
 import rootReducer from "./reducers";
+import thunk from 'redux-thunk';
+// import { initAxios } from './common/config/axios';
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(thunk));
+
+// initAxios();
 
 ReactDOM.render(
 	<Provider store={store}>

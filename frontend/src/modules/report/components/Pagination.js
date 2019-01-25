@@ -1,38 +1,30 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import { connect } from 'react-redux';
-import { setPage } from '@/actions/report';
-import { withRouter } from 'react-router-dom';
+import { connect } from "react-redux";
+import { setPage, fetchData } from "@/actions/report";
 
 class Pagination extends React.Component {
-	renderPageNumbers = (totalPages) =>
+	renderPageNumbers = totalPages =>
 		new Array(totalPages).fill().map((e, i) => (
-			<button 
-				className={`button ${this.props.currentPage === i+1 ? '' : 'is-light'}`}
-				key={i} 
-				onClick={() => this.props.setPage(i + 1)}>
+			<button className={`button ${this.props.currentPage === i + 1 ? "" : "is-light"}`} key={i} onClick={() => this.props.setPage(i + 1)}>
 				{i + 1}
 			</button>
 		));
+	handlePageChange(page) {
+		this.props.setPage(page);
+		this.props.fetchData(this.props.url + "&page=" + page)
+	}
 
 	render() {
-		const { totalPages, currentPage, setPage } = this.props;
+		const { totalPages, currentPage } = this.props;
 		return (
 			<div className="buttons no-mb">
-				<button 
-					className="button is-light" 
-					onClick={() => setPage(currentPage - 1)}
-					disabled={currentPage === 1}
-				>
+				<button className="button is-light" onClick={() => this.handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
 					<FontAwesomeIcon icon={faAngleLeft} />
 				</button>
 				{this.renderPageNumbers(totalPages)}
-				<button 
-					className="button is-light"
-					onClick={() => setPage(currentPage + 1)}
-					disabled={currentPage === totalPages}
-				>
+				<button className="button is-light" onClick={() => this.handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
 					<FontAwesomeIcon icon={faAngleRight} />
 				</button>
 			</div>
@@ -40,16 +32,15 @@ class Pagination extends React.Component {
 	}
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
 	currentPage: state.report.currentPage
-})
+});
 const mapDispatchToProps = {
-	setPage
-}
+	setPage,
+	fetchData
+};
 
-export default withRouter(
-	connect(
-		mapStateToProps,
-		mapDispatchToProps
-	)(Pagination)
-)
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Pagination);
