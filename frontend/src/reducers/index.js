@@ -1,6 +1,8 @@
-import { combineReducers } from 'redux'
-import report from './report'
+import { combineReducers } from "redux";
+import report from "./report";
+import single from "./single";
 
 export default combineReducers({
-  report
-})
+	report,
+	single
+});

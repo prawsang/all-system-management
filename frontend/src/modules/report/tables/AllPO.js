@@ -46,9 +46,9 @@ class AllPO extends React.Component {
 							</tr>
 						</thead>
 						<tbody className="is-hoverable">
-							{data.rows &&
-								(data.rows.length > 0 &&
-									data.rows.map((e, i) => (
+							{data.po &&
+								(data.po.length > 0 &&
+									data.po.map((e, i) => (
 										<tr className="is-hoverable is-clickable" key={i + e.po_number}>
 											<td>{e.po_number}</td>
 											<td>{e.job.customer.name}</td>

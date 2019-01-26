@@ -4,6 +4,7 @@ import Nav from './components/Nav';
 import Menu from './components/Menu';
 import Report from '../modules/report';
 import PORecord from '../modules/porecord';
+import Single from '../modules/single';
 
 class AppRouter extends React.Component {
     render() {
@@ -14,6 +15,7 @@ class AppRouter extends React.Component {
                 <div className="container main with-side-bar">
                     <Router>
                         <Switch>
+                            <Route path="/single" component={Single} />
                             <Route path="/po-record" component={PORecord} />
                             <Route path="/report" component={Report} />
                             <Route path="/" component={Home} />
