@@ -1,22 +1,17 @@
 import React from "react";
-import { connect } from "react-redux";
-import { fetchData } from '@/actions/single';
 import Field from '../components/Field';
 
 class PO extends React.PureComponent {
 	async componentDidMount() {
-		const { po_number } = this.props.match.params;
-		await this.props.fetchData(`/po/single/${po_number}`);
-
-		const { po } = this.props.data;
-		const {
-			description,
-			installed
-		} = po;
-		this.setState({
-			description,
-			installed
-		})
+		// const { po } = this.props.data;
+		// const {
+		// 	description,
+		// 	installed
+		// } = po;
+		// this.setState({
+		// 	description,
+		// 	installed
+		// })
 
 	}
 	state = {
@@ -25,7 +20,7 @@ class PO extends React.PureComponent {
 		installed: false
 	}
 	render() {
-		const { po_number } = this.props.match.params;
+		// const { po_number } = this.props.match.params;
 		const { data } = this.props;
 		const { 
 			edit,
@@ -34,8 +29,8 @@ class PO extends React.PureComponent {
 		} = this.state;
 		return (
 			<React.Fragment>
-				<h3>PO Number: {po_number}</h3>
-				<div className="panel">
+				<h3>PO Number</h3>
+				{/* <div className="panel">
 						{ data.po && (
 							<React.Fragment>
 								<div className="panel-content no-pb">
@@ -110,21 +105,10 @@ class PO extends React.PureComponent {
 								<div style={{ paddingBottom: 30 }}/>
 							</React.Fragment>
 						)}
-				</div>
+				</div> */}
 			</React.Fragment>
 		);
 	}
 }
 
-const mapStateToProps = state => ({
-	data: state.single.data
-})
-
-const mapDispatchToProps = {
-	fetchData
-}
-
-export default connect(
-	mapStateToProps,
-	mapDispatchToProps
-)(PO);
+export default PO;

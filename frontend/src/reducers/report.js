@@ -1,6 +1,5 @@
 import { 
-    SET_PAGE, 
-    UPDATE_DATA_FROM_FETCH,
+    SET_PAGE,
     SET_LIMIT
 } from "@/common/action-types";
 
@@ -21,11 +20,6 @@ const report = (state = initialState, action) => {
             return {
                 ...state,
                 currentLimit: action.payload.limit
-            }
-        case UPDATE_DATA_FROM_FETCH:
-            return {
-                ...state,
-                data: action.payload.data
             }
         default:
             return state;

@@ -2,7 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import { connect } from "react-redux";
-import { setPage, fetchData } from "@/actions/report";
+import { setPage } from "@/actions/report";
 
 class Pagination extends React.Component {
 	renderPageNumbers = totalPages =>
@@ -36,8 +36,7 @@ const mapStateToProps = state => ({
 	currentPage: state.report.currentPage
 });
 const mapDispatchToProps = {
-	setPage,
-	fetchData
+	setPage
 };
 
 export default connect(

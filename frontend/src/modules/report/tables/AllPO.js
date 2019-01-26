@@ -1,17 +1,14 @@
 import React from "react";
 import SearchBar from "@/common/components/SearchBar";
 import Pagination from "../components/Pagination";
-import { fetchData, setPage, setLimit } from "@/actions/report";
+import { setPage, setLimit } from "@/actions/report";
 import { connect } from "react-redux";
+import history from '@/common/history';
 
 class AllPO extends React.Component {
-	componentDidMount() {
-		this.props.fetchData(`/po/get-all?limit=${this.props.currentLimit}&page=${this.props.currentPage}`);
-	}
 	handleLimitChange(limit) {
 		this.props.setPage(1);
 		this.props.setLimit(limit);
-		this.props.fetchData(`/po/get-all?limit=${limit}&page=1`);
 	}
 	render() {
 		const { data, currentLimit } = this.props;
@@ -29,7 +26,7 @@ class AllPO extends React.Component {
 									<option>100</option>
 								</select>
 								<Pagination 
-									totalPages={data.pagesCount} 
+									totalPages={data ? data.pagesCount : 1} 
 									url={`/po/get-all?limit=${currentLimit}`}
 								/>
 							</div>
@@ -46,10 +43,17 @@ class AllPO extends React.Component {
 							</tr>
 						</thead>
 						<tbody className="is-hoverable">
-							{data.po &&
+							{data &&
 								(data.po.length > 0 &&
 									data.po.map((e, i) => (
-										<tr className="is-hoverable is-clickable" key={i + e.po_number}>
+										<tr 
+											className="is-hoverable is-clickable" 
+											key={i + e.po_number}
+											onClick={(event) => {
+												history.push(`/single/po/${e.po_number}`);
+												event.stopPropagation();
+											}}
+										>
 											<td>{e.po_number}</td>
 											<td>{e.job.customer.name}</td>
 											<td>{e.job.job_code}</td>
@@ -61,7 +65,7 @@ class AllPO extends React.Component {
 					</table>
 					<div className="panel-content is-flex is-jc-flex-end">
 						<Pagination 
-							totalPages={data.pagesCount} 
+							totalPages={data ? data.pagesCount : 1} 
 							url={`/po/get-all?limit=${currentLimit}`}
 						/>
 					</div>
@@ -72,12 +76,10 @@ class AllPO extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	data: state.report.data,
 	currentPage: state.report.currentPage,
 	currentLimit: state.report.currentLimit
 });
 const mapDispatchToProps = {
-	fetchData,
 	setPage,
 	setLimit
 };

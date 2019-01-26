@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Router, Switch, Route } from 'react-router-dom';
+import history from './history';
 import Nav from './components/Nav';
 import Menu from './components/Menu';
 import Report from '../modules/report';
@@ -13,7 +14,7 @@ class AppRouter extends React.Component {
                 <Nav />
                 <Menu />
                 <div className="container main with-side-bar">
-                    <Router>
+                    <Router history={history}>
                         <Switch>
                             <Route path="/single" component={Single} />
                             <Route path="/po-record" component={PORecord} />
