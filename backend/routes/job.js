@@ -46,9 +46,9 @@ router.get("/single/:job_code", (req, res) => {
 				[Op.eq]: job_code
 			}
 		},
-		include: {
+		include: [{
 			model: Branch
-		}
+		}]
 	})
 		.then(job => res.send({ data: { job }}))
 		.catch(err => res.status(500).send({errors: [err]}));

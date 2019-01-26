@@ -3,6 +3,7 @@ const router = express.Router();
 const Branch = require("../models/Branch");
 const Job = require("../models/Job");
 const Customer = require("../models/Customer");
+const StoreType = require("../models/StoreType");
 const PurchaseOrder = require("../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -55,11 +56,19 @@ router.get("/single/:po_number", (req, res) => {
 		include: [
 			{
 				model: Job,
-				as: "job"
+				as: "job",
+				include: {
+					model: Customer,
+					as: 'customer'
+				}
 			},
 			{
 				model: Branch,
-				as: "branches"
+				as: "branches",
+				include: {
+					model: StoreType,
+					as: 'store_type'
+				}
 			}
 		]
 	})
