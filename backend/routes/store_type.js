@@ -4,13 +4,33 @@ const StoreType = require("../models/StoreType");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-router.route("/get-all").get((req, res) =>
-	StoreType.findAll()
+router.route("/get-all").get(async (req, res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await StoreType.findAndCountAll()
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
+	StoreType.findAll({
+		offset,
+		limit
+	})
 		.then(types => {
-			res.send(types);
+			res.send({
+				types,
+				count,
+				pagesCount
+			});
 		})
-		.catch(err => res.status(500).send(err))
-);
+		.catch(err => res.status(500).send({errors: [err]}))
+});
 
 // Add New Store Type
 router.post("/add", (req, res) => {
@@ -23,7 +43,7 @@ router.post("/add", (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Edit Store Type
@@ -45,7 +65,7 @@ router.put("/:id/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Delete store type
@@ -59,7 +79,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 module.exports = router;

@@ -16,6 +16,9 @@ const PurchaseOrder = db.define("purchase_orders", {
 	},
 	date: {
 		type: Sequelize.DATE
+	},
+	installed: {
+		type: Sequelize.BOOLEAN
 	}
 });
 

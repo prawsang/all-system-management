@@ -6,18 +6,39 @@ const Job = require("../models/Job");
 const Customer = require("../models/Customer");
 const Branch = require("../models/Branch");
 
-router.get("/get-all", (req, res) => {
+router.get("/get-all", async (req, res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Job.findAndCountAll()
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+	
 	Job.findAll({
+		offset,
+		limit,
 		include: {
 			model: Customer,
 			as: "customer"
 		}
 	})
-		.then(jobs => res.send(jobs))
-		.catch(err => res.status(500).send(err));
+		.then(jobs => res.send({
+			data: {
+				jobs,
+				count,
+				pagesCount
+			}
+		}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
-router.get("/:job_code", (req, res) => {
+router.get("/single/:job_code", (req, res) => {
 	const { job_code } = req.params;
 	Job.findOne({
 		where: {
@@ -29,8 +50,8 @@ router.get("/:job_code", (req, res) => {
 			model: Branch
 		}
 	})
-		.then(job => res.send(job))
-		.catch(err => res.status(500).send(err));
+		.then(job => res.send({ data: { job }}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Add Job
@@ -56,7 +77,7 @@ router.post("/add", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Edit Job
@@ -80,7 +101,7 @@ router.put("/:job_code/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Remove Branch from job
@@ -90,7 +111,7 @@ router.delete("/:job_code/remove-branch", (req, res) => {
 	db.query("DELETE FROM branch_job \
     WHERE branch_id = " + branch_id + "AND job_code = '" + job_code + "'", { type: db.QueryTypes.DELETE })
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Add branch to job if branch doesn't exist for that job
@@ -117,10 +138,10 @@ router.post("/:job_code/add-branch", (req, res) => {
 				db.query("INSERT INTO branch_job (branch_id, job_code)\
                         VALUES (" + `${branch_id},'${job_code}'` + ")", { type: db.QueryTypes.INSERT })
 					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err));
+					.catch(err => res.status(500).send({errors: [err]}));
 			} else res.status(400).send([{message: "Branch exists for this job"}]);
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Delete job
@@ -134,7 +155,7 @@ router.delete("/:job_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 module.exports = router;

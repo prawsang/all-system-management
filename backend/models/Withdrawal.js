@@ -68,6 +68,11 @@ Withdrawal.belongsTo(Branch, {
 	foreignKey: "branch_id",
 	as: "branch"
 });
+Branch.hasMany(Withdrawal, {
+	foreignKey: "branch_id",
+	as: "withdrawals"
+});
+
 
 Withdrawal.belongsToMany(Item,{
 	through: 'item_withdrawal',

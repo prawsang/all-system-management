@@ -12,13 +12,35 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
 
-router.get("/get-all", (req, res) => {
-	Withdrawal.findAll()
-		.then(withdrawals => res.send(withdrawals))
-		.catch(err => err);
+router.get("/get-all", async (req, res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Withdrawal.findAndCountAll()
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
+	Withdrawal.findAll({
+		limit,
+		offset
+	})
+		.then(withdrawals => res.send({
+			data: {
+				withdrawals,
+				count,
+				pagesCount
+			}
+		}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
-router.get("/:id", (req, res) => {
+router.get("/single/:id", (req, res) => {
 	const { id } = req.params;
 	Withdrawal.findOne({
 		where: { id: { [Op.eq]: id } },
@@ -49,13 +71,21 @@ router.get("/:id", (req, res) => {
 			}
 		]
 	})
-		.then(withdrawal => res.send(withdrawal))
-		.catch(err => console.log(err));
+		.then(withdrawal => res.send({
+			data: {withdrawal}
+		}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // List of withdrawals of type INSTALLATION without a purchase order
-router.get("/without-po", (req, res) => {
-	Withdrawal.findAll({
+router.get("/without-po", async (req, res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Withdrawal.findAndCountAll({
 		where: {
 			po_number: {
 				[Op.eq]: null
@@ -65,8 +95,32 @@ router.get("/without-po", (req, res) => {
 			}
 		}
 	})
-		.then(withdrawals => res.send(withdrawals))
-		.catch(err => res.status(500).send(err));
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
+	Withdrawal.findAll({
+		offset,
+		limit,
+		where: {
+			po_number: {
+				[Op.eq]: null
+			},
+			type: {
+				[Op.eq]: "INSTALLATION"
+			}
+		}
+	})
+		.then(withdrawals => res.send({
+			data: {
+				withdrawals,
+				count,
+				pagesCount
+			}
+		}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 checkBranchInPo = (branch_id, po_number) => {
@@ -86,7 +140,7 @@ checkBranchInPo = (branch_id, po_number) => {
 		}
 	})
 		.then(count => (count == 0 ? false : true))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 };
 checkBranchInJob = (branch_id, job_code) => {
 	return Job.count({
@@ -105,7 +159,7 @@ checkBranchInJob = (branch_id, job_code) => {
 		}
 	})
 		.then(count => (count == 0 ? false : true))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 };
 checkWithdrawalFields = values => {
 	const { job_code, branch_id, po_number, staff_code, type, return_by, install_date, date, has_po } = values;
@@ -185,7 +239,7 @@ router.post("/add", async (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Edit Withdrawal (only if it is pending)
@@ -224,7 +278,7 @@ router.put("/:id/edit", async (req, res) => {
 				pending = false;
 			}
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 	if (!pending) return;
 
 	// check if branch is in the specified PO (if any)
@@ -268,7 +322,7 @@ router.put("/:id/edit", async (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Edit remarks
@@ -289,7 +343,7 @@ router.put("/:id/edit-remarks", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Change Status
@@ -313,7 +367,7 @@ changeStatus = (id, status) => {
 		}
 	)
 		.then(rows => null)
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 };
 
 router.put("/:id/change-status", async (req, res) => {
@@ -330,7 +384,7 @@ router.put("/:id/change-status", async (req, res) => {
 		}
 	})
 		.then(withdrawal => (currentStatus = withdrawal.status))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 
 	if (status == "PRINTED") {
 		if (currentStatus != "PENDING") {
@@ -416,7 +470,7 @@ router.delete("/:id", async (req, res) => {
 				pending = true;
 			}
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 	if (pending) return;
 
 	Withdrawal.destroy({
@@ -427,7 +481,7 @@ router.delete("/:id", async (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Force delete withdrawal (superadmins only)
@@ -441,7 +495,7 @@ router.delete("/:id/force-delete", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 module.exports = router;

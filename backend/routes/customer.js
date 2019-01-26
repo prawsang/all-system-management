@@ -5,12 +5,34 @@ const Op = Sequelize.Op;
 const Job = require("../models/Job");
 const Customer = require("../models/Customer");
 
-router.get("/get-all", (req, res) => {
-	Customer.findAll()
-		.then(customers => res.send(customers))
-		.catch(err => res.status(500).send(err));
+router.get("/get-all", async (req, res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Customer.findAndCountAll()
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+	
+	Customer.findAll({
+		limit,
+		offset
+	})
+		.then(customers => res.send({
+			data: {
+				customers,
+				count,
+				pagesCount
+			}
+		}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
-router.get("/:customer_code", (req, res) => {
+router.get("/single/:customer_code", (req, res) => {
 	const { customer_code } = req.params;
 	Customer.findOne({
 		where: {
@@ -19,8 +41,8 @@ router.get("/:customer_code", (req, res) => {
 			}
 		}
 	})
-		.then(customer => res.send(customer))
-		.catch(err => res.status(500).send(err));
+		.then(customer => res.send({ data: { customer }}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Add New Customer
@@ -39,7 +61,7 @@ router.post("/add", (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Edit Customer
@@ -63,7 +85,7 @@ router.put("/:customer_code/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 
@@ -78,7 +100,7 @@ router.delete("/:customer_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 module.exports = router;

@@ -12,20 +12,41 @@ const Op = Sequelize.Op;
 
 router.use("/", require("./stock_status"));
 
-router.route("/get-all").get((req, res) =>
+router.route("/get-all").get(async (req, res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Item.findAndCountAll()
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+	
 	Item.findAll({
+		offset,
+		count,
 		include: {
 			model: Model,
 			as: "model"
 		}
 	})
-		.then(models => {
-			res.send(models);
+		.then(items => {
+			res.send({
+				data: {
+					items,
+					count,
+					pagesCount
+				}
+			});
 		})
-		.catch(err => res.status(500).send(err))
-);
+		.catch(err => res.status(500).send({errors: [err]}))
+});
 
-router.route("/:serial_no").get((req, res) => {
+router.get("/single/:serial_no",(req, res) => {
 	const { serial_no } = req.params;
 	Item.findOne({
 		where: { serial_no: { [Op.eq]: serial_no } },
@@ -62,15 +83,37 @@ router.route("/:serial_no").get((req, res) => {
 			}
 		]
 	})
-		.then(models => {
-			res.send(models);
+		.then(item => {
+			res.send({
+				data: {item}
+			});
 		})
 		.catch(err => console.log(err));
 });
 
 // Get item by status
-router.get("/status/:status", (req, res) => {
+router.get("/status/:status", async (req, res) => {
 	const { status } = req.params;
+
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Item.findAndCountAll({
+		where: {
+			status: {
+				[Op.eq]: status.toUpperCase()
+			}
+		}
+	})
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
 	// Show return_by if borrowed
 	const include =
 		status == "borrowed"
@@ -81,7 +124,12 @@ router.get("/status/:status", (req, res) => {
 					},
 					{
 						model: Withdrawal,
-						as: "withdrawal"
+						as: "withdrawals",
+						where: {
+							type: {
+								[Op.eq]: "BORROW"
+							}
+						}
 					}
 			  ]
 			: [
@@ -92,6 +140,8 @@ router.get("/status/:status", (req, res) => {
 			  ];
 
 	Item.findAll({
+		limit,
+		offset,
 		include,
 		where: {
 			status: {
@@ -99,38 +149,100 @@ router.get("/status/:status", (req, res) => {
 			}
 		}
 	})
-		.then(models => {
-			res.send(models);
+		.then(items => {
+			res.send({
+				data: {
+					items,
+					count,
+					pagesCount
+				}
+			});
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Get all items reserved by branch
-router.get("/reserve-branch-id/:branch_id", (req, res) => {
+router.get("/reserve-branch-id/:branch_id", async (req, res) => {
+	let { limit, page } = req.query;
 	const { branch_id } = req.params;
-	Item.findAll({
+
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Item.findAndCountAll({
 		where: {
 			reserve_branch_id: {
 				[Op.eq]: branch_id
 			}
 		}
 	})
-		.then(items => res.send(items))
-		.catch(err => res.status(500).send(err));
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
+	Item.findAll({
+		offset,
+		limit,
+		where: {
+			reserve_branch_id: {
+				[Op.eq]: branch_id
+			}
+		}
+	})
+		.then(items => res.send({
+			data: {
+				items,
+				count,
+				pagesCount
+			}
+		}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Get all items reserved by job (customer)
-router.get("/reserve-job-code/:job_code", (req, res) => {
+router.get("/reserve-job-code/:job_code", async (req, res) => {
+	let { limit, page } = req.query;
 	const { job_code } = req.params;
-	Item.findAll({
+	
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Item.findAndCountAll({
 		where: {
 			reserve_job_code: {
 				[Op.eq]: job_code
 			}
 		}
 	})
-		.then(items => res.send(items))
-		.catch(err => res.status(500).send(err));
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
+	Item.findAll({
+		limit,
+		offset,
+		where: {
+			reserve_job_code: {
+				[Op.eq]: job_code
+			}
+		}
+	})
+		.then(items => res.send({
+			data: {
+				items,
+				count,
+				pagesCount
+			}
+		}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Add items to stock
@@ -176,7 +288,7 @@ router.put("/:serial_no/edit", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 
@@ -191,7 +303,7 @@ router.delete("/:serial_no", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 module.exports = router;

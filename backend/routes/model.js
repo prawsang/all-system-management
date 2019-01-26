@@ -4,21 +4,45 @@ const Model = require("../models/Model");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-router.route("/get-all").get((req, res) =>
-	Model.findAll()
-		.then(models => {
-			res.send(models);
-		})
-		.catch(err => res.status(500).send(err))
-);
+router.route("/get-all").get(async (req, res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
 
-router.route("/:id").get((req, res) => {
+	let offset = 0;
+	let count = 0;
+	await Model.findAndCountAll()
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+	
+	Model.findAll({
+		limit,
+		offset
+	})
+		.then(models => {
+			res.send({
+				data: {
+					models,
+					count,
+					pagesCount
+				}
+			});
+		})
+		.catch(err => res.status(500).send({errors: [err]}))
+});
+
+router.route("/single/:id").get((req, res) => {
 	const { id } = req.params;
 	Model.findOne({ where: { id: { [Op.eq]: id } } })
-		.then(models => {
-			res.send(models);
+		.then(model => {
+			res.send({
+				data: { model }
+			});
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Add New Model
@@ -37,7 +61,7 @@ router.post("/add", (req, res) => {
 		type
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Edit Model
@@ -64,7 +88,7 @@ router.put("/:id/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Delete Model
@@ -78,7 +102,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 module.exports = router;

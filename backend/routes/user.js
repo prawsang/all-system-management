@@ -5,12 +5,34 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const bcrypt = require('bcrypt');
 
-router.get("/get-all", (req, res) =>
-	User.findAll()
-		.then(users => res.send(users))
-		.catch(err => res.status(500).send(err))
-);
-router.get("/:staff_code", (req, res) => {
+router.get("/get-all", async (req, res) => {
+    let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await User.findAndCountAll()
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send({errors: [err]}));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+    offset = limit * (page - 1);
+    
+	User.findAll({
+        offset,
+        limit
+    })
+		.then(users => res.send({
+            data: {
+                users,
+                count,
+                pagesCount
+            }
+        }))
+		.catch(err => res.status(500).send({errors: [err]}))
+});
+router.get("/single/:staff_code", (req, res) => {
 	const { staff_code } = req.params;
 	User.findOne({
 		where: {
@@ -19,8 +41,8 @@ router.get("/:staff_code", (req, res) => {
 			}
 		}
 	})
-		.then(user => res.send(user))
-		.catch(err => res.status(500).send(err));
+		.then(user => res.send({data: { user }}))
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 checkUserFields = (values) => {
@@ -59,7 +81,7 @@ router.post("/add", (req, res) => {
                 .then(rows => res.sendStatus(200))
                 .catch(err => console.log(err.errors));
         })
-        .catch(err => res.status(500).send(err));
+        .catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Edit User
@@ -92,9 +114,9 @@ router.put("/:staff_code/edit", (req, res) => {
                 }
             })
                 .then(rows => res.sendStatus(200))
-                .catch(err => res.status(500).send(err));
+                .catch(err => res.status(500).send({errors: [err]}));
         })
-        .catch(err => res.status(500).send(err));
+        .catch(err => res.status(500).send({errors: [err]}));
 });
 
 // Delete user
@@ -108,7 +130,7 @@ router.delete("/:staff_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).send({errors: [err]}));
 });
 
 module.exports = router;
