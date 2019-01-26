@@ -36,9 +36,10 @@ checkStockStatus = (serial_no, status) => {
 				[Op.eq]: serial_no
 			}
 		}
-	}).then(item => (item.status != status ? false : true))
-	.catch(err => false)
-}
+	})
+		.then(item => (item.status != status ? false : true))
+		.catch(err => false);
+};
 // Check if withdrawal is of a correct type
 checkWithdrawalType = (withdrawal_id, type) => {
 	return Withdrawal.findOne({
@@ -47,9 +48,10 @@ checkWithdrawalType = (withdrawal_id, type) => {
 				[Op.eq]: withdrawal_id
 			}
 		}
-	}).then(withdrawal => (withdrawal.type != type ? false : true))
-	.catch(err => false)
-}
+	})
+		.then(withdrawal => (withdrawal.type != type ? false : true))
+		.catch(err => false);
+};
 
 // Install
 // Withdrawal of type INSTALLATION is required
@@ -59,39 +61,42 @@ router.put("/install", async (req, res) => {
 	// Check if there is a valid withdrawal
 	const { withdrawal_id } = req.query;
 	if (!withdrawal_id) {
-		res.status(400).send([{message: 'A withdrawal must be provided.'}]);
-		return
+		res.status(400).send([{ message: "A withdrawal must be provided." }]);
+		return;
 	}
-	const validWithdrawal = await checkWithdrawalType(withdrawal_id, 'TRANSFER');
+	const validWithdrawal = await checkWithdrawalType(withdrawal_id, "TRANSFER");
 	if (!validWithdrawal) {
-		res.status(400).send([{message: 'The withdrawal must be of type TRANSFER.'}]);
-		return
+		res.status(400).send([{ message: "The withdrawal must be of type TRANSFER." }]);
+		return;
 	}
 
 	let { serial_no } = req.query;
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
-	await Promise.all(serial_no.map( async no => {
-		// Check status if it's either in stock or reserved
-		let valid = await Item.findOne({
-			where: {
-				serial_no: {
-					[Op.eq]: serial_no
+	await Promise.all(
+		serial_no.map(async no => {
+			// Check status if it's either in stock or reserved
+			let valid = await Item.findOne({
+				where: {
+					serial_no: {
+						[Op.eq]: serial_no
+					}
 				}
-			}
-		}).then(item => ((item.status != 'IN_STOCK' && item.status != 'RESERVED') ? false : true))
-		.catch(err => false);
+			})
+				.then(item => (item.status != "IN_STOCK" && item.status != "RESERVED" ? false : true))
+				.catch(err => false);
 
-		if (valid) {
-			const results = await changeStockStatus(no, "INSTALLED", { withdrawal_id, reserve_branch_id: null, reserve_job_code: null });
-			if (results.errors) errors.push(results.errors);
-		} else {
-			errors.push({message: "This item is not in stock nor reserved.", value: no})
-		}
-	}));
-	if (errors.length > 0) res.status(400).send(errors)
-	else res.sendStatus(200)
+			if (valid) {
+				const results = await changeStockStatus(no, "INSTALLED", { withdrawal_id, reserve_branch_id: null, reserve_job_code: null });
+				if (results.errors) errors.push(results.errors);
+			} else {
+				errors.push({ message: "This item is not in stock nor reserved.", value: no });
+			}
+		})
+	);
+	if (errors.length > 0) res.status(400).send({ errors });
+	else res.sendStatus(200);
 });
 
 // Transfer
@@ -101,30 +106,32 @@ router.put("/transfer", async (req, res) => {
 	// Check if there is a valid withdrawal
 	const { withdrawal_id } = req.query;
 	if (!withdrawal_id) {
-		res.status(400).send([{message: 'A withdrawal must be provided.'}]);
-		return
+		res.status(400).send([{ message: "A withdrawal must be provided." }]);
+		return;
 	}
-	const validWithdrawal = await checkWithdrawalType(withdrawal_id, 'TRANSFER');
+	const validWithdrawal = await checkWithdrawalType(withdrawal_id, "TRANSFER");
 	if (!validWithdrawal) {
-		res.status(400).send([{message: 'The withdrawal must be of type TRANSFER.'}]);
-		return
+		res.status(400).send([{ message: "The withdrawal must be of type TRANSFER." }]);
+		return;
 	}
 
 	let { serial_no } = req.query;
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
-	await Promise.all(serial_no.map( async no => {
-		let valid = await checkStockStatus(no, 'IN_STOCK');
-		if (valid) {
-			const results = await changeStockStatus(no, "TRANSFERRED", { withdrawal_id });
-			if (results.errors) errors.push(results.errors);
-		} else {
-			errors.push({message: "This item is not in stock.", value: no})
-		}
-	}));
-	if (errors.length > 0) res.status(400).send(errors)
-	else res.sendStatus(200)
+	await Promise.all(
+		serial_no.map(async no => {
+			let valid = await checkStockStatus(no, "IN_STOCK");
+			if (valid) {
+				const results = await changeStockStatus(no, "TRANSFERRED", { withdrawal_id });
+				if (results.errors) errors.push(results.errors);
+			} else {
+				errors.push({ message: "This item is not in stock.", value: no });
+			}
+		})
+	);
+	if (errors.length > 0) res.status(400).send({ errors });
+	else res.sendStatus(200);
 });
 
 // Borrow
@@ -134,30 +141,32 @@ router.put("/transfer", async (req, res) => {
 	// Check if there is a valid withdrawal
 	const { withdrawal_id } = req.query;
 	if (!withdrawal_id) {
-		res.status(400).send([{message: 'A withdrawal must be provided.'}]);
-		return
+		res.status(400).send([{ message: "A withdrawal must be provided." }]);
+		return;
 	}
-	const validWithdrawal = await checkWithdrawalType(withdrawal_id, 'BORROW');
+	const validWithdrawal = await checkWithdrawalType(withdrawal_id, "BORROW");
 	if (!validWithdrawal) {
-		res.status(400).send([{message: 'The withdrawal must be of type BORROW.'}]);
-		return
+		res.status(400).send([{ message: "The withdrawal must be of type BORROW." }]);
+		return;
 	}
 
 	let { serial_no } = req.query;
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
-	await Promise.all(serial_no.map( async no => {
-		let valid = await checkStockStatus(no, 'IN_STOCK');
-		if (valid) {
-			const results = await changeStockStatus(no, "BORROWED", { withdrawal_id });
-			if (results.errors) errors.push(results.errors);
-		} else {
-			errors.push({message: "This item is not in stock.", value: no})
-		}
-	}));
-	if (errors.length > 0) res.status(400).send(errors)
-	else res.sendStatus(200)
+	await Promise.all(
+		serial_no.map(async no => {
+			let valid = await checkStockStatus(no, "IN_STOCK");
+			if (valid) {
+				const results = await changeStockStatus(no, "BORROWED", { withdrawal_id });
+				if (results.errors) errors.push(results.errors);
+			} else {
+				errors.push({ message: "This item is not in stock.", value: no });
+			}
+		})
+	);
+	if (errors.length > 0) res.status(400).send({ errors });
+	else res.sendStatus(200);
 });
 
 // Reserve
@@ -166,8 +175,8 @@ router.put("/transfer", async (req, res) => {
 router.put("/reserve", async (req, res) => {
 	const { reserve_branch_id, reserve_job_code } = req.query;
 	if (!reserve_job_code) {
-		res.status(400).send([{message: 'A job code must be provided.'}]);
-		return
+		res.status(400).send([{ message: "A job code must be provided." }]);
+		return;
 	}
 	let branchInJob = true;
 	if (reserve_branch_id) {
@@ -186,13 +195,12 @@ router.put("/reserve", async (req, res) => {
 					}
 				}
 			}
-		})
-			.then(count => {
-				if (count == 0) {
-					res.status(400).send([{ message: "Branch is not associated to the job code." }]);
-					branchInJob = false;
-				}
-			})
+		}).then(count => {
+			if (count == 0) {
+				res.status(400).send([{ message: "Branch is not associated to the job code." }]);
+				branchInJob = false;
+			}
+		});
 	}
 	if (!branchInJob) return;
 
@@ -200,17 +208,19 @@ router.put("/reserve", async (req, res) => {
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
-	await Promise.all(serial_no.map( async no => {
-		let valid = await checkStockStatus(no, 'IN_STOCK');
-		if (valid) {
-			const results = await changeStockStatus(no, "RESERVED", { reserve_branch_id, reserve_job_code });
-			if (results.errors) errors.push(results.errors);
-		} else {
-			errors.push({message: "This item is not in stock.", value: no})
-		}
-	}));
-	if (errors.length > 0) res.status(400).send(errors)
-	else res.sendStatus(200)
+	await Promise.all(
+		serial_no.map(async no => {
+			let valid = await checkStockStatus(no, "IN_STOCK");
+			if (valid) {
+				const results = await changeStockStatus(no, "RESERVED", { reserve_branch_id, reserve_job_code });
+				if (results.errors) errors.push(results.errors);
+			} else {
+				errors.push({ message: "This item is not in stock.", value: no });
+			}
+		})
+	);
+	if (errors.length > 0) res.status(400).send({ errors });
+	else res.sendStatus(200);
 });
 // Return
 // BORROWED -> RETURNED
@@ -220,17 +230,19 @@ router.put("/return", async (req, res) => {
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
-	await Promise.all(serial_no.map( async no => {
-		let valid = await checkStockStatus(no, 'BORROWED');
-		if (valid) {
-			const results = await changeStockStatus(no, "IN_STOCK", { withdrawal_id: null });
-			if (results.errors) errors.push(results.errors);
-		} else {
-			errors.push({message: "This item is not borrowed.", value: no})
-		}
-	}));
-	if (errors.length > 0) res.status(400).send(errors)
-	else res.sendStatus(200)
+	await Promise.all(
+		serial_no.map(async no => {
+			let valid = await checkStockStatus(no, "BORROWED");
+			if (valid) {
+				const results = await changeStockStatus(no, "IN_STOCK", { withdrawal_id: null });
+				if (results.errors) errors.push(results.errors);
+			} else {
+				errors.push({ message: "This item is not borrowed.", value: no });
+			}
+		})
+	);
+	if (errors.length > 0) res.status(400).send({ errors });
+	else res.sendStatus(200);
 });
 
 // Mark Broken
@@ -239,20 +251,24 @@ router.put("/broken", async (req, res) => {
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
-	await Promise.all(serial_no.map( async no => {
-		Item.update({
-			broken: true
-		},{
-			where: {
-				serial_no: {
-					[Op.eq]: no
+	await Promise.all(
+		serial_no.map(async no => {
+			Item.update(
+				{
+					broken: true
+				},
+				{
+					where: {
+						serial_no: {
+							[Op.eq]: no
+						}
+					}
 				}
-			}
+			).catch(err => errors.push(err.errors));
 		})
-			.catch(err => errors.push(err.errors));
-	}));
-	if (errors.length > 0) res.status(400).send(errors)
-	else res.sendStatus(200)
+	);
+	if (errors.length > 0) res.status(400).send({ errors });
+	else res.sendStatus(200);
 });
 
 module.exports = router;

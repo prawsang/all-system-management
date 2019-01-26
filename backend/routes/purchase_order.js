@@ -17,7 +17,7 @@ router.get("/get-all", async (req, res) => {
 	let count = 0;
 	await PurchaseOrder.findAndCountAll()
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -64,7 +64,7 @@ router.get("/:po_number", (req, res) => {
 		]
 	})
 		.then(po => res.send(po))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 checkPOFields = values => {
@@ -97,7 +97,7 @@ router.post("/add", (req, res) => {
 		date
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit PO information (date and job_code cannot be edited)
@@ -128,7 +128,7 @@ router.put("/:po_number/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Remove Branch from PO
@@ -138,7 +138,7 @@ router.delete("/:po_number/remove-branch", (req, res) => {
 	db.query("DELETE FROM branch_po \
     WHERE branch_id = " + branch_id + "AND po_number = '" + po_number + "'", { type: db.QueryTypes.DELETE })
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Add Branch to PO (if doesn't exist)
@@ -165,10 +165,10 @@ router.post("/:po_number/add-branch", (req, res) => {
 				db.query("INSERT INTO branch_po (branch_id, po_number)\
                         VALUES (" + `${branch_id},'${po_number}'` + ")", { type: db.QueryTypes.INSERT })
 					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err.errors));
+					.catch(err => res.status(500).send(err));
 			} else res.status(400).send([{ message: "Branch exists for this PO" }]);
 		})
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Delete PO (Superadmins Only)
@@ -182,7 +182,7 @@ router.delete("/:po_number", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

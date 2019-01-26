@@ -8,7 +8,7 @@ const Customer = require("../models/Customer");
 router.get("/get-all", (req, res) => {
 	Customer.findAll()
 		.then(customers => res.send(customers))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 router.get("/:customer_code", (req, res) => {
 	const { customer_code } = req.params;
@@ -20,7 +20,7 @@ router.get("/:customer_code", (req, res) => {
 		}
 	})
 		.then(customer => res.send(customer))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Add New Customer
@@ -39,7 +39,7 @@ router.post("/add", (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit Customer
@@ -63,7 +63,7 @@ router.put("/:customer_code/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 
@@ -78,7 +78,7 @@ router.delete("/:customer_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

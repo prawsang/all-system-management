@@ -10,6 +10,7 @@ const Withdrawal = require("../models/Withdrawal");
 const PurchaseOrder = require("../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+const db = require("../config/database");
 
 router.get("/get-all", (req, res) => {
 	Withdrawal.findAll()
@@ -65,7 +66,7 @@ router.get("/without-po", (req, res) => {
 		}
 	})
 		.then(withdrawals => res.send(withdrawals))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 checkBranchInPo = (branch_id, po_number) => {
@@ -85,7 +86,7 @@ checkBranchInPo = (branch_id, po_number) => {
 		}
 	})
 		.then(count => (count == 0 ? false : true))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 };
 checkBranchInJob = (branch_id, job_code) => {
 	return Job.count({
@@ -104,7 +105,7 @@ checkBranchInJob = (branch_id, job_code) => {
 		}
 	})
 		.then(count => (count == 0 ? false : true))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 };
 checkWithdrawalFields = values => {
 	const { job_code, branch_id, po_number, staff_code, type, return_by, install_date, date, has_po } = values;
@@ -184,7 +185,7 @@ router.post("/add", async (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit Withdrawal (only if it is pending)
@@ -223,7 +224,7 @@ router.put("/:id/edit", async (req, res) => {
 				pending = false;
 			}
 		})
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 	if (!pending) return;
 
 	// check if branch is in the specified PO (if any)
@@ -267,7 +268,7 @@ router.put("/:id/edit", async (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit remarks
@@ -288,7 +289,7 @@ router.put("/:id/edit-remarks", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Change Status
@@ -312,7 +313,7 @@ changeStatus = (id, status) => {
 		}
 	)
 		.then(rows => null)
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 };
 
 router.put("/:id/change-status", async (req, res) => {
@@ -329,7 +330,7 @@ router.put("/:id/change-status", async (req, res) => {
 		}
 	})
 		.then(withdrawal => (currentStatus = withdrawal.status))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 
 	if (status == "PRINTED") {
 		if (currentStatus != "PENDING") {
@@ -358,6 +359,45 @@ router.put("/:id/change-status", async (req, res) => {
 	}
 });
 
+// Add items to withdrawal
+router.put('/:id/add-items', async (req,res) => {
+	let { serial_no } = req.query;
+	const { id } = req.params;
+	if (typeof serial_no == "string") serial_no = [serial_no];
+	let errors = [];
+	await Promise.all(
+		serial_no.map(async no => {
+			await Withdrawal.count({
+				where: {
+					id: {
+						[Op.eq]: id
+					}
+				},
+				include: {
+					model: Item,
+					as: 'items',
+					where: {
+						serial_no: {
+							[Op.eq]: no
+						}
+					}
+				}
+			})
+				.then(count => {
+					if (count == 0) {
+						db.query("INSERT INTO item_withdrawal (serial_no, withdrawal_id)\
+								VALUES (" + `${no},'${id}'` + ")", { type: db.QueryTypes.INSERT })
+							.then(rows => null)
+							.catch(err => errors.push(err.errors));
+					} else errors.push({ message: `Serial No. ${no} is already in this withdrawal.` });
+				})
+				.catch(err => errors.push(err.errors));
+		})
+	);
+	if (errors.length > 0) res.status(400).send({errors});
+	else res.sendStatus(200);
+})
+
 // Delete Withdrawal (only if it is pending)
 router.delete("/:id", async (req, res) => {
 	const { id } = req.params;
@@ -376,7 +416,7 @@ router.delete("/:id", async (req, res) => {
 				pending = true;
 			}
 		})
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 	if (pending) return;
 
 	Withdrawal.destroy({
@@ -387,7 +427,7 @@ router.delete("/:id", async (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Force delete withdrawal (superadmins only)
@@ -401,7 +441,7 @@ router.delete("/:id/force-delete", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

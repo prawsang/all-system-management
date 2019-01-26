@@ -14,7 +14,7 @@ router.get("/get-all", (req, res) => {
 		}
 	})
 		.then(jobs => res.send(jobs))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 router.get("/:job_code", (req, res) => {
@@ -30,7 +30,7 @@ router.get("/:job_code", (req, res) => {
 		}
 	})
 		.then(job => res.send(job))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Add Job
@@ -56,7 +56,7 @@ router.post("/add", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit Job
@@ -80,7 +80,7 @@ router.put("/:job_code/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Remove Branch from job
@@ -90,7 +90,7 @@ router.delete("/:job_code/remove-branch", (req, res) => {
 	db.query("DELETE FROM branch_job \
     WHERE branch_id = " + branch_id + "AND job_code = '" + job_code + "'", { type: db.QueryTypes.DELETE })
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Add branch to job if branch doesn't exist for that job
@@ -117,10 +117,10 @@ router.post("/:job_code/add-branch", (req, res) => {
 				db.query("INSERT INTO branch_job (branch_id, job_code)\
                         VALUES (" + `${branch_id},'${job_code}'` + ")", { type: db.QueryTypes.INSERT })
 					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err.errors));
+					.catch(err => res.status(500).send(err));
 			} else res.status(400).send([{message: "Branch exists for this job"}]);
 		})
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Delete job
@@ -134,7 +134,7 @@ router.delete("/:job_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

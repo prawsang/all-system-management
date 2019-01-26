@@ -9,7 +9,7 @@ router.route("/get-all").get((req, res) =>
 		.then(types => {
 			res.send(types);
 		})
-		.catch(err => res.status(500).send(err.errors))
+		.catch(err => res.status(500).send(err))
 );
 
 // Add New Store Type
@@ -23,7 +23,7 @@ router.post("/add", (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit Store Type
@@ -45,7 +45,7 @@ router.put("/:id/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Delete store type
@@ -59,7 +59,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

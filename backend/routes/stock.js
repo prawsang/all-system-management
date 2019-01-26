@@ -22,7 +22,7 @@ router.route("/get-all").get((req, res) =>
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => res.status(500).send(err.errors))
+		.catch(err => res.status(500).send(err))
 );
 
 router.route("/:serial_no").get((req, res) => {
@@ -102,7 +102,7 @@ router.get("/status/:status", (req, res) => {
 		.then(models => {
 			res.send(models);
 		})
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Get all items reserved by branch
@@ -116,7 +116,7 @@ router.get("/reserve-branch-id/:branch_id", (req, res) => {
 		}
 	})
 		.then(items => res.send(items))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Get all items reserved by job (customer)
@@ -130,7 +130,7 @@ router.get("/reserve-job-code/:job_code", (req, res) => {
 		}
 	})
 		.then(items => res.send(items))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 // Add items to stock
@@ -176,7 +176,7 @@ router.put("/:serial_no/edit", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 
@@ -191,7 +191,7 @@ router.delete("/:serial_no", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err.errors));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;
