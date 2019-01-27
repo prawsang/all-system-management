@@ -60,14 +60,6 @@ router.get("/single/:id", (req, res) => {
 				as: 'customer'
 			},
 			{
-				model: Withdrawal,
-				as: 'withdrawals'
-			},
-			{
-				model: PurchaseOrder,
-				as: "purchase_orders"
-			},
-			{
 				model: StoreType,
 				as: "store_type"
 			}
@@ -76,6 +68,45 @@ router.get("/single/:id", (req, res) => {
 		.then(branch => res.send({ branch }))
 		.catch(err => res.status(500).send(err));
 });
+
+// List of items in a branch
+router.get("/items/:id", async (req, res) => {
+	const { id } = req.params;
+
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+
+	const queryString = `FROM stock, models, withdrawals, branches, item_withdrawal\
+		WHERE withdrawals.branch_id = ${id}\
+		AND branches.id = ${id}\
+		AND item_withdrawal.withdrawal_id = withdrawals.id\
+		AND item_withdrawal.serial_no = stock.serial_no\
+		AND stock.model_id = models.id`;
+
+	await db.query(
+		`SELECT COUNT(stock.serial_no) ${queryString}`
+		, { type: db.QueryTypes.SELECT })
+		.then(c => (count = parseInt(c[0].count)))
+		.catch(err => console.log(err));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
+	await db.query(
+		`SELECT stock.serial_no, models.type, models.name, install_date ${queryString}\
+		LIMIT ${limit} OFFSET ${offset}`
+		,{ type: db.QueryTypes.SELECT })
+		.then(items => res.send({
+			items,
+			count,
+			pagesCount
+		}))
+		.catch(err => res.status(500).send(err));
+})
 
 // List of branches with po but po has installed = false
 router.get("/no-install", async (req, res) => {
@@ -127,7 +158,7 @@ router.get("/no-install", async (req, res) => {
 });
 
 // List of po_number of a branch
-router.get("/:id/get-po-number", async (req, res) => {
+router.get("/po/:id", async (req, res) => {
 	let { limit, page } = req.query;
 	const { id } = req.params;
 	if (!limit) limit = 25;
