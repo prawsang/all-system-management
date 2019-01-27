@@ -78,7 +78,16 @@ router.get("/branches/:po_number", async (req,res) => {
 
 	let offset = 0;
 	let count = 0;
-	await PurchaseOrder.findAndCountAll()
+	await Branch.findAndCountAll({
+		include: {
+			model: PurchaseOrder,
+			where: {
+				po_number: {
+					[Op.eq]: po_number
+				}
+			}
+		}
+	})
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
 	if (count == 0) return;

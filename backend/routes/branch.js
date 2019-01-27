@@ -177,9 +177,11 @@ router.get("/po/:id", async (req, res) => {
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
-	db.query("SELECT po_number\
-		FROM branch_po\
-		WHERE branch_po.branch_id = " + id + "LIMIT " + limit + "OFFSET " + offset, { type: db.QueryTypes.SELECT })
+	db.query(`SELECT branch_po.po_number, description, date
+		FROM branch_po, purchase_orders
+		WHERE branch_po.branch_id = ${id}
+		AND branch_po.po_number = purchase_orders.po_number
+		LIMIT ${limit} OFFSET ${offset}`, { type: db.QueryTypes.SELECT })
 		.then(po =>
 			res.send({
 				po,
