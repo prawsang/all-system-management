@@ -16,10 +16,11 @@ class Single extends React.Component {
 }
 
 const POWrapper = (props) => {
+    const { po_number } = props.match.params;
     return (
         <FetchDataFromServer 
-            url={`/po/single/${props.match.params.po_number}`}
-            render={data => <PO data={data} />}
+            url={`/po/single/${po_number}`}
+            render={data => <PO data={data} po_number={po_number}/>}
         />
     )
 }

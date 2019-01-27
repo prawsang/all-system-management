@@ -1,37 +1,28 @@
 import React from "react";
 import Field from '../components/Field';
+import Axios from 'axios';
 
 class PO extends React.PureComponent {
-	async componentDidMount() {
-		// const { po } = this.props.data;
-		// const {
-		// 	description,
-		// 	installed
-		// } = po;
-		// this.setState({
-		// 	description,
-		// 	installed
-		// })
-
+	componentDidMount() {
+		Axios.get(`/po/branches/${this.props.po_number}`)
+			.then(res => this.setState({ branches: res.data.branches }));
 	}
 	state = {
 		edit: false,
-		description: '',
-		installed: false
+		branches: []
 	}
 	render() {
-		// const { po_number } = this.props.match.params;
 		const { data } = this.props;
 		const { 
 			edit,
-			description,
-			installed
+			branches
 		} = this.state;
+
 		return (
 			<React.Fragment>
-				<h3>PO Number</h3>
-				{/* <div className="panel">
-						{ data.po && (
+				<h3>PO Number: {data && data.po.po_number}</h3>
+				<div className="panel">
+						{ data && (
 							<React.Fragment>
 								<div className="panel-content no-pb">
 									<form>
@@ -46,16 +37,16 @@ class PO extends React.PureComponent {
 											label="Installed"
 											edit={edit}
 											editable={false}
-											value={installed}
+											value={data.po.installed}
 											type="checkbox"
-											text={installed ? "Installed" : "Not Installed"}
+											text={data.po.installed ? "Installed" : "Not Installed"}
 											onChange={(e) => this.setState({ installed: e.target.value })}
 										/>
 										<Field 
 											label="Description"
 											edit={edit}
 											editable={true}
-											value={description}
+											value={data.po.description}
 											onChange={(e) => this.setState({ description: e.target.value})}
 										/>
 									</form>
@@ -92,7 +83,7 @@ class PO extends React.PureComponent {
 										</tr>
 									</thead>
 									<tbody className="is-hoverable">
-										{data.po.branches.map((e,i) => (
+										{branches && branches.map((e,i) => (
 											<tr key={e.name + i} className="is-hoverable is-clickable">
 												<td>{e.branch_code}</td>
 												<td>{e.name}</td>
@@ -105,7 +96,7 @@ class PO extends React.PureComponent {
 								<div style={{ paddingBottom: 30 }}/>
 							</React.Fragment>
 						)}
-				</div> */}
+				</div>
 			</React.Fragment>
 		);
 	}
