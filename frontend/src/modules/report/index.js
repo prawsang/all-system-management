@@ -19,7 +19,15 @@ class Report extends React.Component {
 const AllPOWrapper = () => (
 	<FetchDataFromServer
 		url="/po/get-all"
-		render={data => <Table data={data} table={data => <AllPO data={data}/>} title="PO ทั้งหมด"/>}
+		render={data => 
+			<Table 
+				data={data} 
+				table={
+					data => <AllPO data={data}/>
+				} 
+				title="PO ทั้งหมด"/>
+			}
+		disabled={false}
 	/>
 )
 

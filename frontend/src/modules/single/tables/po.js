@@ -1,13 +1,11 @@
 import React from "react";
 import history from "@/common/history";
 
-const AllPO = ({ data }) => (
+const POTable = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
 		<thead>
 			<tr>
 				<td>PO Number</td>
-				<td>Customer Name</td>
-				<td>Job Code</td>
 				<td>Description</td>
 				<td>Date</td>
 			</tr>
@@ -25,8 +23,6 @@ const AllPO = ({ data }) => (
 							}}
 						>
 							<td>{e.po_number}</td>
-							<td>{e.job.customer.name}</td>
-							<td>{e.job.job_code}</td>
 							<td>{e.description}</td>
 							<td>{e.date}</td>
 						</tr>
@@ -35,4 +31,4 @@ const AllPO = ({ data }) => (
 	</table>
 );
 
-export default AllPO;
+export default POTable;

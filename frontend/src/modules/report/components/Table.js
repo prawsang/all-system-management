@@ -1,9 +1,8 @@
 import React from "react";
 import SearchBar from "@/common/components/SearchBar";
-import Pagination from "../components/Pagination";
+import Pagination from "@/common/components/Pagination";
 import { setPage, setLimit } from "@/actions/report";
 import { connect } from "react-redux";
-import history from '@/common/history';
 
 class Table extends React.Component {
 	handleLimitChange(limit) {
@@ -11,7 +10,7 @@ class Table extends React.Component {
 		this.props.setLimit(limit);
 	}
 	render() {
-		const { data, currentLimit, title, table } = this.props;
+		const { data, title, table } = this.props;
 		return (
 			<React.Fragment>
 				<h3>{title}</h3>
@@ -27,7 +26,6 @@ class Table extends React.Component {
 								</select>
 								<Pagination 
 									totalPages={data ? data.pagesCount : 1} 
-									url={`/po/get-all?limit=${currentLimit}`}
 								/>
 							</div>
 						</div>
@@ -36,7 +34,6 @@ class Table extends React.Component {
 					<div className="panel-content is-flex is-jc-flex-end">
 						<Pagination 
 							totalPages={data ? data.pagesCount : 1} 
-							url={`/po/get-all?limit=${currentLimit}`}
 						/>
 					</div>
 				</div>
@@ -45,16 +42,12 @@ class Table extends React.Component {
 	}
 }
 
-const mapStateToProps = state => ({
-	currentPage: state.report.currentPage,
-	currentLimit: state.report.currentLimit
-});
 const mapDispatchToProps = {
 	setPage,
 	setLimit
 };
 
 export default connect(
-	mapStateToProps,
+	null,
 	mapDispatchToProps
 )(Table);
