@@ -22,7 +22,14 @@ router.route("/get-all").get(async (req, res) => {
 	await Item.findAndCountAll()
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	if (count == 0) {
+		res.send({
+			items: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 	
@@ -108,7 +115,16 @@ router.get("/status/:status", async (req, res) => {
 	})
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	
+	if (count == 0) {
+		res.send({
+			items: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
+	
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
@@ -176,7 +192,16 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 	})
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	
+	if (count == 0) {
+		res.send({
+			items: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
+
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
@@ -218,7 +243,16 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 	})
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	
+	if (count == 0) {
+		res.send({
+			items: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
+
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 

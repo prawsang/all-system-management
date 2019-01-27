@@ -20,7 +20,14 @@ router.get("/get-all", async (req, res) => {
 	await Branch.findAndCountAll()
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	if (count == 0) {
+		res.send({
+			branches: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
@@ -92,7 +99,16 @@ router.get("/items/:id", async (req, res) => {
 		, { type: db.QueryTypes.SELECT })
 		.then(c => (count = parseInt(c[0].count)))
 		.catch(err => console.log(err));
-	if (count == 0) return;
+	
+	if (count == 0) {
+		res.send({
+			items: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
+
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
@@ -130,7 +146,16 @@ router.get("/no-install", async (req, res) => {
 	})
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+
+	if (count == 0) {
+		res.send({
+			branches: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
+
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
@@ -173,7 +198,16 @@ router.get("/po/:id", async (req, res) => {
 		WHERE branch_po.branch_id = " + id, { type: db.QueryTypes.SELECT })
 		.then(c => (count = parseInt(c[0].count)))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+
+	if (count == 0) {
+		res.send({
+			po: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
+
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 

@@ -14,7 +14,14 @@ router.route("/get-all").get(async (req, res) => {
 	await Model.findAndCountAll()
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	if (count == 0) {
+		res.send({
+			models: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 	

@@ -22,7 +22,14 @@ router.get("/get-all", async (req, res) => {
 	await Withdrawal.findAndCountAll()
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	if (count == 0) {
+		res.send({
+			withdrawals: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
@@ -97,12 +104,19 @@ router.get("/without-po", async (req, res) => {
 			}
 		}
 	})
-		.then(c => (count = c.count))
+		.then(c => count = c.count)
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	if (count == 0) {
+		res.send({
+			withdrawals: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
-
+	res.sendStatus(200);
 	Withdrawal.findAll({
 		offset,
 		limit,

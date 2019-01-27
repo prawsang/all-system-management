@@ -15,7 +15,14 @@ router.get("/get-all", async (req, res) => {
 	await User.findAndCountAll()
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+    if (count == 0) {
+        res.send({
+            users: [],
+            count: 0,
+            pagesCount: 0
+        });
+        return
+    }
 	const pagesCount = Math.ceil(count / limit);
     offset = limit * (page - 1);
     

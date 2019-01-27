@@ -19,7 +19,14 @@ router.get("/get-all", async (req, res) => {
 	await PurchaseOrder.findAndCountAll()
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send({ errors: [err] }));
-	if (count == 0) return;
+	if (count == 0) {
+		res.send({
+			po: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
@@ -90,7 +97,14 @@ router.get("/branches/:po_number", async (req,res) => {
 	})
 		.then(c => (count = c.count))
 		.catch(err => res.status(500).send(err));
-	if (count == 0) return;
+	if (count == 0) {
+		res.send({
+			branches: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
 
