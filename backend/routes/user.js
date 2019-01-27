@@ -14,7 +14,7 @@ router.get("/get-all", async (req, res) => {
 	let count = 0;
 	await User.findAndCountAll()
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
     offset = limit * (page - 1);
@@ -24,13 +24,11 @@ router.get("/get-all", async (req, res) => {
         limit
     })
 		.then(users => res.send({
-            data: {
-                users,
-                count,
-                pagesCount
-            }
+            users,
+            count,
+            pagesCount
         }))
-		.catch(err => res.status(500).send({errors: [err]}))
+		.catch(err => res.status(500).send(err))
 });
 router.get("/single/:staff_code", (req, res) => {
 	const { staff_code } = req.params;
@@ -41,8 +39,8 @@ router.get("/single/:staff_code", (req, res) => {
 			}
 		}
 	})
-		.then(user => res.send({data: { user }}))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.then(user => res.send({user}))
+		.catch(err => res.status(500).send(err));
 });
 
 checkUserFields = (values) => {
@@ -81,7 +79,7 @@ router.post("/add", (req, res) => {
                 .then(rows => res.sendStatus(200))
                 .catch(err => console.log(err.errors));
         })
-        .catch(err => res.status(500).send({errors: [err]}));
+        .catch(err => res.status(500).send(err));
 });
 
 // Edit User
@@ -114,9 +112,9 @@ router.put("/:staff_code/edit", (req, res) => {
                 }
             })
                 .then(rows => res.sendStatus(200))
-                .catch(err => res.status(500).send({errors: [err]}));
+                .catch(err => res.status(500).send(err));
         })
-        .catch(err => res.status(500).send({errors: [err]}));
+        .catch(err => res.status(500).send(err));
 });
 
 // Delete user
@@ -130,7 +128,7 @@ router.delete("/:staff_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

@@ -13,7 +13,7 @@ router.route("/get-all").get(async (req, res) => {
 	let count = 0;
 	await Model.findAndCountAll()
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -24,14 +24,12 @@ router.route("/get-all").get(async (req, res) => {
 	})
 		.then(models => {
 			res.send({
-				data: {
-					models,
-					count,
-					pagesCount
-				}
+				models,
+				count,
+				pagesCount
 			});
 		})
-		.catch(err => res.status(500).send({errors: [err]}))
+		.catch(err => res.status(500).send(err))
 });
 
 router.route("/single/:id").get((req, res) => {
@@ -39,10 +37,10 @@ router.route("/single/:id").get((req, res) => {
 	Model.findOne({ where: { id: { [Op.eq]: id } } })
 		.then(model => {
 			res.send({
-				data: { model }
+				model
 			});
 		})
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Add New Model
@@ -61,7 +59,7 @@ router.post("/add", (req, res) => {
 		type
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit Model
@@ -88,7 +86,7 @@ router.put("/:id/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Delete Model
@@ -102,7 +100,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

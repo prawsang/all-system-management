@@ -14,7 +14,7 @@ router.get("/get-all", async (req, res) => {
 	let count = 0;
 	await Customer.findAndCountAll()
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -24,13 +24,11 @@ router.get("/get-all", async (req, res) => {
 		offset
 	})
 		.then(customers => res.send({
-			data: {
-				customers,
-				count,
-				pagesCount
-			}
+			customers,
+			count,
+			pagesCount
 		}))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 router.get("/single/:customer_code", (req, res) => {
 	const { customer_code } = req.params;
@@ -41,8 +39,8 @@ router.get("/single/:customer_code", (req, res) => {
 			}
 		}
 	})
-		.then(customer => res.send({ data: { customer }}))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.then(customer => res.send({ customer }))
+		.catch(err => res.status(500).send(err));
 });
 
 // Add New Customer
@@ -61,7 +59,7 @@ router.post("/add", (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit Customer
@@ -85,7 +83,7 @@ router.put("/:customer_code/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 
@@ -100,7 +98,7 @@ router.delete("/:customer_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

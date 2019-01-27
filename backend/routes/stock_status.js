@@ -95,7 +95,7 @@ router.put("/install", async (req, res) => {
 			}
 		})
 	);
-	if (errors.length > 0) res.status(400).send({ errors });
+	if (errors.length > 0) res.status(400).send(errors);
 	else res.sendStatus(200);
 });
 
@@ -130,7 +130,7 @@ router.put("/transfer", async (req, res) => {
 			}
 		})
 	);
-	if (errors.length > 0) res.status(400).send({ errors });
+	if (errors.length > 0) res.status(400).send(errors);
 	else res.sendStatus(200);
 });
 
@@ -165,7 +165,7 @@ router.put("/transfer", async (req, res) => {
 			}
 		})
 	);
-	if (errors.length > 0) res.status(400).send({ errors });
+	if (errors.length > 0) res.status(400).send(errors);
 	else res.sendStatus(200);
 });
 
@@ -219,7 +219,7 @@ router.put("/reserve", async (req, res) => {
 			}
 		})
 	);
-	if (errors.length > 0) res.status(400).send({ errors });
+	if (errors.length > 0) res.status(400).send(errors);
 	else res.sendStatus(200);
 });
 // Return
@@ -241,7 +241,7 @@ router.put("/return", async (req, res) => {
 			}
 		})
 	);
-	if (errors.length > 0) res.status(400).send({ errors });
+	if (errors.length > 0) res.status(400).send(errors);
 	else res.sendStatus(200);
 });
 
@@ -267,7 +267,7 @@ router.put("/broken", async (req, res) => {
 			).catch(err => errors.push(err.errors));
 		})
 	);
-	if (errors.length > 0) res.status(400).send({ errors });
+	if (errors.length > 0) res.status(400).send(errors);
 	else res.sendStatus(200);
 });
 

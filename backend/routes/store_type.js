@@ -13,7 +13,7 @@ router.route("/get-all").get(async (req, res) => {
 	let count = 0;
 	await StoreType.findAndCountAll()
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -29,7 +29,7 @@ router.route("/get-all").get(async (req, res) => {
 				pagesCount
 			});
 		})
-		.catch(err => res.status(500).send({errors: [err]}))
+		.catch(err => res.status(500).send(err))
 });
 
 // Add New Store Type
@@ -43,7 +43,7 @@ router.post("/add", (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit Store Type
@@ -65,7 +65,7 @@ router.put("/:id/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Delete store type
@@ -79,7 +79,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

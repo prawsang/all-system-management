@@ -21,7 +21,7 @@ router.route("/get-all").get(async (req, res) => {
 	let count = 0;
 	await Item.findAndCountAll()
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -36,14 +36,12 @@ router.route("/get-all").get(async (req, res) => {
 	})
 		.then(items => {
 			res.send({
-				data: {
-					items,
-					count,
-					pagesCount
-				}
+				items,
+				count,
+				pagesCount
 			});
 		})
-		.catch(err => res.status(500).send({errors: [err]}))
+		.catch(err => res.status(500).send(err))
 });
 
 router.get("/single/:serial_no",(req, res) => {
@@ -85,10 +83,10 @@ router.get("/single/:serial_no",(req, res) => {
 	})
 		.then(item => {
 			res.send({
-				data: {item}
+				item
 			});
 		})
-		.catch(err => console.log(err));
+		.catch(err => res.status(500).send(err));
 });
 
 // Get item by status
@@ -109,7 +107,7 @@ router.get("/status/:status", async (req, res) => {
 		}
 	})
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -151,14 +149,12 @@ router.get("/status/:status", async (req, res) => {
 	})
 		.then(items => {
 			res.send({
-				data: {
-					items,
-					count,
-					pagesCount
-				}
+				items,
+				count,
+				pagesCount
 			});
 		})
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Get all items reserved by branch
@@ -179,7 +175,7 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 		}
 	})
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -200,7 +196,7 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 				pagesCount
 			}
 		}))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Get all items reserved by job (customer)
@@ -221,7 +217,7 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 		}
 	})
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -242,7 +238,7 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 				pagesCount
 			}
 		}))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 // Add items to stock
@@ -288,7 +284,7 @@ router.put("/:serial_no/edit", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 
@@ -303,7 +299,7 @@ router.delete("/:serial_no", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 module.exports = router;

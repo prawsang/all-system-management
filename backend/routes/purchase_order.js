@@ -18,7 +18,7 @@ router.get("/get-all", async (req, res) => {
 	let count = 0;
 	await PurchaseOrder.findAndCountAll()
 		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send({ errors: [err] }));
 	if (count == 0) return;
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -39,14 +39,12 @@ router.get("/get-all", async (req, res) => {
 	})
 		.then(po =>
 			res.send({
-				data: {
-					po,
-					count,
-					pagesCount
-				}
+				po,
+				count,
+				pagesCount
 			})
 		)
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 router.get("/single/:po_number", (req, res) => {
@@ -59,23 +57,55 @@ router.get("/single/:po_number", (req, res) => {
 				as: "job",
 				include: {
 					model: Customer,
-					as: 'customer'
-				}
-			},
-			{
-				model: Branch,
-				as: "branches",
-				include: {
-					model: StoreType,
-					as: 'store_type'
+					as: "customer"
 				}
 			}
 		]
 	})
-		.then(po => res.send({
-			data: {po}
+		.then(po =>
+			res.send({ po })
+		)
+		.catch(err => res.status(500).send(err));
+});
+
+// get branches for po
+router.get("/branches/:po_number", async (req,res) => {
+	const { po_number } = req.params;
+
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await PurchaseOrder.findAndCountAll()
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send(err));
+	if (count == 0) return;
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
+	Branch.findAll({
+		offset,
+		limit,
+		include: [{
+			model: PurchaseOrder,
+			where: {
+				po_number: {
+					[Op.eq]: po_number
+				}
+			}
+		},{
+			model: StoreType,
+			as: 'store_type'
+		}]
+	})
+		.then(branches => res.send({
+			branches,
+			count,
+			pagesCount
 		}))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send(err));
 });
 
 checkPOFields = values => {
@@ -108,7 +138,7 @@ router.post("/add", (req, res) => {
 		date
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send({ errors: [err] }));
 });
 
 // Edit PO information (date and job_code cannot be edited)
@@ -139,7 +169,7 @@ router.put("/:po_number/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send({ errors: [err] }));
 });
 
 // Remove Branch from PO
@@ -149,7 +179,7 @@ router.delete("/:po_number/remove-branch", (req, res) => {
 	db.query("DELETE FROM branch_po \
     WHERE branch_id = " + branch_id + "AND po_number = '" + po_number + "'", { type: db.QueryTypes.DELETE })
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send({ errors: [err] }));
 });
 
 // Add Branch to PO (if doesn't exist)
@@ -176,10 +206,10 @@ router.post("/:po_number/add-branch", (req, res) => {
 				db.query("INSERT INTO branch_po (branch_id, po_number)\
                         VALUES (" + `${branch_id},'${po_number}'` + ")", { type: db.QueryTypes.INSERT })
 					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send({errors: [err]}));
+					.catch(err => res.status(500).send({ errors: [err] }));
 			} else res.status(400).send([{ message: "Branch exists for this PO" }]);
 		})
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send({ errors: [err] }));
 });
 
 // Delete PO (Superadmins Only)
@@ -193,7 +223,7 @@ router.delete("/:po_number", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send({errors: [err]}));
+		.catch(err => res.status(500).send({ errors: [err] }));
 });
 
 module.exports = router;
