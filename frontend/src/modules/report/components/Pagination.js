@@ -13,7 +13,6 @@ class Pagination extends React.Component {
 		));
 	handlePageChange(page) {
 		this.props.setPage(page);
-		this.props.fetchData(this.props.url + "&page=" + page)
 	}
 
 	render() {

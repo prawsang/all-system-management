@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Switch } from 'react-router-dom';
+import Table from "./components/Table";
 import AllPO from "./tables/AllPO";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
@@ -18,7 +19,7 @@ class Report extends React.Component {
 const AllPOWrapper = () => (
 	<FetchDataFromServer
 		url="/po/get-all"
-		render={data => <AllPO data={data} />}
+		render={data => <Table data={data} table={data => <AllPO data={data}/>} title="PO ทั้งหมด"/>}
 	/>
 )
 

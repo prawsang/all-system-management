@@ -14,6 +14,16 @@ class FetchDataFromServer extends React.Component {
                 console.log(res);
             });
     }
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props !== prevProps) {
+            const { url, currentPage, currentLimit } = this.props;
+            Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}`)
+                .then(res => {
+                    this.setState({ data: res.data });
+                    console.log(res);
+                });
+        }
+    }
     render() {
         const { render } = this.props;
         const { data } = this.state;
