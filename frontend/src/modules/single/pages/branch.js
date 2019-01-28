@@ -4,7 +4,6 @@ import Table from '../components/Table';
 import ItemsTable from '../tables/items';
 import { setPage } from '@/actions/report';
 import { connect } from 'react-redux';
-import BranchesTable from "../tables/branches";
 import POTable from "../tables/po";
 
 class Branch extends React.Component {

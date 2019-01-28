@@ -116,10 +116,21 @@ router.get("/without-po", async (req, res) => {
 	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
-	res.sendStatus(200);
+
 	Withdrawal.findAll({
 		offset,
 		limit,
+		include: [{
+			model: Job,
+			as: 'job'
+		}, {
+			model: Branch,
+			as: 'branch',
+			include: {
+				model: Customer,
+				as: 'customer'
+			}
+		}],
 		where: {
 			po_number: {
 				[Op.eq]: null

@@ -11,7 +11,11 @@ body {
 }
 /* Color */
 .accent {
-	color: $primary;
+    color: $primary;
+    &.is-clickable:hover {
+        color: $primary-dark;
+        text-decoration: underline;
+    }
 }
 .warning {
     color: $warning;

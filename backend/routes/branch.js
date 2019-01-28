@@ -162,7 +162,7 @@ router.get("/no-install", async (req, res) => {
 	Branch.findAll({
 		limit,
 		offset,
-		include: {
+		include: [{
 			model: PurchaseOrder,
 			as: "purchase_orders",
 			where: {
@@ -170,7 +170,10 @@ router.get("/no-install", async (req, res) => {
 					[Op.eq]: false
 				}
 			}
-		}
+		},{
+			model: Customer,
+			as: "customer"
+		}]
 	})
 		.then(branches =>
 			res.send({
