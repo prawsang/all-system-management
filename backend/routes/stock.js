@@ -273,14 +273,16 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 			reserve_branch_id: {
 				[Op.eq]: branch_id
 			}
+		},
+		include: {
+			model: Model,
+			as: 'model'
 		}
 	})
 		.then(items => res.send({
-			data: {
-				items,
-				count,
-				pagesCount
-			}
+			items,
+			count,
+			pagesCount
 		}))
 		.catch(err => res.status(500).send(err));
 });
@@ -324,14 +326,16 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 			reserve_job_code: {
 				[Op.eq]: job_code
 			}
+		},
+		include: {
+			model: Model,
+			as: 'model'
 		}
 	})
 		.then(items => res.send({
-			data: {
-				items,
-				count,
-				pagesCount
-			}
+			items,
+			count,
+			pagesCount
 		}))
 		.catch(err => res.status(500).send(err));
 });

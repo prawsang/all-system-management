@@ -1,16 +1,15 @@
 import React from "react";
 import FetchDataFromServer from '@/common/components/FetchDataFromServer';
 import Table from '../components/Table';
-import ItemsTable from '../tables/items';
 import ReservedItemsTable from '../tables/reserved';
 import { setPage } from '@/actions/report';
 import { connect } from 'react-redux';
-import POTable from "../tables/po";
+import BranchesTable from "../tables/branches";
 
-class Branch extends React.Component {
+class Job extends React.Component {
 	state = {
         edit: false,
-        activeTable: 0 // 0 = items, 1 = po, 2 = reserved items
+        activeTable: 0 // 0 = branches, 1 = reserved items
 	}
 	render() {
 		const { data } = this.props;
@@ -21,28 +20,20 @@ class Branch extends React.Component {
 
 		return (
 			<React.Fragment>
-				<h3>Branch: {data && data.branch.name}</h3>
+				<h3>Job: {data && data.job.name}</h3>
 				<div className="panel">
 						{ data && (
 							<React.Fragment>
 								<div className="panel-content no-pb">
 									<form>
-										<h5 className="no-mt has-mb-10">Branch</h5>
+										<h5 className="no-mt has-mb-10">Job</h5>
 										<div className="has-mb-10">
-											<label className="is-bold has-mr-05">Branch Code:</label>
-											<span>{data.branch.branch_code}</span>
+											<label className="is-bold has-mr-05">Job Code:</label>
+											<span>{data.job.job_code}</span>
 										</div>
 										<div className="has-mb-10">
-											<label className="is-bold has-mr-05">Address:</label>
-											<span>{data.branch.address}</span>
-										</div>
-										<div className="has-mb-10">
-											<label className="is-bold has-mr-05">Province:</label>
-											<span>{data.branch.province}</span>
-										</div>
-                                        <div className="has-mb-10">
-											<label className="is-bold has-mr-05">Store Type:</label>
-											<span>{data.branch.store_type.name}</span>
+											<label className="is-bold has-mr-05">Job Name:</label>
+											<span>{data.job.name}</span>
 										</div>
 									</form>
 									<hr/>
@@ -50,21 +41,12 @@ class Branch extends React.Component {
 										<h5 className="has-mb-10 has-mt-10">Customer</h5>
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Customer Code:</label>
-											<span>{data.branch.customer.customer_code}</span>
+											<span>{data.job.customer.customer_code}</span>
 										</div>
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Customer Name:</label>
-											<span>{data.branch.customer.name}</span>
+											<span>{data.job.customer.name}</span>
 										</div>
-									</div>
-									<hr/>
-                                    <div>
-										<h5 className="has-mb-10 has-mt-10">Jobs</h5>
-                                        <ul className="has-mb-10">
-                                            {data.branch.jobs.map((e,i) => 
-                                                <li key={i+e.job_code}>{e.name} ({e.job_code})</li>
-                                            )}
-                                        </ul>
 									</div>
                                     <hr/>
 								</div>
@@ -76,21 +58,12 @@ class Branch extends React.Component {
                                             this.props.setPage(1);
                                         }}
                                     >
-                                        Items
+                                        Branches
                                     </div>
                                     <div 
                                         className={`tab-item ${activeTable === 1 ? 'is-active' : ''}`}
                                         onClick={() => {
                                             this.setState({ activeTable: 1});
-                                            this.props.setPage(1);
-                                        }}
-                                    >
-                                        POs
-                                    </div>
-                                    <div 
-                                        className={`tab-item ${activeTable === 2 ? 'is-active' : ''}`}
-                                        onClick={() => {
-                                            this.setState({ activeTable: 2});
                                             this.props.setPage(1);
                                         }}
                                     >
@@ -101,33 +74,20 @@ class Branch extends React.Component {
                                     <FetchDataFromServer
                                         className={activeTable === 0 ? '' : 'is-hidden'}
                                         disabled={activeTable !== 0}
-                                        url={data && `/branch/items/${data.branch.id}`}
+                                        url={data && `/job/branches/${data.job.job_code}`}
                                         render={d => 
                                             <Table 
                                                 data={d} 
-                                                table={d => <ItemsTable data={d} />} 
+                                                table={d => <BranchesTable data={d} />} 
                                                 className="no-pt"
-                                                title="Items"
+                                                title="Branches"
                                             />
                                         }
                                     />
                                     <FetchDataFromServer
                                         className={activeTable === 1 ? '' : 'is-hidden'}
                                         disabled={activeTable !== 1}
-                                        url={data && `/branch/po/${data.branch.id}`}
-                                        render={d => 
-                                            <Table 
-                                                data={d} 
-                                                table={d => <POTable data={d} />} 
-                                                className="no-pt"
-                                                title="POs"
-                                            />
-                                        }
-                                    />
-                                    <FetchDataFromServer
-                                        className={activeTable === 2 ? '' : 'is-hidden'}
-                                        disabled={activeTable !== 2}
-                                        url={data && `/stock/reserve-branch-id/${data.branch.id}`}
+                                        url={data && `/stock/reserve-job-code/${data.job.job_code}`}
                                         render={d => 
                                             <Table 
                                                 data={d} 
@@ -153,4 +113,4 @@ const mapDispatchToProps = {
 export default connect(
     null,
     mapDispatchToProps
-)(Branch);
+)(Job);

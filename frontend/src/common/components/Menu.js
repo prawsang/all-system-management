@@ -49,7 +49,7 @@ class Menu extends React.Component {
 							<Link link="/report/broken">ของเสีย</Link>
 							<Link link="/report/borrowed">ของยืม</Link>
 							<Link link="/report/all-po">ยังไม่ได้วางบิล</Link>
-							<Link link="/report/in-stock">จำนวน stock คงเหลือ</Link>
+							<Link link="/report/in-stock">Stock คงเหลือ</Link>
 						</ul>
 					</li>
 					<li className="side-bar-menu-item is-clickable">

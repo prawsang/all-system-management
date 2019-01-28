@@ -14,8 +14,8 @@ class Table extends React.Component {
 			<React.Fragment>
 				<div className={`panel-content is-flex is-jc-space-between ${className}`}>
 					<h5 className="no-mt">{title}</h5>
-					<div className="is-flex">
-						<div>
+					<div className="is-flex is-ai-center">
+						<div className="select no-mb">
 							<select onChange={(e) => this.handleLimitChange(e.target.value)}>
 								<option>25</option>
 								<option>50</option>

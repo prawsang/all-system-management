@@ -18,12 +18,14 @@ class Table extends React.Component {
 					<div className="panel-content">
 						<div className="is-flex is-jc-space-between">
 							<SearchBar />
-							<div>
-								<select onChange={(e) => this.handleLimitChange(e.target.value)}>
-									<option>25</option>
-									<option>50</option>
-									<option>100</option>
-								</select>
+							<div className="is-flex is-ai-center">
+								<div className="select no-mb">
+									<select onChange={(e) => this.handleLimitChange(e.target.value)}>
+										<option>25</option>
+										<option>50</option>
+										<option>100</option>
+									</select>
+								</div>
 								<Pagination 
 									totalPages={data ? data.pagesCount : 1} 
 								/>
