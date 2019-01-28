@@ -31,7 +31,8 @@ class Table extends React.Component {
 						</div>
 					</div>
 					{table(data)}
-					<div className="panel-content is-flex is-jc-flex-end">
+					<div className="panel-content is-flex is-jc-space-between">
+						<span>Total: {data && data.count}</span>
 						<Pagination 
 							totalPages={data ? data.pagesCount : 1} 
 						/>

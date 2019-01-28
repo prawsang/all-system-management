@@ -139,6 +139,17 @@ router.get("/status/:status", async (req, res) => {
 					{
 						model: Withdrawal,
 						as: "withdrawals",
+						include: [{
+							model: Job,
+							as: 'job'
+						},{
+							model: Branch,
+							as: 'branch',
+							include: {
+								model: Customer,
+								as: 'customer'
+							}
+						}],
 						where: {
 							type: {
 								[Op.eq]: "BORROW"
@@ -172,6 +183,56 @@ router.get("/status/:status", async (req, res) => {
 		})
 		.catch(err => res.status(500).send(err));
 });
+
+router.get("/broken", async (req,res) => {
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Item.findAndCountAll({
+		where: {
+			broken: {
+				[Op.eq]: true
+			}
+		}
+	})
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send(err));
+
+	if (count == 0) {
+		res.send({
+			items: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
+
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+
+	Item.findAll({
+		limit,
+		offset,
+		where: {
+			broken: {
+				[Op.eq]: true
+			}
+		},
+		include: {
+			model: Model,
+			as: 'model'
+		}
+	})
+		.then(items => res.send({
+			items,
+			count,
+			pagesCount
+		}))
+		.catch(err => res.status(500).send(err));
+})
 
 // Get all items reserved by branch
 router.get("/reserve-branch-id/:branch_id", async (req, res) => {
