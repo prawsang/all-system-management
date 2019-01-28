@@ -4,6 +4,8 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const Job = require("../models/Job");
 const Customer = require("../models/Customer");
+const Branch = require("../models/Branch");
+const StoreType = require("../models/StoreType");
 
 router.get("/get-all", async (req, res) => {
 	let { limit, page } = req.query;
@@ -40,6 +42,10 @@ router.get("/get-all", async (req, res) => {
 router.get("/single/:customer_code", (req, res) => {
 	const { customer_code } = req.params;
 	Customer.findOne({
+		include: {
+			model: Job,
+			as: 'jobs'
+		},
 		where: {
 			customer_code: {
 				[Op.eq]: customer_code
@@ -47,6 +53,56 @@ router.get("/single/:customer_code", (req, res) => {
 		}
 	})
 		.then(customer => res.send({ customer }))
+		.catch(err => res.status(500).send(err));
+});
+
+// Get Branches for Customer
+router.get("/branches/:customer_code", async (req, res) => {
+	const { customer_code } = req.params;
+	let { limit, page } = req.query;
+	if (!limit) limit = 25;
+	if (!page) page = 1;
+
+	let offset = 0;
+	let count = 0;
+	await Branch.findAndCountAll({
+		where: {
+			customer_code: {
+				[Op.eq]: customer_code
+			}
+		}
+	})
+		.then(c => (count = c.count))
+		.catch(err => res.status(500).send(err));
+	if (count == 0) {
+		res.send({
+			branches: [],
+			count: 0,
+			pagesCount: 0
+		});
+		return
+	}
+	const pagesCount = Math.ceil(count / limit);
+	offset = limit * (page - 1);
+	
+	Branch.findAll({
+		limit,
+		offset,
+		where: {
+			customer_code: {
+				[Op.eq]: customer_code
+			}
+		},
+		include: {
+			model: StoreType,
+			as: 'store_type'
+		}
+	})
+		.then(branches => res.send({
+			branches,
+			count,
+			pagesCount
+		}))
 		.catch(err => res.status(500).send(err));
 });
 

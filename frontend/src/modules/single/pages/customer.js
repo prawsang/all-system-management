@@ -1,15 +1,15 @@
 import React from "react";
 import FetchDataFromServer from '@/common/components/FetchDataFromServer';
 import Table from '../components/Table';
-import ReservedItemsTable from '../tables/reserved';
 import { setPage } from '@/actions/report';
 import { connect } from 'react-redux';
+import JobsTable from "../tables/jobs";
 import BranchesTable from "../tables/branches";
 
-class Job extends React.Component {
+class Customer extends React.Component {
 	state = {
         edit: false,
-        activeTable: 0 // 0 = branches, 1 = reserved items
+        activeTable: 0 // 0 = branches, 1 = jobs
 	}
 	render() {
 		const { data } = this.props;
@@ -18,39 +18,27 @@ class Job extends React.Component {
             activeTable
 		} = this.state;
         if (data) {
-            if (!data.job) return <p>ไม่พบรายการ</p>
+            if (!data.customer) return <p>ไม่พบรายการ</p>
         }
 		return (
 			<React.Fragment>
-				<h3>Job: {data && data.job.name}</h3>
+				<h3>Customer: {data && data.customer.name}</h3>
 				<div className="panel">
 						{ data && (
 							<React.Fragment>
 								<div className="panel-content no-pb">
-									<form>
-										<h5 className="no-mt has-mb-10">Job</h5>
-										<div className="has-mb-10">
-											<label className="is-bold has-mr-05">Job Code:</label>
-											<span>{data.job.job_code}</span>
-										</div>
-										<div className="has-mb-10">
-											<label className="is-bold has-mr-05">Job Name:</label>
-											<span>{data.job.name}</span>
-										</div>
-									</form>
-									<hr/>
 									<div>
-										<h5 className="has-mb-10 has-mt-10">Customer</h5>
+										<h5 className="no-mt has-mb-10">Customer</h5>
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Customer Code:</label>
-											<span>{data.job.customer.customer_code}</span>
+											<span>{data.customer.customer_code}</span>
 										</div>
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Customer Name:</label>
-											<span>{data.job.customer.name}</span>
+											<span>{data.customer.name}</span>
 										</div>
 									</div>
-                                    <hr/>
+									<hr/>
 								</div>
                                 <div className="tabs" style={{ paddingLeft: 30 }}>
                                     <div 
@@ -69,14 +57,14 @@ class Job extends React.Component {
                                             this.props.setPage(1);
                                         }}
                                     >
-                                        Reserved
+                                        Jobs
                                     </div>
                                 </div>
                                 <div>
                                     <FetchDataFromServer
                                         className={activeTable === 0 ? '' : 'is-hidden'}
                                         disabled={activeTable !== 0}
-                                        url={data && `/job/branches/${data.job.job_code}`}
+                                        url={data && `/customer/branches/${data.customer.customer_code}`}
                                         render={d => 
                                             <Table 
                                                 data={d} 
@@ -86,18 +74,12 @@ class Job extends React.Component {
                                             />
                                         }
                                     />
-                                    <FetchDataFromServer
-                                        className={activeTable === 1 ? '' : 'is-hidden'}
-                                        disabled={activeTable !== 1}
-                                        url={data && `/stock/reserve-job-code/${data.job.job_code}`}
-                                        render={d => 
-                                            <Table 
-                                                data={d} 
-                                                table={d => <ReservedItemsTable data={d} />} 
-                                                className="no-pt"
-                                                title="Reserved Items"
-                                            />
-                                        }
+                                    <Table 
+                                        data={data} 
+                                        table={data => <JobsTable data={data.customer} />} 
+                                        className={activeTable === 1 ? 'no-pt' : 'no-pt is-hidden'}
+                                        title="Jobs"
+                                        noPage={true}
                                     />
                                 </div>
 							</React.Fragment>
@@ -115,4 +97,4 @@ const mapDispatchToProps = {
 export default connect(
     null,
     mapDispatchToProps
-)(Job);
+)(Customer);

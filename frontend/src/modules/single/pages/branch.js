@@ -18,7 +18,9 @@ class Branch extends React.Component {
             edit,
             activeTable
 		} = this.state;
-
+        if (data) {
+            if (!data.branch) return <p>ไม่พบรายการ</p>
+        }
 		return (
 			<React.Fragment>
 				<h3>Branch: {data && data.branch.name}</h3>

@@ -12,7 +12,9 @@ class PO extends React.PureComponent {
 		const { 
 			edit
 		} = this.state;
-
+		if (data) {
+            if (!data.po) return <p>ไม่พบรายการ</p>
+        }
 		return (
 			<React.Fragment>
 				<h3>PO Number: {data && data.po.po_number}</h3>

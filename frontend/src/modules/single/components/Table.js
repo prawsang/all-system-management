@@ -9,25 +9,32 @@ class Table extends React.Component {
 		this.props.setLimit(limit);
 	}
 	render() {
-		const { title, className, table, data } = this.props;
+		const { title, className, table, data, noPage } = this.props;
+		console.log(data);
 		return (
 			<React.Fragment>
 				<div className={`panel-content is-flex is-jc-space-between ${className}`}>
 					<h5 className="no-mt">{title}</h5>
-					<div className="is-flex is-ai-center">
-						<div className="select no-mb">
-							<select onChange={(e) => this.handleLimitChange(e.target.value)}>
-								<option>25</option>
-								<option>50</option>
-								<option>100</option>
-							</select>
+					{noPage || (
+						<div className="is-flex is-ai-center">
+							<div className="select no-mb">
+								<select onChange={(e) => this.handleLimitChange(e.target.value)}>
+									<option>25</option>
+									<option>50</option>
+									<option>100</option>
+								</select>
+							</div>
+							<Pagination totalPages={data ? data.pagesCount : 1} />
 						</div>
-                    	<Pagination totalPages={data ? data.pagesCount : 1} />
-					</div>
+					)}
 				</div>
-				{table(data)}
+				<div style={{maxWidth: '100%', overflowY: 'scroll'}} className={className}>
+					{ table(data) }
+				</div>
 				<div className="panel-content is-flex is-jc-flex-end">
-					<Pagination totalPages={data ? data.pagesCount : 1} />
+					{noPage || (
+						<Pagination totalPages={data ? data.pagesCount : 1} />
+					)}
 				</div>
 			</React.Fragment>
 		);

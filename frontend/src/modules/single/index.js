@@ -3,6 +3,8 @@ import { Route, Switch } from 'react-router-dom';
 import PO from './pages/po';
 import Branch from './pages/branch';
 import Job from './pages/job';
+import Item from './pages/item';
+import Customer from './pages/customer';
 import FetchDataFromServer from '@/common/components/FetchDataFromServer';
 
 class Single extends React.Component {
@@ -13,6 +15,8 @@ class Single extends React.Component {
                     <Route path="/single/po/:po_number" component={POWrapper}/>
                     <Route path="/single/branch/:branch_id" component={BranchWrapper}/>
                     <Route path="/single/job/:job_code" component={JobWrapper}/>
+                    <Route path="/single/item/:serial_no" component={ItemWrapper}/>
+                    <Route path="/single/customer/:customer_code" component={CustomerWrapper}/>
                 </Switch>
             </div>
         );
@@ -45,6 +49,26 @@ const JobWrapper = (props) => {
         <FetchDataFromServer 
             url={`/job/single/${job_code}`}
             render={data => <Job data={data}/>}
+        />
+    )
+}
+
+const ItemWrapper = (props) => {
+    const { serial_no } = props.match.params;
+    return (
+        <FetchDataFromServer 
+            url={`/stock/single/${serial_no}`}
+            render={data => <Item data={data}/>}
+        />
+    )
+}
+
+const CustomerWrapper = (props) => {
+    const { customer_code } = props.match.params;
+    return (
+        <FetchDataFromServer 
+            url={`/customer/single/${customer_code}`}
+            render={data => <Customer data={data}/>}
         />
     )
 }

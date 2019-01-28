@@ -2,6 +2,8 @@ import React from 'react';
 import history from "@/common/history";
 
 const BranchesTable = ({ data }) => (
+	// console.log(data);
+	// return <h1>sadsad</h1>
     <table className="is-fullwidth is-rounded">
 		<thead>
 			<tr>
