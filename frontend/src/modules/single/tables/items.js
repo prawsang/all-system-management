@@ -1,14 +1,14 @@
 import React from 'react';
 import history from "@/common/history";
 
-const ItemsTable = ({ data }) => (
+const ItemsTable = ({ data, showInstallDate }) => (
     <table className="is-fullwidth is-rounded">
 		<thead>
 			<tr>
 				<td>Serial Number</td>
 				<td>Model Name</td>
 				<td>Type</td>
-				<td>Installation Date</td>
+				{showInstallDate && <td>Installation Date</td>}
 			</tr>
 		</thead>
 		<tbody className="is-hoverable">
@@ -24,9 +24,9 @@ const ItemsTable = ({ data }) => (
 							}}
 						>
 							<td>{e.serial_no}</td>
-							<td>{e.name}</td>
-							<td>{e.type}</td>
-							<td>{e.install_date}</td>
+							<td>{e.name ? e.name : e.model.name}</td>
+							<td>{e.type ? e.type : e.model.type}</td>
+							{showInstallDate && <td>{e.install_date}</td>}
 						</tr>
 					)))}
 		</tbody>

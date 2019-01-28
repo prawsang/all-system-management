@@ -107,7 +107,7 @@ class Branch extends React.Component {
                                         render={d => 
                                             <Table 
                                                 data={d} 
-                                                table={d => <ItemsTable data={d} />} 
+                                                table={d => <ItemsTable data={d} showInstallDate={true}/>} 
                                                 className="no-pt"
                                                 title="Items"
                                             />

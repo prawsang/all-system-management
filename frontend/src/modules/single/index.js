@@ -5,6 +5,7 @@ import Branch from './pages/branch';
 import Job from './pages/job';
 import Item from './pages/item';
 import Customer from './pages/customer';
+import Withdrawal from './pages/withdrawal';
 import FetchDataFromServer from '@/common/components/FetchDataFromServer';
 
 class Single extends React.Component {
@@ -16,7 +17,8 @@ class Single extends React.Component {
                     <Route path="/single/branch/:branch_id" component={BranchWrapper}/>
                     <Route path="/single/job/:job_code" component={JobWrapper}/>
                     <Route path="/single/item/:serial_no" component={ItemWrapper}/>
-                    <Route path="/single/customer/:customer_code" component={CustomerWrapper}/>
+                    <Route path="/single/customer/:customer_code" component={CustomerWrapper}/>                    <Route path="/single/customer/:customer_code" component={CustomerWrapper}/>
+                    <Route path="/single/withdrawal/:id" component={WithdrawalWrapper}/>
                 </Switch>
             </div>
         );
@@ -69,6 +71,16 @@ const CustomerWrapper = (props) => {
         <FetchDataFromServer 
             url={`/customer/single/${customer_code}`}
             render={data => <Customer data={data}/>}
+        />
+    )
+}
+
+const WithdrawalWrapper = (props) => {
+    const { id } = props.match.params;
+    return (
+        <FetchDataFromServer 
+            url={`/withdrawal/single/${id}`}
+            render={data => <Withdrawal data={data}/>}
         />
     )
 }

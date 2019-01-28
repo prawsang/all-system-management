@@ -34,6 +34,10 @@ class Item extends React.Component {
 										<label className="is-bold has-mr-05">Type:</label>
 										<span>{data.item.model.type}</span>
 									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Remarks:</label>
+										<span>{data.item.remarks}</span>
+									</div>
 								</div>
 								<hr />
 								<div>
