@@ -9,7 +9,7 @@ const StoreType = require("../models/StoreType");
 const tools = require("../utils/tools");
 
 router.get("/get-all", async (req, res) => {
-	let { limit, page, search, search_term } = req.query;
+	const { limit, page, search, search_term } = req.query;
 
 	const query = await tools.countAndQuery({
 		limit,
@@ -44,7 +44,7 @@ router.get("/:customer_code/details", (req, res) => {
 // Get Branches for Customer
 router.get("/:customer_code/branches", async (req, res) => {
 	const { customer_code } = req.params;
-	let { limit, page, search, search_term } = req.query;
+	const { limit, page, search, search_term } = req.query;
 
 	const query = await tools.countAndQuery({
 		limit,

@@ -9,47 +9,29 @@ const StoreType = require("../models/StoreType");
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Op = Sequelize.Op;
+const tools = require("../utils/tools");
 
 router.get("/get-all", async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Branch.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			branches: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Branch.findAll({
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
-		offset,
+		page,
 		include: {
 			model: StoreType,
 			as: "store_type"
-		}
+		},
+		search,
+		search_term,
+		model: Branch
 	})
-		.then(branches =>
-			res.send({
-				branches,
-				count,
-				pagesCount
-			})
-		)
-		.catch(err => res.status(500).send(err));
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
-router.get("/single/:id", (req, res) => {
+router.get("/:id/details", (req, res) => {
 	const { id } = req.params;
 	Branch.findOne({
 		where: {
@@ -77,15 +59,9 @@ router.get("/single/:id", (req, res) => {
 });
 
 // List of items in a branch
-router.get("/items/:id", async (req, res) => {
+router.get("/:id/items/", async (req, res) => {
 	const { id } = req.params;
-
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
+	const { limit, page, search, search_term } = req.query;
 
 	const queryString = `FROM stock, models, withdrawals, branches, item_withdrawal\
 		WHERE withdrawals.branch_id = ${id}\
@@ -93,75 +69,30 @@ router.get("/items/:id", async (req, res) => {
 		AND item_withdrawal.withdrawal_id = withdrawals.id\
 		AND item_withdrawal.serial_no = stock.serial_no\
 		AND stock.model_id = models.id`;
-
-	await db.query(
-		`SELECT COUNT(stock.serial_no) ${queryString}`
-		, { type: db.QueryTypes.SELECT })
-		.then(c => (count = parseInt(c[0].count)))
-		.catch(err => console.log(err));
 	
-	if (count == 0) {
-		res.send({
-			items: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
+	const query = await tools.countAndQueryWithString({
+		select: "SELECT stock.serial_no, models.type, models.name, install_date",
+		from_where: queryString,
+		search,
+		search_table: 'stock',
+		search_term,
+		limit,
+		page
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
 	}
-
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	await db.query(
-		`SELECT stock.serial_no, models.type, models.name, install_date ${queryString}\
-		LIMIT ${limit} OFFSET ${offset}`
-		,{ type: db.QueryTypes.SELECT })
-		.then(items => res.send({
-			items,
-			count,
-			pagesCount
-		}))
-		.catch(err => res.status(500).send(err));
+	res.send(query);
 })
 
 // List of branches with po but po has installed = false
 router.get("/no-install", async (req, res) => {
-	console.log("hello");
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
+	let { limit, page, search, search_term } = req.query;
 
-	let offset = 0;
-	let count = 0;
-	await Branch.findAndCountAll({
-		include: {
-			model: PurchaseOrder,
-			as: "purchase_orders",
-			where: {
-				installed: {
-					[Op.eq]: false
-				}
-			}
-		}
-	})
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-
-	if (count == 0) {
-		res.send({
-			branches: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Branch.findAll({
+	const query = await tools.countAndQuery({
 		limit,
-		offset,
+		page,
 		include: [{
 			model: PurchaseOrder,
 			as: "purchase_orders",
@@ -173,60 +104,39 @@ router.get("/no-install", async (req, res) => {
 		},{
 			model: Customer,
 			as: "customer"
-		}]
-	})
-		.then(branches =>
-			res.send({
-				branches,
-				count,
-				pagesCount
-			})
-		)
-		.catch(err => res.status(500).send(err));
+		}],
+		search,
+		search_term,
+		model: Branch
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
 // List of po_number of a branch
-router.get("/po/:id", async (req, res) => {
-	let { limit, page } = req.query;
+router.get("/:id/po", async (req, res) => {
 	const { id } = req.params;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
+	let { limit, page, search, search_term } = req.query;
 
-	let offset = 0;
-	let count = 0;
-
-	await db
-		.query("SELECT COUNT(po_number)\
-		FROM branch_po\
-		WHERE branch_po.branch_id = " + id, { type: db.QueryTypes.SELECT })
-		.then(c => (count = parseInt(c[0].count)))
-		.catch(err => res.status(500).send(err));
-
-	if (count == 0) {
-		res.send({
-			po: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
+	const query = await tools.countAndQueryWithString({
+		limit,
+		page,
+		search,
+		search_table: 'purchase_orders',
+		search_term,
+		select: "SELECT branch_po.po_number, description, date",
+		from_where: `FROM branch_po, purchase_orders
+			WHERE branch_po.branch_id = ${id}
+			AND branch_po.po_number = purchase_orders.po_number`
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
 	}
-
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	db.query(`SELECT branch_po.po_number, description, date
-		FROM branch_po, purchase_orders
-		WHERE branch_po.branch_id = ${id}
-		AND branch_po.po_number = purchase_orders.po_number
-		LIMIT ${limit} OFFSET ${offset}`, { type: db.QueryTypes.SELECT })
-		.then(po =>
-			res.send({
-				po,
-				count,
-				pagesCount
-			})
-		)
-		.catch(err => res.status(500).send(err));
+	res.send(query);
 });
 
 checkBranchFields = values => {
