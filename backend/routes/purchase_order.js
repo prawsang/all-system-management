@@ -25,7 +25,7 @@ router.get("/get-all", async (req, res) => {
 			count: 0,
 			pagesCount: 0
 		});
-		return
+		return;
 	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -69,14 +69,12 @@ router.get("/single/:po_number", (req, res) => {
 			}
 		]
 	})
-		.then(po =>
-			res.send({ po })
-		)
+		.then(po => res.send({ po }))
 		.catch(err => res.status(500).send(err));
 });
 
 // get branches for po
-router.get("/branches/:po_number", async (req,res) => {
+router.get("/branches/:po_number", async (req, res) => {
 	const { po_number } = req.params;
 
 	let { limit, page } = req.query;
@@ -103,7 +101,7 @@ router.get("/branches/:po_number", async (req,res) => {
 			count: 0,
 			pagesCount: 0
 		});
-		return
+		return;
 	}
 	const pagesCount = Math.ceil(count / limit);
 	offset = limit * (page - 1);
@@ -111,23 +109,28 @@ router.get("/branches/:po_number", async (req,res) => {
 	Branch.findAll({
 		offset,
 		limit,
-		include: [{
-			model: PurchaseOrder,
-			where: {
-				po_number: {
-					[Op.eq]: po_number
+		include: [
+			{
+				model: PurchaseOrder,
+				where: {
+					po_number: {
+						[Op.eq]: po_number
+					}
 				}
+			},
+			{
+				model: StoreType,
+				as: "store_type"
 			}
-		},{
-			model: StoreType,
-			as: 'store_type'
-		}]
+		]
 	})
-		.then(branches => res.send({
-			branches,
-			count,
-			pagesCount
-		}))
+		.then(branches =>
+			res.send({
+				branches,
+				count,
+				pagesCount
+			})
+		)
 		.catch(err => res.status(500).send(err));
 });
 
@@ -143,7 +146,7 @@ checkPOFields = values => {
 };
 // Add PO information
 router.post("/add", (req, res) => {
-	const { po_number, description, installed, date } = req.query;
+	const { po_number, description, installed, date } = req.body;
 	const validationErrors = checkPOFields({
 		po_number,
 		description,
@@ -167,7 +170,8 @@ router.post("/add", (req, res) => {
 // Edit PO information (date and job_code cannot be edited)
 router.put("/:po_number/edit", (req, res) => {
 	const { po_number } = req.params;
-	const { description, installed, date } = req.query;
+	const { description, installed, date } = req.body;
+	console.log(req.body);
 	const validationErrors = checkPOFields({
 		po_number,
 		description,
@@ -199,8 +203,15 @@ router.put("/:po_number/edit", (req, res) => {
 router.delete("/:po_number/remove-branch", (req, res) => {
 	const { po_number } = req.params;
 	const { branch_id } = req.query;
-	db.query("DELETE FROM branch_po \
-    WHERE branch_id = " + branch_id + "AND po_number = '" + po_number + "'", { type: db.QueryTypes.DELETE })
+	db.query(
+		"DELETE FROM branch_po \
+    WHERE branch_id = " +
+			branch_id +
+			"AND po_number = '" +
+			po_number +
+			"'",
+		{ type: db.QueryTypes.DELETE }
+	)
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send({ errors: [err] }));
 });
@@ -226,8 +237,13 @@ router.post("/:po_number/add-branch", (req, res) => {
 	})
 		.then(count => {
 			if (count == 0) {
-				db.query("INSERT INTO branch_po (branch_id, po_number)\
-                        VALUES (" + `${branch_id},'${po_number}'` + ")", { type: db.QueryTypes.INSERT })
+				db.query(
+					"INSERT INTO branch_po (branch_id, po_number)\
+                        VALUES (" +
+						`${branch_id},'${po_number}'` +
+						")",
+					{ type: db.QueryTypes.INSERT }
+				)
 					.then(rows => res.sendStatus(200))
 					.catch(err => res.status(500).send({ errors: [err] }));
 			} else res.status(400).send([{ message: "Branch exists for this PO" }]);

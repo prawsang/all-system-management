@@ -4,29 +4,27 @@ const Field = ({
     editable, 
     label, 
     text, 
-    type, 
+    name,
+    type = 'text', 
     onChange, 
-    edit, 
     value, 
     inputClassName, 
-    pClassName 
+    pClassName,
+    placeholder
 }) => (
-    <div className="field">
+    <div className="field is-flex is-ai-center">
         <label className="is-bold has-mr-05">{label}:</label>
-        {
-            edit ? (
-                <input 
-                    className={`input ${inputClassName}`} 
-                    value={value} 
-                    onChange={onChange} 
-                    readOnly={!editable}
-                    type={type ? type : 'text'}
-                    checked={value}
-                />
-            ) : (
-                <span className={pClassName}>{text ? text : value}</span>
-            )
-        }
+        <input 
+            className={`${type === 'text' ? 'input' : type} ${inputClassName} ${editable || 'is-hidden'}`} 
+            value={value} 
+            onChange={onChange} 
+            readOnly={!editable}
+            type={type ? type : 'text'}
+            checked={value}
+            name={name}
+            placeholder={ placeholder ? placeholder : label}
+        />
+        <span className={`${pClassName} ${editable && 'is-hidden'}`}>{text ? text : value}</span>
     </div>
 )
 

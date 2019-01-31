@@ -10,7 +10,6 @@ class Table extends React.Component {
 	}
 	render() {
 		const { title, className, table, data, noPage } = this.props;
-		console.log(data);
 		return (
 			<React.Fragment>
 				<div className={`panel-content is-flex is-jc-space-between ${className}`}>

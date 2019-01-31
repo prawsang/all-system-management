@@ -59,6 +59,36 @@
 	}
 }
 
+.checkbox {
+	background-color: $gray-4;
+	border-radius: 6px;
+	box-sizing: border-box;
+	height: 20px;
+	position: relative;
+	width: 20px;
+	-webkit-appearance: none;
+
+	&:focus, &:active {
+		outline: none;
+	}
+
+	&:checked {
+		background-color: $primary;
+		&:after {
+			border-color: white;
+			border-style: solid;
+			border-width: 0 3px 3px 0;
+			content:'';
+			height: 8px;
+			position:absolute;
+			top: 3px;
+			left:6px;
+			transform: rotate(45deg);
+			width: 4px;
+		}
+	}
+}
+
 .is-disabled {
 	.input:disabled {
 		opacity: 1;

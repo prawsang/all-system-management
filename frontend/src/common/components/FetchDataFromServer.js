@@ -18,11 +18,24 @@ class FetchDataFromServer extends React.Component {
 	componentDidUpdate(prevProps, prevState) {
 		if (this.props !== prevProps) {
 			const { url, currentPage, currentLimit, disabled } = this.props;
-			if (!disabled) {
-				Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}`).then(res => {
-					this.setState({ data: res.data });
-					console.log(res);
-				});
+			const {
+				url: prevUrl,
+				currentPage: prevCurrentPage,
+				currentLimit: prevCurrentLimit,
+				disabled: prevDisabled
+			} = prevProps;
+			if (
+				url !== prevUrl ||
+				currentPage !== prevCurrentPage ||
+				currentLimit !== prevCurrentLimit ||
+				disabled !== prevDisabled
+			) {
+				if (!disabled) {
+					Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}`).then(res => {
+						this.setState({ data: res.data });
+						console.log(res);
+					});
+				}
 			}
 		}
 	}
