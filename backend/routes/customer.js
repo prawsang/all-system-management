@@ -6,40 +6,25 @@ const Job = require("../models/Job");
 const Customer = require("../models/Customer");
 const Branch = require("../models/Branch");
 const StoreType = require("../models/StoreType");
+const tools = require("../utils/tools");
 
 router.get("/get-all", async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
+	let { limit, page, search, search_term } = req.query;
 
-	let offset = 0;
-	let count = 0;
-	await Customer.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			customers: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-	
-	Customer.findAll({
+	const query = await tools.countAndQuery({
 		limit,
-		offset
+		page,
+		search_term,
+		search,
+		model: Customer
 	})
-		.then(customers => res.send({
-			customers,
-			count,
-			pagesCount
-		}))
-		.catch(err => res.status(500).send(err));
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
-router.get("/single/:customer_code", (req, res) => {
+router.get("/:customer_code/details", (req, res) => {
 	const { customer_code } = req.params;
 	Customer.findOne({
 		include: {
@@ -57,37 +42,13 @@ router.get("/single/:customer_code", (req, res) => {
 });
 
 // Get Branches for Customer
-router.get("/branches/:customer_code", async (req, res) => {
+router.get("/:customer_code/branches", async (req, res) => {
 	const { customer_code } = req.params;
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
+	let { limit, page, search, search_term } = req.query;
 
-	let offset = 0;
-	let count = 0;
-	await Branch.findAndCountAll({
-		where: {
-			customer_code: {
-				[Op.eq]: customer_code
-			}
-		}
-	})
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			branches: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-	
-	Branch.findAll({
+	const query = await tools.countAndQuery({
 		limit,
-		offset,
+		page,
 		where: {
 			customer_code: {
 				[Op.eq]: customer_code
@@ -96,14 +57,16 @@ router.get("/branches/:customer_code", async (req, res) => {
 		include: {
 			model: StoreType,
 			as: 'store_type'
-		}
+		},
+		search,
+		search_term,
+		model: Branch
 	})
-		.then(branches => res.send({
-			branches,
-			count,
-			pagesCount
-		}))
-		.catch(err => res.status(500).send(err));
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
 // Add New Customer
@@ -151,7 +114,7 @@ router.put("/:customer_code/edit", (req, res) => {
 
 
 // Delete customer
-router.delete("/:customer_code", (req, res) => {
+router.delete("/:customer_code/delete", (req, res) => {
 	const { customer_code } = req.params;
 	Customer.destroy({
 		where: {
