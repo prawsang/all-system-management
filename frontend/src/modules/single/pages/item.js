@@ -45,7 +45,12 @@ class Item extends React.Component {
 									{data.item.reserve_job && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Job:</label>
-											<span>
+											<span
+												className="accent is-clickable"
+												onClick={() =>
+													history.push(`/single/job/${data.item.reserve_job.job_code}`)
+												}
+											>
 												{data.item.reserve_job.name} (
 												{data.item.reserve_job.job_code})
 											</span>
@@ -54,7 +59,12 @@ class Item extends React.Component {
 									{data.item.reserve_branch && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Branch:</label>
-											<span>
+											<span
+												className="accent is-clickable"
+												onClick={() =>
+													history.push(`/single/branch/${data.item.reserve_branch.id}`)
+												}
+											>
 												{data.item.reserve_branch.name}{" "}
 												{data.item.reserve_branch.branch_code &&
 													`(${data.item.reserve_branch.branch_code})`}

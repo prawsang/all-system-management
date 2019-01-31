@@ -5,6 +5,9 @@ import ReservedItemsTable from '../tables/reserved';
 import { setPage } from '@/actions/report';
 import { connect } from 'react-redux';
 import BranchesTable from "../tables/branches";
+import history from '@/common/history';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 class Job extends React.Component {
 	state = {
@@ -40,7 +43,15 @@ class Job extends React.Component {
 									</form>
 									<hr/>
 									<div>
-										<h5 className="has-mb-10 has-mt-10">Customer</h5>
+                                        <h5 className="no-mt has-mb-10">
+											Customer
+											<span 
+												className="is-clickable accent has-ml-10 is-6"
+												onClick={() => history.push(`/single/customer/${data.job.customer_code}`)}
+											>
+												<FontAwesomeIcon icon={faExternalLinkAlt}/>
+											</span>
+										</h5>
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Customer Code:</label>
 											<span>{data.job.customer.customer_code}</span>

@@ -5,6 +5,9 @@ import BranchesTable from '../tables/branches';
 import Modal from '@/common/components/Modal';
 import Field from "../components/Field";
 import Axios from 'axios';
+import history from '@/common/history';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 class PO extends React.PureComponent {
 	state = {
@@ -72,7 +75,15 @@ class PO extends React.PureComponent {
 									</form>
 									<hr/>
 									<div>
-										<h5 className="has-mb-10 has-mt-10">Job</h5>
+										<h5 className="no-mt has-mb-10">
+											Job
+											<span 
+												className="is-clickable accent has-ml-10 is-6"
+												onClick={() => history.push(`/single/job/${data.po.job_code}`)}
+											>
+												<FontAwesomeIcon icon={faExternalLinkAlt}/>
+											</span>
+										</h5>
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Job Code:</label>
 											<span>{data.po.job_code}</span>

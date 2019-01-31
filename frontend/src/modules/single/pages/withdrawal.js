@@ -1,6 +1,9 @@
 import React from "react";
 import Table from "../components/Table";
 import ItemsTable from "../tables/items";
+import history from "@/common/history";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 class Withdrawal extends React.PureComponent {
 	state = {
@@ -89,7 +92,15 @@ class Withdrawal extends React.PureComponent {
 								</div>
 								<hr />
 								<div>
-									<h5 className="has-mb-10 has-mt-10">Job</h5>
+									<h5 className="no-mt has-mb-10">
+                                        Job
+                                        <span 
+                                            className="is-clickable accent has-ml-10 is-6"
+                                            onClick={() => history.push(`/single/job/${data.withdrawal.job_code}`)}
+                                        >
+                                            <FontAwesomeIcon icon={faExternalLinkAlt}/>
+                                        </span>
+                                    </h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Job Code:</label>
 										<span>{data.withdrawal.job.job_code}</span>
@@ -101,7 +112,15 @@ class Withdrawal extends React.PureComponent {
 								</div>
 								<hr />
                                 <div>
-									<h5 className="has-mb-10 has-mt-10">Branch</h5>
+									<h5 className="no-mt has-mb-10">
+                                        Branch
+                                        <span 
+                                            className="is-clickable accent has-ml-10 is-6"
+                                            onClick={() => history.push(`/single/branch/${data.withdrawal.branch_id}`)}
+                                        >
+                                            <FontAwesomeIcon icon={faExternalLinkAlt}/>
+                                        </span>
+                                    </h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Branch Code:</label>
 										<span>{data.withdrawal.branch.branch_code}</span>
