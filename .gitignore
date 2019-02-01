@@ -1,8 +1,9 @@
 .env
 dist
-data
-nginx-data
-public
-
-.vscode
-.DS_Store
+package-lock.json
+node_modules
+client/node_modules
+.idea
+*.log
+.graphcoolrc
+**/.DS_Store
