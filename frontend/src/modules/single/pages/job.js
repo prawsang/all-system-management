@@ -17,7 +17,7 @@ class Job extends React.Component {
 	render() {
 		const { data } = this.props;
 		const { 
-            edit,
+            // edit,
             activeTable
 		} = this.state;
         if (data) {
@@ -87,7 +87,7 @@ class Job extends React.Component {
                                     <FetchDataFromServer
                                         className={activeTable === 0 ? '' : 'is-hidden'}
                                         disabled={activeTable !== 0}
-                                        url={data && `/job/branches/${data.job.job_code}`}
+                                        url={data && `/job/${data.job.job_code}/branches`}
                                         render={d => 
                                             <Table 
                                                 data={d} 

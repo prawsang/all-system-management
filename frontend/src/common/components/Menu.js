@@ -23,7 +23,7 @@ class Menu extends React.Component {
 		const { active, close } = this.props;
 		return (
 			<div className={`side-bar ${active && 'is-active'}`}>
-				<div className="has-mt-10 has-ml-10">
+				<div className="has-mt-10 has-ml-10 is-hidden-desktop">
 					<FontAwesomeIcon icon={faTimes} onClick={close} />
 				</div>
 				<div className="side-bar-head is-ta-center">

@@ -14,7 +14,7 @@ class Customer extends React.Component {
 	render() {
 		const { data } = this.props;
 		const { 
-            edit,
+            // edit,
             activeTable
 		} = this.state;
         if (data) {
@@ -64,7 +64,7 @@ class Customer extends React.Component {
                                     <FetchDataFromServer
                                         className={activeTable === 0 ? '' : 'is-hidden'}
                                         disabled={activeTable !== 0}
-                                        url={data && `/customer/branches/${data.customer.customer_code}`}
+                                        url={data && `/customer/${data.customer.customer_code}/branches`}
                                         render={d => 
                                             <Table 
                                                 data={d} 

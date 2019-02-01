@@ -104,7 +104,7 @@ class PO extends React.PureComponent {
 									<hr/>
 								</div>
 								<FetchDataFromServer
-									url={data && `/po/branches/${data.po.po_number}`}
+									url={data && `/po/${data.po.po_number}/branches`}
 									render={d => 
 										<Table 
 											data={d} 

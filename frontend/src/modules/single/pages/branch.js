@@ -17,7 +17,9 @@ class Branch extends React.Component {
 	};
 	render() {
 		const { data } = this.props;
-		const { edit, activeTable } = this.state;
+		const { 
+			// edit, 
+			activeTable } = this.state;
 		if (data) {
 			if (!data.branch) return <p>ไม่พบรายการ</p>;
 		}
@@ -120,7 +122,7 @@ class Branch extends React.Component {
 								<FetchDataFromServer
 									className={activeTable === 0 ? "" : "is-hidden"}
 									disabled={activeTable !== 0}
-									url={data && `/branch/items/${data.branch.id}`}
+									url={data && `/branch/${data.branch.id}/items`}
 									render={d => (
 										<Table
 											data={d}
@@ -135,7 +137,7 @@ class Branch extends React.Component {
 								<FetchDataFromServer
 									className={activeTable === 1 ? "" : "is-hidden"}
 									disabled={activeTable !== 1}
-									url={data && `/branch/po/${data.branch.id}`}
+									url={data && `/branch/${data.branch.id}/po`}
 									render={d => (
 										<Table
 											data={d}

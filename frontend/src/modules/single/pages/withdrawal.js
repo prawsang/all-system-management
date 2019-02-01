@@ -11,7 +11,7 @@ class Withdrawal extends React.PureComponent {
 	};
 	render() {
 		const { data } = this.props;
-		const { edit } = this.state;
+		// const { edit } = this.state;
 		if (data) {
 			if (!data.withdrawal) return <p>ไม่พบรายการ</p>;
 		}

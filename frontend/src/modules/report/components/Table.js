@@ -20,7 +20,7 @@ class Table extends React.Component {
 							<div className="col-6 has-mb-05">
 								<SearchBar />
 							</div>
-							<div className="col-6 is-flex is-ai-center is-jc-space-between">
+							<div className="col-6 is-flex is-ai-center is-jc-flex-end">
 								<div className="select no-mb">
 									<select onChange={e => this.handleLimitChange(e.target.value)}>
 										<option>25</option>

@@ -29,7 +29,7 @@ const POWrapper = (props) => {
     const { po_number } = props.match.params;
     return (
         <FetchDataFromServer 
-            url={`/po/single/${po_number}`}
+            url={`/po/${po_number}/details`}
             render={data => <PO data={data}/>}
         />
     )
@@ -39,7 +39,7 @@ const BranchWrapper = (props) => {
     const { branch_id } = props.match.params;
     return (
         <FetchDataFromServer 
-            url={`/branch/single/${branch_id}`}
+            url={`/branch/${branch_id}/details`}
             render={data => <Branch data={data}/>}
         />
     )
@@ -49,7 +49,7 @@ const JobWrapper = (props) => {
     const { job_code } = props.match.params;
     return (
         <FetchDataFromServer 
-            url={`/job/single/${job_code}`}
+            url={`/job/${job_code}/details`}
             render={data => <Job data={data}/>}
         />
     )
@@ -59,7 +59,7 @@ const ItemWrapper = (props) => {
     const { serial_no } = props.match.params;
     return (
         <FetchDataFromServer 
-            url={`/stock/single/${serial_no}`}
+            url={`/stock/${serial_no}/details`}
             render={data => <Item data={data}/>}
         />
     )
@@ -69,7 +69,7 @@ const CustomerWrapper = (props) => {
     const { customer_code } = props.match.params;
     return (
         <FetchDataFromServer 
-            url={`/customer/single/${customer_code}`}
+            url={`/customer/${customer_code}/details`}
             render={data => <Customer data={data}/>}
         />
     )
@@ -79,7 +79,7 @@ const WithdrawalWrapper = (props) => {
     const { id } = props.match.params;
     return (
         <FetchDataFromServer 
-            url={`/withdrawal/single/${id}`}
+            url={`/withdrawal/${id}/details`}
             render={data => <Withdrawal data={data}/>}
         />
     )

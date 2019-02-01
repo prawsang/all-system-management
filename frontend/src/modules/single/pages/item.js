@@ -9,7 +9,7 @@ class Item extends React.Component {
 	};
 	render() {
 		const { data } = this.props;
-		const { edit } = this.state;
+		// const { edit } = this.state;
 		if (data) {
             if (!data.item) return <p>ไม่พบรายการ</p>
         }

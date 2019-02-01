@@ -3,7 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 class PORecord extends React.Component {
+    state = {
+        branches: []
+    }
     render() {
+        const {
+            branches
+        } = this.state;
         return (
             <div className="content">
                 <h3>บันทึกใบสั่งซื้อ (PO)</h3>
