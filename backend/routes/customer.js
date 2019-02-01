@@ -71,7 +71,7 @@ router.get("/:customer_code/branches", async (req, res) => {
 
 // Add New Customer
 router.post("/add", (req, res) => {
-	const { customer_code, name } = req.query;
+	const { customer_code, name } = req.body;
 	if (!customer_code) {
 		res.status(400).send([{message: "Customer Code is required."}]);
 		return;
@@ -91,7 +91,7 @@ router.post("/add", (req, res) => {
 // Edit Customer
 router.put("/:customer_code/edit", (req, res) => {
 	const { customer_code } = req.params;
-	const { name } = req.query;
+	const { name } = req.body;
 	if (!name) {
 		res.status(400).send([{message: "Name is required."}]);
 		return;

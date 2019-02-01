@@ -11,43 +11,25 @@ const PurchaseOrder = require("../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
+const tools = require("../utils/tools");
 
 router.get("/get-all", async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Withdrawal.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			withdrawals: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Withdrawal.findAll({
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
-		offset
-	})
-		.then(withdrawals =>
-			res.send({
-				withdrawals,
-				count,
-				pagesCount
-			})
-		)
-		.catch(err => res.status(500).send(err));
+		page,
+		search,
+		search_term,
+		model: Withdrawal
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
-router.get("/single/:id", (req, res) => {
+router.get("/:id/details", (req, res) => {
 	const { id } = req.params;
 	Withdrawal.findOne({
 		where: { id: { [Op.eq]: id } },
@@ -88,49 +70,26 @@ router.get("/single/:id", (req, res) => {
 
 // List of withdrawals of type INSTALLATION without a purchase order
 router.get("/without-po", async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Withdrawal.findAndCountAll({
-		where: {
-			po_number: {
-				[Op.eq]: null
-			},
-			type: {
-				[Op.eq]: "INSTALLATION"
-			}
-		}
-	})
-		.then(c => count = c.count)
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			withdrawals: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Withdrawal.findAll({
-		offset,
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
-		include: [{
-			model: Job,
-			as: 'job'
-		}, {
-			model: Branch,
-			as: 'branch',
-			include: {
-				model: Customer,
-				as: 'customer'
+		page,
+		search,
+		search_term,
+		include: [
+			{
+				model: Job,
+				as: "job"
+			},
+			{
+				model: Branch,
+				as: "branch",
+				include: {
+					model: Customer,
+					as: "customer"
+				}
 			}
-		}],
+		],
 		where: {
 			po_number: {
 				[Op.eq]: null
@@ -138,16 +97,14 @@ router.get("/without-po", async (req, res) => {
 			type: {
 				[Op.eq]: "INSTALLATION"
 			}
-		}
-	})
-		.then(withdrawals =>
-			res.send({
-				withdrawals,
-				count,
-				pagesCount
-			})
-		)
-		.catch(err => res.status(500).send(err));
+		},
+		model: Withdrawal
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
 checkBranchInPo = (branch_id, po_number) => {
@@ -189,23 +146,47 @@ checkBranchInJob = (branch_id, job_code) => {
 		.catch(err => res.status(500).send(err));
 };
 checkWithdrawalFields = values => {
-	const { job_code, branch_id, po_number, staff_code, type, return_by, install_date, date, has_po } = values;
+	const {
+		job_code,
+		branch_id,
+		po_number,
+		staff_code,
+		type,
+		return_by,
+		install_date,
+		date,
+		has_po
+	} = values;
 	let errors = [];
 	if (!job_code && !po_number) errors.push({ message: "Job code or PO number is required." });
 	if (!branch_id) errors.push({ message: "Branch is required." });
 	if (!type) errors.push({ message: "Withdrawal type is required." });
 	if (!staff_code) errors.push({ message: "Staff code is required." });
 	if (!date) errors.push({ message: "Date is required." });
-	if (type == "INSTALLATION" && !install_date) errors.push({ message: "Installation date is required." });
+	if (type == "INSTALLATION" && !install_date)
+		errors.push({ message: "Installation date is required." });
 	if (type == "BORROW" && !return_by) errors.push({ message: "Please specify return date." });
-	if (!has_po && po_number) errors.push({ message: "Cannot specify PO Number to withdrawals without a PO." });
+	if (!has_po && po_number)
+		errors.push({ message: "Cannot specify PO Number to withdrawals without a PO." });
 	if (errors.length > 0) return errors;
 	else return null;
 };
 
 // Add Withdrawal
 router.post("/add", async (req, res) => {
-	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, install_date, date, remarks, has_po } = req.query;
+	const {
+		job_code,
+		branch_id,
+		po_number,
+		do_number,
+		staff_code,
+		type,
+		return_by,
+		install_date,
+		date,
+		remarks,
+		has_po
+	} = req.body;
 	// Check required fields
 	const validationErrors = checkWithdrawalFields({
 		job_code,
@@ -272,7 +253,18 @@ router.post("/add", async (req, res) => {
 // Edit Withdrawal (only if it is pending)
 router.put("/:id/edit", async (req, res) => {
 	const { id } = req.params;
-	const { job_code, branch_id, po_number, do_number, staff_code, type, return_by, date, install_date, has_po } = req.query;
+	const {
+		job_code,
+		branch_id,
+		po_number,
+		do_number,
+		staff_code,
+		type,
+		return_by,
+		date,
+		install_date,
+		has_po
+	} = req.body;
 	// Check required fields
 	const validationErrors = checkWithdrawalFields({
 		job_code,
@@ -301,7 +293,12 @@ router.put("/:id/edit", async (req, res) => {
 	})
 		.then(withdrawal => {
 			if (withdrawal.status != "PENDING") {
-				res.status(400).send([{ message: "This withdrawal/service report/DO is printed and cannot be edited." }]);
+				res.status(400).send([
+					{
+						message:
+							"This withdrawal/service report/DO is printed and cannot be edited."
+					}
+				]);
 				pending = false;
 			}
 		})
@@ -320,7 +317,9 @@ router.put("/:id/edit", async (req, res) => {
 	if (job_code) {
 		const branchInJob = await checkBranchInPo(branch_id, job_code);
 		if (!branchInJob) {
-			res.status(400).send([{ message: "This branch is not associated with this job code." }]);
+			res.status(400).send([
+				{ message: "This branch is not associated with this job code." }
+			]);
 			return;
 		}
 	}
@@ -355,7 +354,7 @@ router.put("/:id/edit", async (req, res) => {
 // Edit remarks
 router.put("/:id/edit-remarks", (req, res) => {
 	const { id } = req.params;
-	const { remarks } = req.query;
+	const { remarks } = req.body;
 
 	Withdrawal.update(
 		{
@@ -397,7 +396,7 @@ changeStatus = (id, status) => {
 
 router.put("/:id/change-status", async (req, res) => {
 	const { id } = req.params;
-	const { status } = req.query;
+	const { status } = req.body;
 
 	//Check current status
 	let currentStatus = "";
@@ -440,7 +439,7 @@ router.put("/:id/change-status", async (req, res) => {
 
 // Add items to withdrawal
 router.put("/:id/add-items", async (req, res) => {
-	let { serial_no } = req.query;
+	let { serial_no } = req.body;
 	const { id } = req.params;
 	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
@@ -464,11 +463,17 @@ router.put("/:id/add-items", async (req, res) => {
 			})
 				.then(count => {
 					if (count == 0) {
-						db.query("INSERT INTO item_withdrawal (serial_no, withdrawal_id)\
-								VALUES (" + `${no},'${id}'` + ")", { type: db.QueryTypes.INSERT })
+						db.query(
+							"INSERT INTO item_withdrawal (serial_no, withdrawal_id)\
+								VALUES (" +
+								`${no},'${id}'` +
+								")",
+							{ type: db.QueryTypes.INSERT }
+						)
 							.then(rows => null)
 							.catch(err => errors.push(err.errors));
-					} else errors.push({ message: `Serial No. ${no} is already in this withdrawal.` });
+					} else
+						errors.push({ message: `Serial No. ${no} is already in this withdrawal.` });
 				})
 				.catch(err => errors.push(err.errors));
 		})
@@ -491,7 +496,12 @@ router.delete("/:id", async (req, res) => {
 	})
 		.then(withdrawal => {
 			if (withdrawal.status != "PENDING") {
-				res.status(400).send([{ message: "This withdrawal/service report/DO is printed and cannot be deleted." }]);
+				res.status(400).send([
+					{
+						message:
+							"This withdrawal/service report/DO is printed and cannot be deleted."
+					}
+				]);
 				pending = true;
 			}
 		})

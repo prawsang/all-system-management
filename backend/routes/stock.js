@@ -9,49 +9,31 @@ const Customer = require("../models/Customer");
 const Withdrawal = require("../models/Withdrawal");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+const tools = require("../utils/tools");
 
 router.use("/", require("./stock_status"));
 
 router.route("/get-all").get(async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Item.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			items: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-	
-	Item.findAll({
-		offset,
-		count,
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
+		limit,
+		page,
+		search,
+		search_term,
 		include: {
 			model: Model,
 			as: "model"
-		}
-	})
-		.then(items => {
-			res.send({
-				items,
-				count,
-				pagesCount
-			});
-		})
-		.catch(err => res.status(500).send(err))
+		},
+		model: Item
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
-router.get("/single/:serial_no",(req, res) => {
+router.get("/:serial_no/details",(req, res) => {
 	const { serial_no } = req.params;
 	Item.findOne({
 		where: { serial_no: { [Op.eq]: serial_no } },
@@ -99,34 +81,7 @@ router.get("/single/:serial_no",(req, res) => {
 // Get item by status
 router.get("/status/:status", async (req, res) => {
 	const { status } = req.params;
-
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Item.findAndCountAll({
-		where: {
-			status: {
-				[Op.eq]: status.toUpperCase()
-			}
-		}
-	})
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	
-	if (count == 0) {
-		res.send({
-			items: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
+	const { limit, page, search, search_term } = req.query;
 
 	// Show return_by if borrowed
 	const include =
@@ -164,58 +119,33 @@ router.get("/status/:status", async (req, res) => {
 					}
 			  ];
 
-	Item.findAll({
+	const query = await tools.countAndQuery({
 		limit,
-		offset,
-		include,
+		page,
+		search,
+		search_term,
 		where: {
 			status: {
 				[Op.eq]: status.toUpperCase()
 			}
-		}
-	})
-		.then(items => {
-			res.send({
-				items,
-				count,
-				pagesCount
-			});
-		})
-		.catch(err => res.status(500).send(err));
+		},
+		include,
+		model: Item
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
 router.get("/broken", async (req,res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Item.findAndCountAll({
-		where: {
-			broken: {
-				[Op.eq]: true
-			}
-		}
-	})
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-
-	if (count == 0) {
-		res.send({
-			items: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Item.findAll({
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
-		offset,
+		page,
+		search,
+		search_term,
 		where: {
 			broken: {
 				[Op.eq]: true
@@ -224,51 +154,25 @@ router.get("/broken", async (req,res) => {
 		include: {
 			model: Model,
 			as: 'model'
-		}
-	})
-		.then(items => res.send({
-			items,
-			count,
-			pagesCount
-		}))
-		.catch(err => res.status(500).send(err));
+		},
+		model: Item
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 })
 
 // Get all items reserved by branch
 router.get("/reserve-branch-id/:branch_id", async (req, res) => {
-	let { limit, page } = req.query;
 	const { branch_id } = req.params;
-
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Item.findAndCountAll({
-		where: {
-			reserve_branch_id: {
-				[Op.eq]: branch_id
-			}
-		}
-	})
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	
-	if (count == 0) {
-		res.send({
-			items: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Item.findAll({
-		offset,
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
+		page,
+		search,
+		search_term,
 		where: {
 			reserve_branch_id: {
 				[Op.eq]: branch_id
@@ -277,51 +181,25 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 		include: {
 			model: Model,
 			as: 'model'
-		}
-	})
-		.then(items => res.send({
-			items,
-			count,
-			pagesCount
-		}))
-		.catch(err => res.status(500).send(err));
+		},
+		model: Item
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
 // Get all items reserved by job (customer)
 router.get("/reserve-job-code/:job_code", async (req, res) => {
-	let { limit, page } = req.query;
 	const { job_code } = req.params;
-	
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Item.findAndCountAll({
-		where: {
-			reserve_job_code: {
-				[Op.eq]: job_code
-			}
-		}
-	})
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	
-	if (count == 0) {
-		res.send({
-			items: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Item.findAll({
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
-		offset,
+		page,
+		search,
+		search_term,
 		where: {
 			reserve_job_code: {
 				[Op.eq]: job_code
@@ -330,25 +208,23 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 		include: {
 			model: Model,
 			as: 'model'
-		}
-	})
-		.then(items => res.send({
-			items,
-			count,
-			pagesCount
-		}))
-		.catch(err => res.status(500).send(err));
+		},
+		model: Item
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
 // Add items to stock
 router.post("/add", async (req, res) => {
-	const { model_id, remarks } = req.query;
+	const { model_id, remark, serial_no } = req.body;
 	if (!model_id) {
 		res.status(400).send([{message: "Model is required."}]);
 		return;
 	}
-	let { serial_no } = req.query;
-	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 	await Promise.all(
 		serial_no.map(async no => {
@@ -367,7 +243,7 @@ router.post("/add", async (req, res) => {
 // Edit Item
 router.put("/:serial_no/edit", (req, res) => {
 	const { serial_no } = req.params;
-	const { model_id, remarks } = req.query;
+	const { model_id, remarks } = req.body;
 	if (!model_id) {
 		res.status(400).send([{message: "Model is required."}]);
 		return;

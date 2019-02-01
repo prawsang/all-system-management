@@ -5,41 +5,22 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 router.route("/get-all").get(async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Model.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			models: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-	
-	Model.findAll({
+	let { limit, page, search, search_term } = req.query;
+	const query = await tools.query({
 		limit,
-		offset
-	})
-		.then(models => {
-			res.send({
-				models,
-				count,
-				pagesCount
-			});
-		})
-		.catch(err => res.status(500).send(err))
+		page,
+		search,
+		search_term,
+		model: Model
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
-router.route("/single/:id").get((req, res) => {
+router.route("/:id/details").get((req, res) => {
 	const { id } = req.params;
 	Model.findOne({ where: { id: { [Op.eq]: id } } })
 		.then(model => {
@@ -52,7 +33,7 @@ router.route("/single/:id").get((req, res) => {
 
 // Add New Model
 router.post("/add", (req, res) => {
-	const { name, type } = req.query;
+	const { name, type } = req.body;
 	if (!name) {
 		res.status(400).send([{message: "Name is required."}]);
 		return;
@@ -72,7 +53,7 @@ router.post("/add", (req, res) => {
 // Edit Model
 router.put("/:id/edit", (req, res) => {
 	const { id } = req.params;
-	const { name, type } = req.query;
+	const { name, type } = req.body;
 	if (!name) {
 		res.status(400).send([{message: "Name is required."}]);
 		return;

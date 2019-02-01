@@ -6,38 +6,25 @@ const Op = Sequelize.Op;
 const bcrypt = require('bcrypt');
 
 router.get("/get-all", async (req, res) => {
-    let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await User.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-    if (count == 0) {
-        res.send({
-            users: [],
-            count: 0,
-            pagesCount: 0
-        });
-        return
-    }
-	const pagesCount = Math.ceil(count / limit);
-    offset = limit * (page - 1);
-    
-	User.findAll({
-        offset,
-        limit
-    })
-		.then(users => res.send({
-            users,
-            count,
-            pagesCount
-        }))
-		.catch(err => res.status(500).send(err))
+    const { limit, page, search, search_term } = req.query;
+	const query = await tools.query({
+		limit,
+		page,
+		search,
+		search_term,
+		include: {
+			model: Model,
+			as: "model"
+		},
+		model: User
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
-router.get("/single/:staff_code", (req, res) => {
+router.get("/:staff_code/details", (req, res) => {
 	const { staff_code } = req.params;
 	User.findOne({
 		where: {
@@ -63,8 +50,8 @@ checkUserFields = (values) => {
 
 // Add New User
 router.post("/add", (req, res) => {
-    const { name, staff_code, department } = req.query;
-    let { password } = req.query;
+    const { name, staff_code, department } = req.body;
+    let { password } = req.body;
     const validationErrors = checkUserFields({
         name,
         staff_code,
@@ -92,8 +79,8 @@ router.post("/add", (req, res) => {
 // Edit User
 router.put("/:staff_code/edit", (req, res) => {
 	const { staff_code } = req.params;
-    const { name, department } = req.query;
-    let { password } = req.query;
+    const { name, department } = req.body;
+    let { password } = req.body;
     const validationErrors = checkUserFields({
         name,
         staff_code,
@@ -106,7 +93,6 @@ router.put("/:staff_code/edit", (req, res) => {
     }
     bcrypt.hash(password, 12)
         .then(hashedPassword => {
-            console.log(password)
             User.update({
                 name,
                 department,

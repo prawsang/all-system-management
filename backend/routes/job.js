@@ -6,45 +6,29 @@ const Job = require("../models/Job");
 const Customer = require("../models/Customer");
 const Branch = require("../models/Branch");
 const StoreType = require("../models/StoreType");
+const tools = require("../utils/tools");
 
 router.get("/get-all", async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Job.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			jobs: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-	
-	Job.findAll({
-		offset,
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
+		page,
+		search,
+		search_term,
 		include: {
 			model: Customer,
 			as: "customer"
-		}
-	})
-		.then(jobs => res.send({
-			jobs,
-			count,
-			pagesCount
-		}))
-		.catch(err => res.status(500).send(err));
+		},
+		model: Job
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
-router.get("/single/:job_code", (req, res) => {
+router.get("/:job_code/details", (req, res) => {
 	const { job_code } = req.params;
 	Job.findOne({
 		include: {
@@ -62,41 +46,14 @@ router.get("/single/:job_code", (req, res) => {
 });
 
 // Get branches for job
-router.get("/branches/:job_code", async (req,res) => {
+router.get("/:job_code/branches", async (req,res) => {
 	const { job_code } = req.params;
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Branch.findAndCountAll({
-		include: {
-			model: Job,
-			as: 'jobs',
-			where: {
-				job_code: {
-					[Op.eq]: job_code
-				}
-			}
-		}
-	})
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			jobs: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Branch.findAll({
-		offset,
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
+		page,
+		search,
+		search_term,
 		include: [{
 			model: Job,
 			as: 'jobs',
@@ -108,19 +65,19 @@ router.get("/branches/:job_code", async (req,res) => {
 		},{
 			model: StoreType,
 			as: 'store_type'
-		}]
-	})
-		.then(branches => res.send({
-			branches,
-			count,
-			pagesCount
-		}))
-		.catch(err => res.status(500).send(err));
+		}],
+		model: Branch
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 })
 
 // Add Job
 router.post("/add", (req, res) => {
-	const { name, job_code, customer_code } = req.query;
+	const { name, job_code, customer_code } = req.body;
 	if (!job_code) {
 		res.status(400).send([{message: "Job Code is required."}]);
 		return;
@@ -147,7 +104,7 @@ router.post("/add", (req, res) => {
 // Edit Job
 router.put("/:job_code/edit", (req, res) => {
 	const { job_code } = req.params;
-	const { name } = req.query;
+	const { name } = req.body;
 	if (!name) {
 		res.status(400).send([{message: "Name is required."}]);
 		return;
@@ -181,7 +138,7 @@ router.delete("/:job_code/remove-branch", (req, res) => {
 // Add branch to job if branch doesn't exist for that job
 router.post("/:job_code/add-branch", (req, res) => {
 	const { job_code } = req.params;
-	const { branch_id } = req.query;
+	const { branch_id } = req.body;
 	Job.count({
 		where: {
 			job_code: {

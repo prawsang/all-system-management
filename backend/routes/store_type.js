@@ -5,43 +5,24 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 router.route("/get-all").get(async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await StoreType.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			types: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.query({
+		limit,
+		page,
+		search,
+		search_term,
+		model: StoreType
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
 	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	StoreType.findAll({
-		offset,
-		limit
-	})
-		.then(types => {
-			res.send({
-				types,
-				count,
-				pagesCount
-			});
-		})
-		.catch(err => res.status(500).send(err))
+	res.send(query);
 });
 
 // Add New Store Type
 router.post("/add", (req, res) => {
-	const { name } = req.query;
+	const { name } = req.body;
 	if (!name) {
 		res.status(400).send([{message: "Name is required."}]);
 		return;
@@ -56,7 +37,7 @@ router.post("/add", (req, res) => {
 // Edit Store Type
 router.put("/:id/edit", (req, res) => {
 	const { id } = req.params;
-	const { name } = req.query;
+	const { name } = req.body;
 	if (!name) {
 		res.status(400).send([{message: "Name is required."}]);
 		return;

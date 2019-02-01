@@ -77,7 +77,8 @@ router.get("/:id/items/", async (req, res) => {
 		search_table: 'stock',
 		search_term,
 		limit,
-		page
+		page,
+		rows_name: "items"
 	});
 	if (query.errors) {
 		res.status(500).send(query.errors);
@@ -130,7 +131,8 @@ router.get("/:id/po", async (req, res) => {
 		select: "SELECT branch_po.po_number, description, date",
 		from_where: `FROM branch_po, purchase_orders
 			WHERE branch_po.branch_id = ${id}
-			AND branch_po.po_number = purchase_orders.po_number`
+			AND branch_po.po_number = purchase_orders.po_number`,
+		rows_name: 'po'
 	});
 	if (query.errors) {
 		res.status(500).send(query.errors);
@@ -151,7 +153,7 @@ checkBranchFields = values => {
 
 // Add New Branch
 router.post("/add", (req, res) => {
-	const { branch_code, customer_code, name, store_type_id, address, province } = req.query;
+	const { branch_code, customer_code, name, store_type_id, address, province } = req.body;
 	const validationErrors = checkBranchFields({
 		customer_code,
 		name,
@@ -176,7 +178,7 @@ router.post("/add", (req, res) => {
 // Edit Branch
 router.put("/:id/edit", (req, res) => {
 	const { id } = req.params;
-	const { branch_code, name, store_type_id, address, province, customer_code } = req.query;
+	const { branch_code, name, store_type_id, address, province, customer_code } = req.body;
 	const validationErrors = checkBranchFields({
 		customer_code,
 		name,
@@ -209,7 +211,7 @@ router.put("/:id/edit", (req, res) => {
 // Remove Job from branch
 router.delete("/:id/remove-job", (req, res) => {
 	const { id } = req.params;
-	const { job_code } = req.query;
+	const { job_code } = req.body;
 	if (!job_code) {
 		res.status(400).send([{ message: "Job code is required" }]);
 	}
@@ -222,7 +224,7 @@ router.delete("/:id/remove-job", (req, res) => {
 // Add Job to branch if Job doesn't exist for that branch
 router.post("/:id/add-job", (req, res) => {
 	const { id } = req.params;
-	const { job_code } = req.query;
+	const { job_code } = req.body;
 	if (!job_code) {
 		res.status(400).send([{ message: "Job code is required" }]);
 	}
@@ -264,7 +266,7 @@ router.delete("/:id/remove-po", (req, res) => {
 // Add PO to branch if PO doesn't exist for that branch
 router.post("/:id/add-po", (req, res) => {
 	const { id } = req.params;
-	const { po_number } = req.query;
+	const { po_number } = req.body;
 	Branch.count({
 		where: {
 			id: {

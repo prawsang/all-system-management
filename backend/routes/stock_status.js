@@ -59,7 +59,7 @@ checkWithdrawalType = (withdrawal_id, type) => {
 // Removes the reserve_job_code and reserve_branch_id of the items
 router.put("/install", async (req, res) => {
 	// Check if there is a valid withdrawal
-	const { withdrawal_id } = req.query;
+	const { withdrawal_id, serial_no } = req.body;
 	if (!withdrawal_id) {
 		res.status(400).send([{ message: "A withdrawal must be provided." }]);
 		return;
@@ -70,8 +70,6 @@ router.put("/install", async (req, res) => {
 		return;
 	}
 
-	let { serial_no } = req.query;
-	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
 	await Promise.all(
@@ -104,7 +102,7 @@ router.put("/install", async (req, res) => {
 // IN_STOCK -> TRANSFERRED
 router.put("/transfer", async (req, res) => {
 	// Check if there is a valid withdrawal
-	const { withdrawal_id } = req.query;
+	const { withdrawal_id, serial_no } = req.body;
 	if (!withdrawal_id) {
 		res.status(400).send([{ message: "A withdrawal must be provided." }]);
 		return;
@@ -115,8 +113,6 @@ router.put("/transfer", async (req, res) => {
 		return;
 	}
 
-	let { serial_no } = req.query;
-	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
 	await Promise.all(
@@ -139,7 +135,7 @@ router.put("/transfer", async (req, res) => {
 // IN_STOCK -> BORROWED
 router.put("/transfer", async (req, res) => {
 	// Check if there is a valid withdrawal
-	const { withdrawal_id } = req.query;
+	const { withdrawal_id, serial_no } = req.body;
 	if (!withdrawal_id) {
 		res.status(400).send([{ message: "A withdrawal must be provided." }]);
 		return;
@@ -150,8 +146,6 @@ router.put("/transfer", async (req, res) => {
 		return;
 	}
 
-	let { serial_no } = req.query;
-	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
 	await Promise.all(
@@ -173,7 +167,7 @@ router.put("/transfer", async (req, res) => {
 // reserve_job_code is required
 // IN_STOCK -> RESERVED
 router.put("/reserve", async (req, res) => {
-	const { reserve_branch_id, reserve_job_code } = req.query;
+	const { reserve_branch_id, reserve_job_code, serial_no } = req.body;
 	if (!reserve_job_code) {
 		res.status(400).send([{ message: "A job code must be provided." }]);
 		return;
@@ -204,8 +198,6 @@ router.put("/reserve", async (req, res) => {
 	}
 	if (!branchInJob) return;
 
-	let { serial_no } = req.query;
-	if (typeof serial_no == "string") serial_no = [serial_no];
 	let errors = [];
 
 	await Promise.all(
@@ -226,9 +218,7 @@ router.put("/reserve", async (req, res) => {
 // BORROWED -> RETURNED
 // Removes the withdrawal_id of the items
 router.put("/return", async (req, res) => {
-	let { serial_no } = req.query;
-	if (typeof serial_no == "string") serial_no = [serial_no];
-	let errors = [];
+	const { serial_no } = req.body;
 
 	await Promise.all(
 		serial_no.map(async no => {
@@ -247,8 +237,7 @@ router.put("/return", async (req, res) => {
 
 // Mark Broken
 router.put("/broken", async (req, res) => {
-	let { serial_no } = req.query;
-	if (typeof serial_no == "string") serial_no = [serial_no];
+	const { serial_no } = req.body;
 	let errors = [];
 
 	await Promise.all(

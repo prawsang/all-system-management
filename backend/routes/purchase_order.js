@@ -8,31 +8,15 @@ const PurchaseOrder = require("../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
+const tools = require("../utils/tools");
 
 router.get("/get-all", async (req, res) => {
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await PurchaseOrder.findAndCountAll()
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send({ errors: [err] }));
-	if (count == 0) {
-		res.send({
-			po: [],
-			count: 0,
-			pagesCount: 0
-		});
-		return;
-	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	PurchaseOrder.findAll({
+	let { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
 		limit,
-		offset,
+		page,
+		search,
+		search_term,
 		include: [
 			{
 				model: Job,
@@ -42,19 +26,17 @@ router.get("/get-all", async (req, res) => {
 					as: "customer"
 				}
 			}
-		]
-	})
-		.then(po =>
-			res.send({
-				po,
-				count,
-				pagesCount
-			})
-		)
-		.catch(err => res.status(500).send(err));
+		],
+		model: PurchaseOrder
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
 });
 
-router.get("/single/:po_number", (req, res) => {
+router.get("/:po_number/details", (req, res) => {
 	const { po_number } = req.params;
 	PurchaseOrder.findOne({
 		where: { po_number: { [Op.eq]: po_number } },
@@ -74,64 +56,33 @@ router.get("/single/:po_number", (req, res) => {
 });
 
 // get branches for po
-router.get("/branches/:po_number", async (req, res) => {
+router.get("/:po_number/branches", async (req, res) => {
 	const { po_number } = req.params;
 
-	let { limit, page } = req.query;
-	if (!limit) limit = 25;
-	if (!page) page = 1;
-
-	let offset = 0;
-	let count = 0;
-	await Branch.findAndCountAll({
-		include: {
+	let { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
+		limit,
+		page,
+		search,
+		search_term,
+		include: [{
 			model: PurchaseOrder,
 			where: {
 				po_number: {
 					[Op.eq]: po_number
 				}
 			}
-		}
-	})
-		.then(c => (count = c.count))
-		.catch(err => res.status(500).send(err));
-	if (count == 0) {
-		res.send({
-			branches: [],
-			count: 0,
-			pagesCount: 0
-		});
+		},{
+			model: StoreType,
+			as: 'store_type'
+		}],
+		model: Branch
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
 		return;
 	}
-	const pagesCount = Math.ceil(count / limit);
-	offset = limit * (page - 1);
-
-	Branch.findAll({
-		offset,
-		limit,
-		include: [
-			{
-				model: PurchaseOrder,
-				where: {
-					po_number: {
-						[Op.eq]: po_number
-					}
-				}
-			},
-			{
-				model: StoreType,
-				as: "store_type"
-			}
-		]
-	})
-		.then(branches =>
-			res.send({
-				branches,
-				count,
-				pagesCount
-			})
-		)
-		.catch(err => res.status(500).send(err));
+	res.send(query);
 });
 
 checkPOFields = values => {
@@ -171,7 +122,7 @@ router.post("/add", (req, res) => {
 router.put("/:po_number/edit", (req, res) => {
 	const { po_number } = req.params;
 	const { description, installed, date } = req.body;
-	console.log(req.body);
+
 	const validationErrors = checkPOFields({
 		po_number,
 		description,
@@ -202,7 +153,7 @@ router.put("/:po_number/edit", (req, res) => {
 // Remove Branch from PO
 router.delete("/:po_number/remove-branch", (req, res) => {
 	const { po_number } = req.params;
-	const { branch_id } = req.query;
+	const { branch_id } = req.body;
 	db.query(
 		"DELETE FROM branch_po \
     WHERE branch_id = " +
@@ -219,7 +170,7 @@ router.delete("/:po_number/remove-branch", (req, res) => {
 // Add Branch to PO (if doesn't exist)
 router.post("/:po_number/add-branch", (req, res) => {
 	const { po_number } = req.params;
-	const { branch_id } = req.query;
+	const { branch_id } = req.body;
 	PurchaseOrder.count({
 		where: {
 			po_number: {

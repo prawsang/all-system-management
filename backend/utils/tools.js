@@ -4,6 +4,30 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
 
+const Branch = require('../models/Branch');
+const Customer = require('../models/Customer');
+const Item = require('../models/Item');
+const Job = require('../models/Job');
+const Model = require('../models/Model');
+const PurchaseOrder = require('../models/PurchaseOrder');
+const StoreType = require('../models/StoreType');
+const User = require('../models/User');
+const Withdrawal = require('../models/Withdrawal');
+
+getModelPluralName = (model) => {
+    switch (model) {
+        case Branch: return 'branches';
+        case Customer: return 'customers';
+        case Item: return 'items';
+        case Job: return 'jobs';
+        case Model: return 'models';
+        case PurchaseOrder: return 'po';
+        case StoreType: return 'types';
+        case User: return 'users';
+        case Withdrawal: return 'withdrawals'
+    }
+}
+
 configPrefs = (data) => {
     const {
         include,
@@ -61,11 +85,13 @@ module.exports = {
     
         let pagesCount = 1;
         if (limit) pagesCount = Math.ceil(res.count / limit);
-        return {
-            rows: res.rows,
+        
+        let out = {
             count: res.count,
             pagesCount
         };
+        out[getModelPluralName(model)] = res.rows;
+        return out;
     },
     countAndQueryWithString: async function(data) {
         const {
@@ -76,6 +102,7 @@ module.exports = {
             search,
             search_table,
             search_term,
+            rows_name
         } = data;
 
         let res = null
@@ -112,10 +139,11 @@ module.exports = {
         let pagesCount = 1;
         if (limit) pagesCount = Math.ceil(res.count / limit);
 
-        return {
-            rows: res,
+        let out = {
             count,
             pagesCount
         };
+        out[rows_name] = res;
+        return out;
     }
 }
