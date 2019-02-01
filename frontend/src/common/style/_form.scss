@@ -58,6 +58,11 @@
 		}
 	}
 }
+@media screen and (max-width: 767px) {
+	.input {
+		min-width: 100px;
+	}
+}
 
 .checkbox {
 	background-color: $gray-4;

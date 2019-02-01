@@ -9,7 +9,7 @@ class PORecord extends React.Component {
                 <h3>บันทึกใบสั่งซื้อ (PO)</h3>
                 <div className="panel">
                     <div className="panel-content">
-                        <form className="form">
+                        <form className="form" onSubmit={(e) => e.preventDefault()}>
                             <div className="field">
                                 <input className="input is-fullwidth" placeholder="PO Number"/>
                             </div>

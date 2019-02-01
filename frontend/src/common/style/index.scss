@@ -5,6 +5,12 @@
 @import "data";
 @import "form";
 
+html,
+body {
+	overflow-x: hidden;
+	width: 100vw;
+}
+
 body {
 	background-color: $gray-5;
 }
@@ -26,6 +32,13 @@ body {
 	}
 }
 
+@media screen and (max-width: 767px) {
+	.container.main.with-side-bar {
+		margin-left: 0;
+		padding: 0 20px;
+	}
+}
+
 .panel {
 	box-shadow: 0 3px 12px $gray-4;
 	background-color: white;
@@ -40,6 +53,11 @@ body {
 		padding: 30px;
 	}
 }
+@media screen and (max-width: 767px) {
+	.panel .panel-content {
+		padding: 15px;
+	}
+}
 
 /* Modifiers */
 .is-clickable {
@@ -51,6 +69,17 @@ body {
 }
 .is-hidden {
 	display: none !important;
+}
+.is-hidden-desktop {
+	display: none !important;
+}
+@media screen and (max-width: 767px) {
+	.is-hidden-mobile {
+		display: none !important;
+	}
+	.is-hidden-desktop {
+		display: inherit;
+	}
 }
 .is-disabled {
 	opacity: 0.5;
@@ -131,6 +160,9 @@ body {
 .is-jc-flex-end {
 	justify-content: flex-end;
 }
+.is-wrap {
+	flex-wrap: wrap;
+}
 
 /* Tabs */
 .tabs {
@@ -169,7 +201,7 @@ body {
 
 .modal-background {
 	align-items: center;
-	background-color: rgba(0,0,0,0.7);
+	background-color: rgba(0, 0, 0, 0.7);
 	display: flex;
 	height: 100vh;
 	justify-content: center;
@@ -181,6 +213,32 @@ body {
 	width: 100vw;
 	z-index: 9999;
 	.panel {
-		box-shadow: 0 3px 12px $gray-1
+		box-shadow: 0 3px 12px $gray-1;
+		max-width: 90%;
+	}
+}
+
+/* columns */
+.row {
+	display: flex;
+}
+.col-3,
+.col-4,
+.col-6 {
+	flex-basis: 100%;
+	width: 100%;
+}
+@media screen and (min-width: 768px) {
+	.col-3 {
+		flex-basis: 25%;
+		width: 25%;
+	}
+	.col-4 {
+		flex-basis: 33%;
+		width: 33%;
+	}
+	.col-6 {
+		flex-basis: 50%;
+		width: 50%;
 	}
 }

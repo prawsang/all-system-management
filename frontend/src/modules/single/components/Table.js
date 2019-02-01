@@ -12,10 +12,10 @@ class Table extends React.Component {
 		const { title, className, table, data, noPage } = this.props;
 		return (
 			<React.Fragment>
-				<div className={`panel-content is-flex is-jc-space-between ${className}`}>
+				<div className={`panel-content is-flex is-jc-space-between is-wrap ${className}`}>
 					<h5 className="no-mt">{title}</h5>
 					{noPage || (
-						<div className="is-flex is-ai-center">
+						<div className="is-flex is-ai-center is-jc-space-between">
 							<div className="select no-mb">
 								<select onChange={(e) => this.handleLimitChange(e.target.value)}>
 									<option>25</option>

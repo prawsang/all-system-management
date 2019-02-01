@@ -8,7 +8,8 @@ import {
 	faArrowAltCircleDown,
 	faEdit,
 	faAngleLeft,
-	faAngleRight
+	faAngleRight,
+	faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import history from "@/common/history";
 
@@ -19,14 +20,18 @@ class Menu extends React.Component {
 	};
 	render() {
 		const { showReportMenu, showEditMenu } = this.state;
+		const { active, close } = this.props;
 		return (
-			<div className="side-bar">
+			<div className={`side-bar ${active && 'is-active'}`}>
+				<div className="has-mt-10 has-ml-10">
+					<FontAwesomeIcon icon={faTimes} onClick={close} />
+				</div>
 				<div className="side-bar-head is-ta-center">
 					<small className="is-6 is-bold">All System Corporation</small>
 				</div>
 				<ul className="side-bar-menu">
 					<li
-						className="side-bar-menu-item is-clickable is-active is-flex is-jc-space-between"
+						className="side-bar-menu-item is-clickable"
 						onClick={e =>
 							this.setState({
 								showReportMenu: !showReportMenu,
@@ -34,14 +39,16 @@ class Menu extends React.Component {
 							})
 						}
 					>
-						<div>
-							<FontAwesomeIcon className="icon has-mr-05" icon={faTable} />
-							รายงาน
+						<div className="is-active is-flex is-jc-space-between">
+							<div>
+								<FontAwesomeIcon className="icon has-mr-05" icon={faTable} />
+								รายงาน
+							</div>
+							<FontAwesomeIcon
+								className="icon has-mr-05"
+								icon={showReportMenu ? faAngleLeft : faAngleRight}
+							/>
 						</div>
-						<FontAwesomeIcon
-							className="icon has-mr-05"
-							icon={showReportMenu ? faAngleLeft : faAngleRight}
-						/>
 						<ul className={`panel menu dropright ${showReportMenu || "is-hidden"}`}>
 							<Link link="/report/all-po">PO ทั้งหมด</Link>
 							<Link link="/report/install-wo-po">การติดตั้งที่ยังไม่ได้รับ PO</Link>
@@ -69,7 +76,7 @@ class Menu extends React.Component {
 						รับของเข้า Stock
 					</li>
 					<li
-						className="side-bar-menu-item is-clickable is-flex is-jc-space-between"
+						className="side-bar-menu-item is-clickable"
 						onClick={e =>
 							this.setState({
 								showReportMenu: false,
@@ -77,14 +84,16 @@ class Menu extends React.Component {
 							})
 						}
 					>
-						<div>
-							<FontAwesomeIcon className="icon has-mr-05" icon={faEdit} />
-							ดู/แก้ไขข้อมูล
+						<div className=" is-flex is-jc-space-between">
+							<div>
+								<FontAwesomeIcon className="icon has-mr-05" icon={faEdit} />
+								ดู/แก้ไขข้อมูล
+							</div>
+							<FontAwesomeIcon
+								className="icon has-mr-05"
+								icon={showEditMenu ? faAngleLeft : faAngleRight}
+							/>
 						</div>
-						<FontAwesomeIcon
-							className="icon has-mr-05"
-							icon={showEditMenu ? faAngleLeft : faAngleRight}
-						/>
 						<ul className={`panel menu dropright ${showEditMenu || "is-hidden"}`}>
 							<li className="list-item is-clickable">ข้อมูลลูกค้า</li>
 							<li className="list-item is-clickable">Store Type</li>
