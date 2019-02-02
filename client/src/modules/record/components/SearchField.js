@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 
 class SearchField extends React.Component {
@@ -32,7 +32,7 @@ class SearchField extends React.Component {
 			placeholder,
 			list,
 			showResults,
-			hideResults,
+			// hideResults,
 			disabled
 		} = this.props;
 		const { data } = this.state;

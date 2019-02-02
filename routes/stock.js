@@ -33,7 +33,33 @@ router.route("/get-all").get(async (req, res) => {
 	res.send(query);
 });
 
-router.get("/:serial_no/details",(req, res) => {
+router.route("/type/:type").get(async (req, res) => {
+	const { limit, page, search, search_term } = req.query;
+	const { type } = req.params;
+	const query = await tools.countAndQuery({
+		limit,
+		page,
+		search,
+		search_term,
+		include: {
+			model: Model,
+			as: "model",
+			where: {
+				type: {
+					[Op.eq]: type
+				}
+			}
+		},
+		model: Item
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
+});
+
+router.get("/:serial_no/details", (req, res) => {
 	const { serial_no } = req.params;
 	Item.findOne({
 		where: { serial_no: { [Op.eq]: serial_no } },
@@ -94,17 +120,20 @@ router.get("/status/:status", async (req, res) => {
 					{
 						model: Withdrawal,
 						as: "withdrawals",
-						include: [{
-							model: Job,
-							as: 'job'
-						},{
-							model: Branch,
-							as: 'branch',
-							include: {
-								model: Customer,
-								as: 'customer'
+						include: [
+							{
+								model: Job,
+								as: "job"
+							},
+							{
+								model: Branch,
+								as: "branch",
+								include: {
+									model: Customer,
+									as: "customer"
+								}
 							}
-						}],
+						],
 						where: {
 							type: {
 								[Op.eq]: "BORROW"
@@ -139,7 +168,7 @@ router.get("/status/:status", async (req, res) => {
 	res.send(query);
 });
 
-router.get("/broken", async (req,res) => {
+router.get("/broken", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
 	const query = await tools.countAndQuery({
 		limit,
@@ -153,7 +182,7 @@ router.get("/broken", async (req,res) => {
 		},
 		include: {
 			model: Model,
-			as: 'model'
+			as: "model"
 		},
 		model: Item
 	});
@@ -162,7 +191,7 @@ router.get("/broken", async (req,res) => {
 		return;
 	}
 	res.send(query);
-})
+});
 
 // Get all items reserved by branch
 router.get("/reserve-branch-id/:branch_id", async (req, res) => {
@@ -180,7 +209,7 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 		},
 		include: {
 			model: Model,
-			as: 'model'
+			as: "model"
 		},
 		model: Item
 	});
@@ -207,7 +236,7 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 		},
 		include: {
 			model: Model,
-			as: 'model'
+			as: "model"
 		},
 		model: Item
 	});
@@ -220,9 +249,9 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 
 // Add items to stock
 router.post("/add", async (req, res) => {
-	const { model_id, remark, serial_no } = req.body;
+	const { model_id, remarks, serial_no } = req.body;
 	if (!model_id) {
-		res.status(400).send([{message: "Model is required."}]);
+		res.status(400).send([{ message: "Model is required." }]);
 		return;
 	}
 	let errors = [];
@@ -232,8 +261,9 @@ router.post("/add", async (req, res) => {
 				serial_no: no,
 				model_id,
 				remarks,
-				status: "IN_STOCK"
-			}).catch(err => errors.push(err.errors[0]));
+				status: "IN_STOCK",
+				broken: false
+			}).catch(err => errors.push(err));
 		})
 	);
 	if (errors.length > 0) res.status(500).send(errors);
@@ -245,23 +275,25 @@ router.put("/:serial_no/edit", (req, res) => {
 	const { serial_no } = req.params;
 	const { model_id, remarks } = req.body;
 	if (!model_id) {
-		res.status(400).send([{message: "Model is required."}]);
+		res.status(400).send([{ message: "Model is required." }]);
 		return;
 	}
-	Item.update({
-		model_id,
-		remarks
-	},{
-		where: {
-			serial_no: {
-				[Op.eq]: serial_no
+	Item.update(
+		{
+			model_id,
+			remarks
+		},
+		{
+			where: {
+				serial_no: {
+					[Op.eq]: serial_no
+				}
 			}
 		}
-	})
+	)
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err));
 });
-
 
 // Delete Item from Stock (superadmins only)
 router.delete("/:serial_no", (req, res) => {
