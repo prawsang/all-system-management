@@ -2,7 +2,6 @@ import React from "react";
 import Axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import history from "@/common/history";
 
 class AddItems extends React.Component {
 	state = {
@@ -44,13 +43,27 @@ class AddItems extends React.Component {
 				remarks
 			}
 		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+			.then(res => this.resetPage())
+			.catch(err => {
+				console.log(err);
+				this.resetPage();
+			});
+	}
+
+	resetPage() {
+		this.setState({
+			type: "",
+			model: "",
+			models: [],
+			remarks: "",
+			serialNos: [],
+			serialNo: ""
+		});
 	}
 
 	render() {
 		const { type, models, model, remarks, serialNos, serialNo } = this.state;
-		console.log(model);
+
 		return (
 			<div className="content">
 				<h3>รับของเข้า Stock</h3>

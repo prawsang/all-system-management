@@ -4,6 +4,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import CustomerSearch from "../components/search/CustomerSearch";
 import BranchSearch from "../components/search/BranchSearch";
+import JobSelect from "../components/JobSelect";
 import { connect } from "react-redux";
 import { setSelectedBranches } from "@/actions/record";
 import history from "@/common/history";
@@ -11,14 +12,13 @@ import history from "@/common/history";
 class AddPO extends React.Component {
 	state = {
 		poNumber: "",
-		selectedJobCode: "",
 		installed: false,
 		date: ""
 	};
 
 	async handleSubmit() {
-		const { selectedBranches } = this.props;
-		const { poNumber, selectedJobCode, installed, description, date } = this.state;
+		const { selectedBranches, selectedJobCode } = this.props;
+		const { poNumber, installed, description, date } = this.state;
 		await Axios.request({
 			url: "/po/add",
 			method: "POST",
@@ -54,8 +54,13 @@ class AddPO extends React.Component {
 	}
 
 	render() {
-		const { poNumber, selectedJobCode, installed, description, date } = this.state;
-		const { jobs, selectedCustomer, selectedBranches, setSelectedBranches } = this.props;
+		const { poNumber, installed, description, date } = this.state;
+		const {
+			selectedCustomer,
+			selectedBranches,
+			setSelectedBranches,
+			selectedJobCode
+		} = this.props;
 
 		return (
 			<div className="content">
@@ -105,30 +110,7 @@ class AddPO extends React.Component {
 								</div>
 							</div>
 							<CustomerSearch />
-							<div className={`field ${!selectedCustomer && "is-disabled"}`}>
-								<div className="select">
-									<select
-										value={selectedJobCode}
-										onChange={e =>
-											this.setState({ selectedJobCode: e.target.value })
-										}
-										disabled={!selectedCustomer}
-									>
-										<option value="">เลือก Job</option>
-										{jobs.length > 0 ? (
-											jobs.map((e, i) => (
-												<option key={e.job_code + i} value={e.job_code}>
-													{e.name} ({e.job_code})
-												</option>
-											))
-										) : (
-											<option value="" disabled>
-												ลูกค้าท่านนี้ยังไม่มี Job
-											</option>
-										)}
-									</select>
-								</div>
-							</div>
+							<JobSelect disabled={!selectedCustomer} />
 							<BranchSearch disabled={selectedJobCode === "" || !selectedJobCode} />
 							<h6>สาขาที่เลือกไว้</h6>
 							<div>
@@ -180,8 +162,8 @@ class AddPO extends React.Component {
 
 const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer,
-	jobs: state.record.jobs,
-	selectedBranches: state.record.selectedBranches
+	selectedBranches: state.record.selectedBranches,
+	selectedJobCode: state.record.selectedJobCode
 });
 const mapDispatchToProps = {
 	setSelectedBranches

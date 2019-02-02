@@ -2,6 +2,7 @@ import {
 	SET_SELECTED_CUSTOMER,
 	SET_SELECTED_BRANCHES,
 	SET_SELECTED_PO,
+	SET_SELECTED_JOB_CODE,
 	FETCH_JOBS
 } from "@/common/action-types";
 import Axios from "axios";
@@ -59,3 +60,12 @@ export const setSelectedPO = po => ({
 	},
 	type: SET_SELECTED_PO
 });
+
+export const setSelectedJobCode = jobCode => {
+	return {
+		payload: {
+			jobCode
+		},
+		type: SET_SELECTED_JOB_CODE
+	};
+};

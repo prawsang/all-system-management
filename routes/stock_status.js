@@ -82,11 +82,17 @@ router.put("/install", async (req, res) => {
 					}
 				}
 			})
-				.then(item => (item.status != "IN_STOCK" && item.status != "RESERVED" ? false : true))
+				.then(item =>
+					item.status != "IN_STOCK" && item.status != "RESERVED" ? false : true
+				)
 				.catch(err => false);
 
 			if (valid) {
-				const results = await changeStockStatus(no, "INSTALLED", { withdrawal_id, reserve_branch_id: null, reserve_job_code: null });
+				const results = await changeStockStatus(no, "INSTALLED", {
+					withdrawal_id,
+					reserve_branch_id: null,
+					reserve_job_code: null
+				});
 				if (results.errors) errors.push(results.errors);
 			} else {
 				errors.push({ message: "This item is not in stock nor reserved.", value: no });
@@ -133,7 +139,7 @@ router.put("/transfer", async (req, res) => {
 // Borrow
 // Withdrawal of type BORROW is required
 // IN_STOCK -> BORROWED
-router.put("/transfer", async (req, res) => {
+router.put("/borrow", async (req, res) => {
 	// Check if there is a valid withdrawal
 	const { withdrawal_id, serial_no } = req.body;
 	if (!withdrawal_id) {
@@ -204,7 +210,10 @@ router.put("/reserve", async (req, res) => {
 		serial_no.map(async no => {
 			let valid = await checkStockStatus(no, "IN_STOCK");
 			if (valid) {
-				const results = await changeStockStatus(no, "RESERVED", { reserve_branch_id, reserve_job_code });
+				const results = await changeStockStatus(no, "RESERVED", {
+					reserve_branch_id,
+					reserve_job_code
+				});
 				if (results.errors) errors.push(results.errors);
 			} else {
 				errors.push({ message: "This item is not in stock.", value: no });
@@ -219,7 +228,7 @@ router.put("/reserve", async (req, res) => {
 // Removes the withdrawal_id of the items
 router.put("/return", async (req, res) => {
 	const { serial_no } = req.body;
-
+	let errors = [];
 	await Promise.all(
 		serial_no.map(async no => {
 			let valid = await checkStockStatus(no, "BORROWED");
