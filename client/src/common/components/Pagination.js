@@ -7,7 +7,11 @@ import { setPage } from "@/actions/report";
 class Pagination extends React.Component {
 	renderPageNumbers = totalPages =>
 		new Array(totalPages).fill().map((e, i) => (
-			<button className={`button ${this.props.currentPage === i + 1 ? "" : "is-light"}`} key={i} onClick={() => this.props.setPage(i + 1)}>
+			<button
+				className={`button ${this.props.currentPage === i + 1 ? "" : "is-light"}`}
+				key={i}
+				onClick={() => this.props.setPage(i + 1)}
+			>
 				{i + 1}
 			</button>
 		));
@@ -19,11 +23,19 @@ class Pagination extends React.Component {
 		const { totalPages, currentPage } = this.props;
 		return (
 			<div className="buttons no-mb">
-				<button className="button is-light" onClick={() => this.handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+				<button
+					className="button is-light"
+					onClick={() => this.handlePageChange(currentPage - 1)}
+					disabled={currentPage === 1 || totalPages === 0}
+				>
 					<FontAwesomeIcon icon={faAngleLeft} />
 				</button>
 				{this.renderPageNumbers(totalPages)}
-				<button className="button is-light" onClick={() => this.handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+				<button
+					className="button is-light"
+					onClick={() => this.handlePageChange(currentPage + 1)}
+					disabled={currentPage === totalPages || totalPages === 0}
+				>
 					<FontAwesomeIcon icon={faAngleRight} />
 				</button>
 			</div>

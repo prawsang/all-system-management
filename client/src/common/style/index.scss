@@ -72,14 +72,14 @@ body {
 	display: none !important;
 }
 .is-hidden-desktop {
-	display: none !important;
+	display: none;
 }
 @media screen and (max-width: 767px) {
 	.is-hidden-mobile {
 		display: none !important;
 	}
 	.is-hidden-desktop {
-		display: inherit;
+		display: block;
 	}
 }
 .is-disabled {

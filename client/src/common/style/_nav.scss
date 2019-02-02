@@ -91,12 +91,20 @@ nav {
 @media screen and (max-width: 767px) {
 	.side-bar {
 		display: none;
-		box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+		overflow-y: scroll;
+		box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+		.side-bar-head {
+			padding: 10px;
+			margin-bottom: 10px;
+		}
 		&.is-active {
 			display: block;
 		}
 		.dropright {
 			position: static;
+		}
+		.side-bar-menu {
+			margin-bottom: 60px;
 		}
 		.side-bar-menu .panel {
 			box-shadow: none;

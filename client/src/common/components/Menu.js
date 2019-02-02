@@ -12,6 +12,7 @@ import {
 	faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import history from "@/common/history";
+import logo from "@/assets/logo.png";
 
 class Menu extends React.Component {
 	state = {
@@ -22,11 +23,26 @@ class Menu extends React.Component {
 		const { showReportMenu, showEditMenu } = this.state;
 		const { active, close } = this.props;
 		return (
-			<div className={`side-bar ${active && 'is-active'}`}>
-				<div className="has-mt-10 has-ml-10 is-hidden-desktop">
-					<FontAwesomeIcon icon={faTimes} onClick={close} />
-				</div>
+			<div className={`side-bar ${active && "is-active"}`}>
+				<button
+					className="button is-light has-mt-10 has-ml-10 is-hidden-desktop"
+					onClick={close}
+				>
+					<FontAwesomeIcon icon={faTimes} />
+				</button>
 				<div className="side-bar-head is-ta-center">
+					<img
+						src={logo}
+						alt="logo"
+						// className="is-hidden-mobile"
+						style={{
+							width: 70,
+							height: "auto",
+							display: "block",
+							margin: "auto",
+							marginBottom: 10
+						}}
+					/>
 					<small className="is-6 is-bold">All System Corporation</small>
 				</div>
 				<ul className="side-bar-menu">
@@ -59,22 +75,22 @@ class Menu extends React.Component {
 							<Link link="/report/in-stock">Stock คงเหลือ</Link>
 						</ul>
 					</li>
-					<li className="side-bar-menu-item is-clickable">
+					<SideBarLink link="/record/edit-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faListUl} />
 						ปรับปรุงรายการ
-					</li>
-					<li className="side-bar-menu-item is-clickable">
+					</SideBarLink>
+					<SideBarLink link="/record/po">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faReceipt} />
 						บันทึกใบสั่งซื้อ (PO)
-					</li>
+					</SideBarLink>
 					<li className="side-bar-menu-item is-clickable">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleUp} />
 						เบิกสินค้า
 					</li>
-					<li className="side-bar-menu-item is-clickable">
+					<SideBarLink link="/record/add-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleDown} />
 						รับของเข้า Stock
-					</li>
+					</SideBarLink>
 					<li
 						className="side-bar-menu-item is-clickable"
 						onClick={e =>
@@ -109,6 +125,13 @@ class Menu extends React.Component {
 const Link = props => {
 	return (
 		<li className="list-item is-clickable" onClick={() => history.push(props.link)}>
+			{props.children}
+		</li>
+	);
+};
+const SideBarLink = props => {
+	return (
+		<li className="side-bar-menu-item is-clickable" onClick={() => history.push(props.link)}>
 			{props.children}
 		</li>
 	);
