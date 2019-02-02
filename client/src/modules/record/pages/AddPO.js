@@ -3,22 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Axios from "axios";
+import CustomerSearch from "../components/search/CustomerSearch";
+import { connect } from "react-redux";
 
-const CUSTOMER = "CUSTOMER";
-const BRANCH = "BRANCH";
-
-class PORecord extends React.Component {
+class AddPO extends React.Component {
 	state = {
-		searchCustomer: "",
-		searchBranch: "",
-		customers: [],
-		jobs: [],
-		branches: [],
-		selectedBranches: [],
-		selectedCustomerCode: "",
-		selectedJobCode: "",
-		poNumber: "",
-		focus: null
+		poNumber: ""
 	};
 
 	searchCustomerName = customerName => {
@@ -44,19 +34,8 @@ class PORecord extends React.Component {
 	};
 
 	render() {
-		const {
-			searchCustomer,
-			searchBranch,
-			customers,
-			jobs,
-			branches,
-			selectedBranches,
-			selectedCustomerCode,
-			selectedJobCode,
-			poNumber,
-			focus
-		} = this.state;
-
+		const { poNumber } = this.state;
+		// console.log(this.props.selectedCustomer);
 		return (
 			<div className="content">
 				<h3>บันทึกใบสั่งซื้อ (PO)</h3>
@@ -64,9 +43,18 @@ class PORecord extends React.Component {
 					<div className="panel-content">
 						<form className="form" onSubmit={e => e.preventDefault()}>
 							<div className="field">
-								<input className="input is-fullwidth" placeholder="PO Number" />
+								<input
+									className="input is-fullwidth"
+									placeholder="PO Number"
+									value={poNumber}
+									onChange={e => this.setState({ poNumber: e.target.value })}
+								/>
 							</div>
-							<div className="field">
+							<CustomerSearch
+							// value={customer}
+							// onChange={e => this.setState({ customer: e.target.value })}
+							/>
+							{/* <div className="field">
 								<div className="is-flex">
 									<input
 										className="input is-flex-fullwidth"
@@ -223,7 +211,7 @@ class PORecord extends React.Component {
 								) : (
 									<p className="is-gray-3 has-mb-10">ยังไม่ได้เลือกสาขา</p>
 								)}
-							</div>
+							</div> */}
 							<div className="field">
 								<button className="button">บันทึกใบสั่งซื้อ</button>
 							</div>
@@ -235,4 +223,11 @@ class PORecord extends React.Component {
 	}
 }
 
-export default PORecord;
+const mapStateToProps = state => ({
+	selectedCustomer: state.record.selectedCustomer
+});
+
+export default connect(
+	mapStateToProps,
+	null
+)(AddPO);

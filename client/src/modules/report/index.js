@@ -1,12 +1,12 @@
 import React from "react";
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch } from "react-router-dom";
 import Table from "./components/Table";
 import AllPO from "./tables/AllPO";
-import InstallWoPO from './tables/InstallWoPO';
-import BranchNoInstall from './tables/BranchNoInstall';
-import Broken from './tables/Broken';
-import Borrowed from './tables/Borrowed';
-import InStock from './tables/InStock';
+import InstallWoPO from "./tables/InstallWoPO";
+import BranchNoInstall from "./tables/BranchNoInstall";
+import Broken from "./tables/Broken";
+import Borrowed from "./tables/Borrowed";
+import InStock from "./tables/InStock";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
 class Report extends React.Component {
@@ -20,7 +20,6 @@ class Report extends React.Component {
 					<Route path="/report/broken" component={BrokenWrapper} />
 					<Route path="/report/borrowed" component={BorrowedWrapper} />
 					<Route path="/report/in-stock" component={InStockWrapper} />
-
 				</Switch>
 			</div>
 		);
@@ -30,85 +29,63 @@ class Report extends React.Component {
 const AllPOWrapper = () => (
 	<FetchDataFromServer
 		url="/po/get-all"
-		render={data => 
-			<Table 
-				data={data} 
-				table={
-					data => <AllPO data={data}/>
-				} 
-				title="PO ทั้งหมด"/>
-			}
+		render={data => (
+			<Table data={data} table={data => <AllPO data={data} />} title="PO ทั้งหมด" />
+		)}
 	/>
-)
+);
 
 const InstallWoPOWrapper = () => (
 	<FetchDataFromServer
 		url="/withdrawal/without-po"
-		render={data => 
-			<Table 
-				data={data} 
-				table={
-					data => <InstallWoPO data={data}/>
-				} 
-				title="การติดตั้งที่ยังไม่ได้รับ PO"/>
-			}
+		render={data => (
+			<Table
+				data={data}
+				table={data => <InstallWoPO data={data} />}
+				title="การติดตั้งที่ยังไม่ได้รับ PO"
+			/>
+		)}
 	/>
-)
+);
 
 const BranchNoInstallWrapper = () => (
 	<FetchDataFromServer
 		url="/branch/no-install"
-		render={data => 
-			<Table 
-				data={data} 
-				table={
-					data => <BranchNoInstall data={data}/>
-				} 
-				title="สาขาที่ยังไม่ได้ติดตั้ง"/>
-			}
+		render={data => (
+			<Table
+				data={data}
+				table={data => <BranchNoInstall data={data} />}
+				title="สาขาที่ยังไม่ได้ติดตั้ง"
+			/>
+		)}
 	/>
-)
+);
 
 const BrokenWrapper = () => (
 	<FetchDataFromServer
 		url="/stock/broken"
-		render={data => 
-			<Table 
-				data={data} 
-				table={
-					data => <Broken data={data}/>
-				} 
-				title="ของเสีย"/>
-			}
+		render={data => (
+			<Table data={data} table={data => <Broken data={data} />} title="ของเสีย" />
+		)}
 	/>
-)
+);
 
 const BorrowedWrapper = () => (
 	<FetchDataFromServer
 		url="/stock/status/borrowed"
-		render={data => 
-			<Table 
-				data={data} 
-				table={
-					data => <Borrowed data={data}/>
-				} 
-				title="ของยืม"/>
-			}
+		render={data => (
+			<Table data={data} table={data => <Borrowed data={data} />} title="ของยืม" />
+		)}
 	/>
-)
+);
 
 const InStockWrapper = () => (
 	<FetchDataFromServer
 		url="/stock/status/in_stock"
-		render={data => 
-			<Table 
-				data={data} 
-				table={
-					data => <InStock data={data}/>
-				} 
-				title="Stock คงเหลือ"/>
-			}
+		render={data => (
+			<Table data={data} table={data => <InStock data={data} />} title="Stock คงเหลือ" />
+		)}
 	/>
-)
+);
 
 export default Report;

@@ -1,3 +1,9 @@
 // Report
 export const SET_PAGE = "SET_PAGE";
 export const SET_LIMIT = "SET_LIMIT";
+
+// Record
+export const SET_SELECTED_CUSTOMER = "SET_SELECTED_CUSTOMER";
+export const SET_SELECTED_BRANCH = "SET_SELECTED_BRANCH";
+export const SET_SELECTED_BRANCHES = "SET_SELECTED_BRANCHES";
+export const SET_SELECTED_PO = "SET_SELECTED_PO";
