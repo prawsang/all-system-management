@@ -56,7 +56,10 @@ configPrefs = data => {
 module.exports = {
 	countAndQuery: async function(data) {
 		const { where, include, limit, page, search, model } = data;
-		const search_term = data.search_term.toLowerCase();
+		let search_term;
+		if (data.search_term) {
+			search_term = data.search_term.toLowerCase();
+		}
 
 		let res = null;
 		let errors = [];
@@ -95,7 +98,10 @@ module.exports = {
 	},
 	countAndQueryWithString: async function(data) {
 		const { select, from_where, limit, page, search, search_table, rows_name } = data;
-		const search_term = data.search_term.toLowerCase();
+		let search_term;
+		if (data.search_term) {
+			search_term = data.search_term.toLowerCase();
+		}
 
 		let res = null;
 		let count = 0;

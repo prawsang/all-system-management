@@ -1,118 +1,118 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import FetchDataFromServer from "@/common/components/FetchDataFromServer";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import CustomerSearch from "../components/search/CustomerSearch";
+import BranchSearch from "../components/search/BranchSearch";
 import { connect } from "react-redux";
+import { setSelectedBranches } from "@/actions/record";
+import history from "@/common/history";
 
 class AddPO extends React.Component {
 	state = {
-		poNumber: ""
+		poNumber: "",
+		selectedJobCode: "",
+		installed: false,
+		date: ""
 	};
 
-	searchCustomerName = customerName => {
-		if (customerName.length >= 3) {
-			Axios.request(`/customer/get-all?search=name&search_term=${this.state.searchCustomer}`)
-				.then(res => this.setState({ customers: res.data.customers }))
-				.catch(err => console.log(err));
-		}
-	};
-	getJobsForSelectedCustomer = customer => {
-		Axios.request(`/customer/${customer.customer_code}/details`)
-			.then(res => this.setState({ jobs: res.data.customer.jobs }))
-			.catch(err => console.log(err));
-	};
-	searchBranchForSelectedCustomer = () => {
-		Axios.request(
-			`/customer/${this.state.selectedCustomerCode}/branches?search=name&search_term=${
-				this.state.searchBranch
-			}`
-		)
-			.then(res => this.setState({ branches: res.data.branches }))
-			.catch(err => console.log(err));
-	};
+	async handleSubmit() {
+		const { selectedBranches } = this.props;
+		const { poNumber, selectedJobCode, installed, description, date } = this.state;
+		await Axios.request({
+			url: "/po/add",
+			method: "POST",
+			data: {
+				po_number: poNumber,
+				description,
+				date,
+				installed,
+				job_code: selectedJobCode
+			}
+		})
+			.then(async res => {
+				let branchIds = [];
+				if (selectedBranches.length > 0) {
+					selectedBranches.map(e => branchIds.push(e.id));
+					await Axios.request({
+						method: "POST",
+						url: `/po/${poNumber}/add-branches`,
+						data: {
+							branch_id: branchIds
+						}
+					})
+						.then(r => {
+							console.log(r);
+							history.push(`/single/po/${poNumber}`);
+						})
+						.catch(err => console.log(err, "branches"));
+				} else {
+					history.push(`/single/po/${poNumber}`);
+				}
+			})
+			.catch(err => console.log(err, "add"));
+	}
 
 	render() {
-		const { poNumber } = this.state;
-		// console.log(this.props.selectedCustomer);
+		const { poNumber, selectedJobCode, installed, description, date } = this.state;
+		const { jobs, selectedCustomer, selectedBranches, setSelectedBranches } = this.props;
+
 		return (
 			<div className="content">
 				<h3>บันทึกใบสั่งซื้อ (PO)</h3>
 				<div className="panel">
 					<div className="panel-content">
-						<form className="form" onSubmit={e => e.preventDefault()}>
-							<div className="field">
-								<input
-									className="input is-fullwidth"
-									placeholder="PO Number"
-									value={poNumber}
-									onChange={e => this.setState({ poNumber: e.target.value })}
-								/>
-							</div>
-							<CustomerSearch
-							// value={customer}
-							// onChange={e => this.setState({ customer: e.target.value })}
-							/>
-							{/* <div className="field">
-								<div className="is-flex">
+						<div className="form">
+							<div className="is-flex is-fullwidth">
+								<div className="field">
 									<input
-										className="input is-flex-fullwidth"
-										placeholder="Customer Name"
-										value={searchCustomer}
-										onChange={e =>
-											this.setState({ searchCustomer: e.target.value })
-										}
-										onFocus={() => this.setState({ focus: CUSTOMER })}
-										onBlur={() => this.setState({ focus: null })}
+										className="input is-fullwidth"
+										placeholder="PO Number"
+										value={poNumber}
+										onChange={e => this.setState({ poNumber: e.target.value })}
 									/>
-									<button
-										className="button has-ml-05"
-										type="button"
-										onClick={() => {
-											this.searchCustomerName(searchCustomer);
-										}}
-										onFocus={() => this.setState({ focus: CUSTOMER })}
-									>
-										<FontAwesomeIcon icon={faSearch} />
-									</button>
-									<div
-										className={`panel menu dropdown ${focus === CUSTOMER ||
-											"is-hidden"}`}
-									>
-										{customers.length > 0 ? (
-											customers.map((e, i) => (
-												<span
-													key={e.name + i}
-													className="list-item is-clickable"
-													onClick={() => {
-														this.setState({
-															searchCustomer: e.name,
-															selectedCustomerCode: e.customer_code,
-															focus: null
-														});
-														this.getJobsForSelectedCustomer(e);
-													}}
-												>
-													{e.name} ({e.customer_code})
-												</span>
-											))
-										) : (
-											<span className="list-item">ไม่พบรายการ</span>
-										)}
-									</div>
+								</div>
+								<div className="field is-flex is-ai-center has-ml-10">
+									<label className="is-bold has-mr-05">ติดตั้งแล้ว:</label>
+									<input
+										className="checkbox"
+										onChange={() => this.setState({ installed: !installed })}
+										type="checkbox"
+										checked={installed}
+										name="installed"
+									/>
 								</div>
 							</div>
-							<div
-								className={`field ${selectedCustomerCode === "" && "is-disabled"}`}
-							>
+							<div className="is-flex">
+								<div className="field col-6">
+									<textarea
+										className="input textarea is-fullwidth"
+										placeholder="Description"
+										value={description}
+										onChange={e =>
+											this.setState({ description: e.target.value })
+										}
+									/>
+								</div>
+								<div className="field col-6 has-ml-05">
+									<input
+										className="input is-fullwidth"
+										placeholder="Date"
+										type="date"
+										value={date}
+										onChange={e => this.setState({ date: e.target.value })}
+									/>
+								</div>
+							</div>
+							<CustomerSearch />
+							<div className={`field ${!selectedCustomer && "is-disabled"}`}>
 								<div className="select">
 									<select
 										value={selectedJobCode}
 										onChange={e =>
 											this.setState({ selectedJobCode: e.target.value })
 										}
-										disabled={selectedCustomerCode === ""}
+										disabled={!selectedCustomer}
 									>
 										<option value="">เลือก Job</option>
 										{jobs.length > 0 ? (
@@ -122,66 +122,14 @@ class AddPO extends React.Component {
 												</option>
 											))
 										) : (
-											<option value="">ลูกค้าท่านนี้ยังไม่มี Job</option>
+											<option value="" disabled>
+												ลูกค้าท่านนี้ยังไม่มี Job
+											</option>
 										)}
 									</select>
 								</div>
 							</div>
-							<div className={`field ${selectedJobCode === "" && "is-disabled"}`}>
-								<div className="is-flex">
-									<input
-										className="input is-flex-fullwidth"
-										placeholder="Branch Name"
-										disabled={selectedJobCode === ""}
-										onFocus={() => this.setState({ focus: BRANCH })}
-										onBlur={() => this.setState({ focus: null })}
-										value={searchBranch}
-										onChange={e =>
-											this.setState({ searchBranch: e.target.value })
-										}
-									/>
-									<button
-										className="button has-ml-05"
-										type="button"
-										onClick={() => this.searchBranchForSelectedCustomer()}
-										onFocus={() => this.setState({ focus: BRANCH })}
-									>
-										<FontAwesomeIcon icon={faSearch} />
-									</button>
-									<div
-										className={`panel menu dropdown ${focus === BRANCH ||
-											"is-hidden"}`}
-									>
-										{branches.length > 0 ? (
-											branches.map((e, i) => (
-												<span
-													key={e.name + i}
-													className="list-item is-clickable"
-													onClick={() => {
-														this.setState({
-															searchBranch: "",
-															branches: [],
-															selectedBranches: [
-																...selectedBranches,
-																{
-																	name: e.name,
-																	branch_id: e.branch_id,
-																	branch_code: e.branch_code
-																}
-															],
-															focus: null
-														});
-													}}
-												>
-													{e.name} {e.branch_code && `(${e.branch_code})`}
-												</span>
-											))
-										) : (
-											<span className="list-item">ไม่พบรายการ</span>
-										)}
-									</div>
-								</div>
-							</div>
+							<BranchSearch disabled={selectedJobCode === "" || !selectedJobCode} />
 							<h6>สาขาที่เลือกไว้</h6>
 							<div>
 								{selectedBranches.length > 0 ? (
@@ -192,15 +140,16 @@ class AddPO extends React.Component {
 												<span
 													className="danger has-ml-05 is-clickable"
 													onClick={() =>
-														// this.setState({
-														// 	selectedBranches:
-														// 		selectedBranches.splice(0, i) +
-														// 		selectedBranches.splice(
-														// 			i,
-														// 			selectedBranches.length
-														// 		)
-														// })
-														console.log(selectedBranches.slice(i, 1))
+														setSelectedBranches(
+															selectedBranches
+																.slice(0, i)
+																.concat(
+																	selectedBranches.slice(
+																		i + 1,
+																		selectedBranches.length
+																	)
+																)
+														)
 													}
 												>
 													<FontAwesomeIcon icon={faTrash} />
@@ -211,11 +160,17 @@ class AddPO extends React.Component {
 								) : (
 									<p className="is-gray-3 has-mb-10">ยังไม่ได้เลือกสาขา</p>
 								)}
-							</div> */}
-							<div className="field">
-								<button className="button">บันทึกใบสั่งซื้อ</button>
 							</div>
-						</form>
+							<div className="field">
+								<button
+									className="button"
+									type="submit"
+									onClick={() => this.handleSubmit()}
+								>
+									บันทึกใบสั่งซื้อ
+								</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -224,10 +179,15 @@ class AddPO extends React.Component {
 }
 
 const mapStateToProps = state => ({
-	selectedCustomer: state.record.selectedCustomer
+	selectedCustomer: state.record.selectedCustomer,
+	jobs: state.record.jobs,
+	selectedBranches: state.record.selectedBranches
 });
+const mapDispatchToProps = {
+	setSelectedBranches
+};
 
 export default connect(
 	mapStateToProps,
-	null
+	mapDispatchToProps
 )(AddPO);

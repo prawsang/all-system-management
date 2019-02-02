@@ -49,6 +49,10 @@
 		}
 	}
 }
+.textarea {
+	min-height: 150px;
+	border-bottom-color: $gray-4;
+}
 @media screen and (max-width: 767px) {
 	.input {
 		min-width: 100px;

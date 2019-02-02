@@ -5,13 +5,12 @@ import Axios from "axios";
 
 class SearchField extends React.Component {
 	state = {
-		data: null,
-		focusButton: false
+		data: null
 	};
 	handleSearch() {
 		const { searchUrl, searchTerm, searchName } = this.props;
 		if (searchTerm.length < 3) {
-			this.setState({ data: { customers: null } });
+			this.setState({ data: null });
 		} else {
 			Axios.get(`${searchUrl}?search=${searchName}&search_term=${searchTerm}`)
 				.then(res => {
@@ -26,18 +25,19 @@ class SearchField extends React.Component {
 			this.handleSearch();
 		}
 	}
-	// componentDidUpdate(prevProps, prevState) {
-	// 	if (prevProps !== this.props) {
-	// 		if (prevProps.searchUrl !== this.props.searchUrl) {
-	// 			this.handleSearch();
-	// 		}
-	// 	}
-	// }
 	render() {
-		const { value, onChange, placeholder, list, showResults, hideResults } = this.props;
-		const { data, focusButton } = this.state;
+		const {
+			value,
+			onChange,
+			placeholder,
+			list,
+			showResults,
+			hideResults,
+			disabled
+		} = this.props;
+		const { data } = this.state;
 		return (
-			<div className="field" onFocus={showResults}>
+			<div className={`field ${disabled && "is-disabled"}`} onFocus={showResults}>
 				<div className="is-flex">
 					<input
 						className="input is-flex-fullwidth"
@@ -45,6 +45,7 @@ class SearchField extends React.Component {
 						value={value}
 						onChange={onChange}
 						onKeyPress={e => this.handleKeyPress(e)}
+						disabled={disabled}
 					/>
 					<button
 						className="button has-ml-05"
