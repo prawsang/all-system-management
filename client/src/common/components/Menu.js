@@ -83,10 +83,10 @@ class Menu extends React.Component {
 						<FontAwesomeIcon className="icon has-mr-05" icon={faReceipt} />
 						บันทึกใบสั่งซื้อ (PO)
 					</SideBarLink>
-					<li className="side-bar-menu-item is-clickable">
+					<SideBarLink link="/record/withdraw-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleUp} />
 						เบิกสินค้า
-					</li>
+					</SideBarLink>
 					<SideBarLink link="/record/add-items">
 						<FontAwesomeIcon className="icon has-mr-05" icon={faArrowAltCircleDown} />
 						รับของเข้า Stock

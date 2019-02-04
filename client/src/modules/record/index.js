@@ -3,6 +3,7 @@ import { Switch, Route } from "react-router-dom";
 import AddPO from "./pages/AddPO";
 import AddItems from "./pages/AddItems";
 import EditItems from "./pages/EditItems";
+import Withdraw from "./pages/Withdraw";
 
 class Record extends React.Component {
 	render() {
@@ -11,6 +12,7 @@ class Record extends React.Component {
 				<Route path="/record/po" component={AddPO} />
 				<Route path="/record/add-items" component={AddItems} />
 				<Route path="/record/edit-items" component={EditItems} />
+				<Route path="/record/withdraw-items" component={Withdraw} />
 			</Switch>
 		);
 	}

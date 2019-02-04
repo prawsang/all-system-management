@@ -11,7 +11,7 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const tools = require("../utils/tools");
 
-router.use("/", require("./stock_status"));
+router.use("/", require("./stock_status").router);
 
 router.route("/get-all").get(async (req, res) => {
 	const { limit, page, search, search_term } = req.query;

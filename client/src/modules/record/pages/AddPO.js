@@ -61,7 +61,6 @@ class AddPO extends React.Component {
 			setSelectedBranches,
 			selectedJobCode
 		} = this.props;
-
 		return (
 			<div className="content">
 				<h3>บันทึกใบสั่งซื้อ (PO)</h3>

@@ -13,6 +13,10 @@ const Op = Sequelize.Op;
 const db = require("../config/database");
 const tools = require("../utils/tools");
 
+const installItems = require("./stock_status").installItems;
+const transferItems = require("./stock_status").transferItems;
+const borrowItems = require("./stock_status").borrowItems;
+
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
 	const query = await tools.countAndQuery({
@@ -158,8 +162,9 @@ checkWithdrawalFields = values => {
 		has_po
 	} = values;
 	let errors = [];
+
 	if (!job_code && !po_number) errors.push({ message: "Job code or PO number is required." });
-	if (!branch_id) errors.push({ message: "Branch is required." });
+	if (branch_id == null) errors.push({ message: "Branch is required." });
 	if (!type) errors.push({ message: "Withdrawal type is required." });
 	if (!staff_code) errors.push({ message: "Staff code is required." });
 	if (!date) errors.push({ message: "Date is required." });
@@ -187,6 +192,7 @@ router.post("/add", async (req, res) => {
 		remarks,
 		has_po
 	} = req.body;
+
 	// Check required fields
 	const validationErrors = checkWithdrawalFields({
 		job_code,
@@ -214,7 +220,7 @@ router.post("/add", async (req, res) => {
 	}
 	// check if branch is in the specified job (if any)
 	if (job_code) {
-		const branchInJob = await checkBranchInPo(branch_id, job_code);
+		const branchInJob = await checkBranchInJob(branch_id, job_code);
 		if (!branchInJob) {
 			res.status(400).send([{ message: "This branch is not associated with this job code" }]);
 			return;
@@ -223,30 +229,21 @@ router.post("/add", async (req, res) => {
 
 	// po_number and job_code cannot coexist
 	// If po_number is specified, job_code will be null
-	Withdrawal.create(
-		{
-			job_code: po_number ? null : job_code,
-			branch_id,
-			po_number,
-			do_number,
-			staff_code,
-			type,
-			install_date,
-			return_by,
-			status: "PENDING",
-			remarks,
-			date,
-			has_po
-		},
-		{
-			where: {
-				id: {
-					[Op.eq]: id
-				}
-			}
-		}
-	)
-		.then(rows => res.sendStatus(200))
+	Withdrawal.create({
+		job_code,
+		branch_id,
+		po_number,
+		do_number,
+		staff_code,
+		type,
+		install_date,
+		return_by,
+		status: "PENDING",
+		remarks,
+		date,
+		has_po
+	})
+		.then(row => res.send(row))
 		.catch(err => res.status(500).send(err));
 });
 
@@ -315,7 +312,7 @@ router.put("/:id/edit", async (req, res) => {
 	}
 	// check if branch is in the specified job (if any)
 	if (job_code) {
-		const branchInJob = await checkBranchInPo(branch_id, job_code);
+		const branchInJob = await checkBranchInJob(branch_id, job_code);
 		if (!branchInJob) {
 			res.status(400).send([
 				{ message: "This branch is not associated with this job code." }
@@ -438,13 +435,26 @@ router.put("/:id/change-status", async (req, res) => {
 });
 
 // Add items to withdrawal
-router.put("/:id/add-items", async (req, res) => {
-	let { serial_no } = req.body;
-	const { id } = req.params;
-	if (typeof serial_no == "string") serial_no = [serial_no];
+router.put("/:id/add-items/:type", async (req, res) => {
+	const { serial_no } = req.body;
+	const { id, type } = req.params;
+
+	let validSerials = null;
+	let r = null;
 	let errors = [];
+
+	if (type === "install") {
+		r = await installItems(serial_no);
+	} else if (type === "transfer") {
+		r = await transferItems(serial_no);
+	} else if (type === "borrow") {
+		r = await borrowItems(serial_no);
+	} else return;
+	validSerials = r.updatedSerials;
+	errors = r.errors;
+
 	await Promise.all(
-		serial_no.map(async no => {
+		validSerials.map(async no => {
 			await Withdrawal.count({
 				where: {
 					id: {

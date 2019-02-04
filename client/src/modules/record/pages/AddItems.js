@@ -170,7 +170,7 @@ class AddItems extends React.Component {
 							<p className="is-gray-3 has-mt-10">ยังไม่ได้ Scan</p>
 						)}
 						<button className="button has-mt-10" onClick={() => this.handleSubmit()}>
-							ยื่นยันการเพิ่มของ
+							ยื่นยันการรับของ
 						</button>
 					</div>
 				</div>
