@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 export const BranchData = ({ data }) => {
-	if (!data) return <p className="no-mt has-mb-10 is-gray-4">Loading...</p>;
+	if (!data) return <p className="no-mt has-mb-10 is-gray-4">No Branch</p>;
 	return (
 		<div>
 			<h5 className="no-mt has-mb-10">
@@ -37,7 +37,7 @@ export const BranchData = ({ data }) => {
 };
 
 export const JobData = ({ data }) => {
-	if (!data) return <p className="no-mt has-mb-10 is-gray-4">Loading...</p>;
+	if (!data) return <p className="no-mt has-mb-10 is-gray-4">No Job</p>;
 	return (
 		<div>
 			<h5 className="no-mt has-mb-10">
@@ -62,7 +62,7 @@ export const JobData = ({ data }) => {
 };
 
 export const CustomerData = ({ data }) => {
-	if (!data) return <p className="no-mt has-mb-10 is-gray-4">Loading...</p>;
+	if (!data) return <p className="no-mt has-mb-10 is-gray-4">No Customer</p>;
 	return (
 		<div>
 			<h5 className="no-mt has-mb-10">

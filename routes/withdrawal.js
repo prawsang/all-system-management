@@ -51,6 +51,14 @@ router.get("/:id/details", (req, res) => {
 				}
 			},
 			{
+				model: PurchaseOrder,
+				as: "po",
+				include: {
+					model: Job,
+					as: "job"
+				}
+			},
+			{
 				model: Item,
 				as: "items",
 				include: {
@@ -231,14 +239,14 @@ router.post("/add", async (req, res) => {
 	// po_number and job_code cannot coexist
 	// If po_number is specified, job_code will be null
 	Withdrawal.create({
-		job_code,
+		job_code: po_number ? null : job_code,
 		branch_id,
-		po_number,
+		po_number: has_po ? po_number : null,
 		do_number,
 		staff_code,
 		type,
-		install_date,
-		return_by,
+		return_by: type === "BORROW" ? return_by : null,
+		install_date: type === "INSTALLATION" ? return_by : null,
 		status: "PENDING",
 		remarks,
 		date,
@@ -326,16 +334,14 @@ router.put("/:id/edit", async (req, res) => {
 	// If po_number is specified, job_code will be null
 	Withdrawal.update(
 		{
-			job_code: po_number ? null : job_code,
-			branch_id,
-			po_number,
+			job_code: po_number && null,
+			po_number: has_po ? po_number : null,
 			do_number,
 			staff_code,
 			type,
-			return_by,
-			install_date,
-			date,
-			has_po
+			return_by: type === "BORROW" ? return_by : null,
+			install_date: type === "INSTALLATION" ? return_by : null,
+			date
 		},
 		{
 			where: {

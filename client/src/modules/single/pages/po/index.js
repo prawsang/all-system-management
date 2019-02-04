@@ -108,52 +108,48 @@ class PO extends React.PureComponent {
 								close={() => this.setState({ edit: false })}
 								title="Edit PO"
 							>
-								<div>
-									<Field
-										name="po_number"
-										editable={false}
-										value={data.po.po_number}
-										label="PO Number"
-									/>
-									<Field
-										name="date"
-										editable={false}
-										value={data.po.date}
-										label="Date"
-									/>
-									<Field
-										editable={true}
-										name="installed"
-										type="checkbox"
-										label="Installed"
-										value={installed}
-										onChange={() => this.setState({ installed: !installed })}
-									/>
-									<Field
-										editable={true}
-										name="description"
-										type="text"
-										label="Description"
-										value={description}
-										onChange={e =>
-											this.setState({ description: e.target.value })
-										}
-									/>
-									<div className="buttons">
-										<button
-											className="button"
-											onClick={() => this.handleFormSubmit()}
-										>
-											Confirm
-										</button>
-										<button
-											className="button is-light"
-											type="button"
-											onClick={() => this.setState({ edit: false })}
-										>
-											Cancel
-										</button>
-									</div>
+								<Field
+									name="po_number"
+									editable={false}
+									value={data.po.po_number}
+									label="PO Number"
+								/>
+								<Field
+									name="date"
+									editable={false}
+									value={data.po.date}
+									label="Date"
+								/>
+								<Field
+									editable={true}
+									name="installed"
+									type="checkbox"
+									label="Installed"
+									value={installed}
+									onChange={() => this.setState({ installed: !installed })}
+								/>
+								<Field
+									editable={true}
+									name="description"
+									type="text"
+									label="Description"
+									value={description}
+									onChange={e => this.setState({ description: e.target.value })}
+								/>
+								<div className="buttons">
+									<button
+										className="button"
+										onClick={() => this.handleFormSubmit()}
+									>
+										Confirm
+									</button>
+									<button
+										className="button is-light"
+										type="button"
+										onClick={() => this.setState({ edit: false })}
+									>
+										Cancel
+									</button>
 								</div>
 							</Modal>
 						</React.Fragment>

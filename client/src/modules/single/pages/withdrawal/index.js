@@ -2,14 +2,49 @@ import React from "react";
 import Table from "@/modules/single/components/Table";
 import ItemsTable from "@/modules/single/tables/items";
 import { BranchData, CustomerData, JobData } from "../../data/";
+import Modal from "@/common/components/Modal";
+import Field from "@/modules/single/components/Field";
+import Axios from "axios";
 
 class Withdrawal extends React.PureComponent {
 	state = {
-		edit: false
+		edit: false,
+		date: "",
+		poNumber: "",
+		doNumber: "",
+		remarks: "",
+		installDate: "",
+		returnDate: ""
 	};
+
+	handleEdit() {
+		const { data } = this.props;
+		const { date, poNumber, doNumber, installDate, returnDate } = this.state;
+		Axios.request({
+			method: "PUT",
+			url: `/withdrawal/${data.withdrawal.id}/edit`,
+			data: {
+				job_code: data.withdrawal.po
+					? data.withdrawal.po.job_code
+					: data.withdrawal.job_code,
+				branch_id: data.withdrawal.branch_id,
+				po_number: poNumber,
+				do_number: doNumber,
+				staff_code: "020", //hard code
+				type: data.withdrawal.type,
+				return_by: returnDate,
+				date,
+				install_date: installDate,
+				has_po: data.withdrawal.has_po
+			}
+		})
+			.then(res => window.location.reload())
+			.catch(err => console.log(err));
+	}
+
 	render() {
 		const { data } = this.props;
-		// const { edit } = this.state;
+		const { edit, date, poNumber, doNumber, remarks, installDate, returnDate } = this.state;
 		if (data) {
 			if (!data.withdrawal) return <p>ไม่พบรายการ</p>;
 		}
@@ -21,7 +56,24 @@ class Withdrawal extends React.PureComponent {
 						<React.Fragment>
 							<div className="panel-content no-pb">
 								<div>
-									<h5 className="no-mt has-mb-10">ใบเบิก</h5>
+									<h5 className="no-mt has-mb-10">
+										ใบเบิก
+										<span
+											className="is-clickable accent has-ml-10 is-6"
+											onClick={() =>
+												this.setState({
+													edit: true,
+													date: data.withdrawal.date,
+													poNumber: data.withdrawal.po_number,
+													doNumber: data.withdrawal.do_number,
+													installDate: data.withdrawal.install_date,
+													returnDate: data.withdrawal.return_by
+												})
+											}
+										>
+											Edit
+										</span>
+									</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Date:</label>
 										<span>{data.withdrawal.date}</span>
@@ -82,11 +134,17 @@ class Withdrawal extends React.PureComponent {
 									</div>
 								</div>
 								<hr />
-								<CustomerData data={data && data.withdrawal.branch.customer} />
+								<CustomerData data={data.withdrawal.branch.customer} />
 								<hr />
-								<JobData data={data && data.withdrawal.job} />
+								<JobData
+									data={
+										data.withdrawal.po
+											? data.withdrawal.po.job
+											: data.withdrawal.job
+									}
+								/>
 								<hr />
-								<BranchData data={data && data.withdrawal.branch} />
+								<BranchData data={data.withdrawal.branch} />
 								<hr />
 							</div>
 							<Table
@@ -99,6 +157,73 @@ class Withdrawal extends React.PureComponent {
 						</React.Fragment>
 					)}
 				</div>
+				<Modal
+					active={edit}
+					close={() => this.setState({ edit: false })}
+					title="แก้ไขใบเบิก"
+				>
+					{data && (
+						<div>
+							<Field
+								editable={false}
+								value={data.withdrawal.id}
+								label="หมายเลขใบเบิก"
+							/>
+							<Field editable={false} value={data.withdrawal.type} label="Type" />
+							<Field
+								editable={true}
+								type="date"
+								label="Date"
+								value={date}
+								onChange={e => this.setState({ date: e.target.value })}
+							/>
+							{data.withdrawal.type === "BORROW" && (
+								<Field
+									editable={true}
+									type="date"
+									label="Return Date"
+									value={returnDate}
+									onChange={e => this.setState({ returnDate: e.target.value })}
+								/>
+							)}
+							{data.withdrawal.type === "INSTALLATION" && (
+								<Field
+									editable={true}
+									type="date"
+									label="Install Date"
+									value={installDate}
+									onChange={e => this.setState({ installDate: e.target.value })}
+								/>
+							)}
+							<Field
+								editable={data.withdrawal.has_po}
+								type="text"
+								label="PO Number"
+								value={poNumber}
+								text={data.withdrawal.has_po || "ไม่มี PO"}
+								onChange={e => this.setState({ poNumber: e.target.value })}
+							/>
+							<Field
+								editable={true}
+								type="text"
+								label="DO Number"
+								value={doNumber}
+								onChange={e => this.setState({ doNumber: e.target.value })}
+							/>
+							<div className="buttons">
+								<button className="button" onClick={() => this.handleEdit()}>
+									ยืนยันการแก้ไข
+								</button>
+								<button
+									className="button is-light"
+									onClick={() => this.setState({ edit: false })}
+								>
+									Cancel
+								</button>
+							</div>
+						</div>
+					)}
+				</Modal>
 			</React.Fragment>
 		);
 	}
