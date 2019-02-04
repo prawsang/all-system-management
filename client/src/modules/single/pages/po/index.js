@@ -1,17 +1,14 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../components/Table";
-import BranchesTable from "../tables/branches";
+import Table from "../../components/Table";
+import BranchesTable from "../../tables/branches";
 import Modal from "@/common/components/Modal";
-import Field from "../components/Field";
+import Field from "../../components/Field";
 import Axios from "axios";
-import history from "@/common/history";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
-
-import BranchSearch from "@/modules/record/components/search/BranchSearch";
-import { setSelectedBranches, setSelectedCustomer } from "@/actions/record";
+import { JobData } from "../../data";
+import AddBranchModal from "./AddBranchModal";
 import { connect } from "react-redux";
+import { setSelectedJobCode } from "@/actions/record";
 
 class PO extends React.PureComponent {
 	state = {
@@ -36,25 +33,9 @@ class PO extends React.PureComponent {
 			.catch(err => console.log(err));
 		window.location.reload();
 	}
-	async handleAddBranches() {
-		const { selectedBranches, data } = this.props;
-		let branchIds = [];
-		if (selectedBranches.length > 0) {
-			selectedBranches.map(e => branchIds.push(e.id));
-			await Axios.request({
-				method: "POST",
-				url: `/po/${data.po.po_number}/add-branches`,
-				data: {
-					branch_id: branchIds
-				}
-			})
-				.then(r => console.log(r))
-				.catch(err => console.log(err, "branches"));
-		}
-		window.location.reload();
-	}
+
 	render() {
-		const { data, selectedBranches, setSelectedBranches, setSelectedCustomer } = this.props;
+		const { data, setSelectedJobCode } = this.props;
 		const { edit, installed, description, showAddBranches } = this.state;
 		if (data) {
 			if (!data.po) return <p>ไม่พบรายการ</p>;
@@ -98,42 +79,14 @@ class PO extends React.PureComponent {
 									</div>
 								</div>
 								<hr />
-								<div>
-									<h5 className="no-mt has-mb-10">
-										Job
-										<span
-											className="is-clickable accent has-ml-10 is-6"
-											onClick={() =>
-												history.push(`/single/job/${data.po.job_code}`)
-											}
-										>
-											<FontAwesomeIcon icon={faExternalLinkAlt} />
-										</span>
-									</h5>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Job Code:</label>
-										<span>{data.po.job_code}</span>
-									</div>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Job Name:</label>
-										<span>{data.po.job.name}</span>
-									</div>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Customer Name:</label>
-										<span>{data.po.job.customer.name}</span>
-									</div>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Customer Code:</label>
-										<span>{data.po.job.customer.customer_code}</span>
-									</div>
-								</div>
+								<JobData data={data.po.job} />
 								<hr />
 								<button
 									className="button has-mb-10"
 									type="button"
 									onClick={() => {
 										this.setState({ showAddBranches: true });
-										setSelectedCustomer(data.po.job.customer);
+										setSelectedJobCode(data.po.job_code);
 									}}
 								>
 									Add Branches
@@ -150,66 +103,6 @@ class PO extends React.PureComponent {
 									/>
 								)}
 							/>
-							<Modal
-								active={showAddBranches}
-								close={() => this.setState({ showAddBranches: false })}
-								title="เพิ่มสาขา"
-							>
-								<div>
-									<BranchSearch />
-									<h6>สาขาที่เลือกไว้</h6>
-									<div>
-										{selectedBranches.length > 0 ? (
-											<ul className="no-mt">
-												{selectedBranches.map((e, i) => (
-													<li key={i + e.name}>
-														{e.name}
-														<span
-															className="danger has-ml-05 is-clickable"
-															onClick={() =>
-																setSelectedBranches(
-																	selectedBranches
-																		.slice(0, i)
-																		.concat(
-																			selectedBranches.slice(
-																				i + 1,
-																				selectedBranches.length
-																			)
-																		)
-																)
-															}
-														>
-															<FontAwesomeIcon icon={faTrash} />
-														</span>
-													</li>
-												))}
-											</ul>
-										) : (
-											<p className="is-gray-3 has-mb-10">
-												ยังไม่ได้เลือกสาขา
-											</p>
-										)}
-									</div>
-									<div className="buttons">
-										<button
-											className="button"
-											type="submit"
-											onClick={() => this.handleAddBranches()}
-										>
-											Confirm
-										</button>
-										<button
-											className="button is-light"
-											type="button"
-											onClick={() =>
-												this.setState({ showAddBranches: false })
-											}
-										>
-											Cancel
-										</button>
-									</div>
-								</div>
-							</Modal>
 							<Modal
 								active={edit}
 								close={() => this.setState({ edit: false })}
@@ -266,20 +159,21 @@ class PO extends React.PureComponent {
 						</React.Fragment>
 					)}
 				</div>
+				<AddBranchModal
+					active={showAddBranches}
+					close={() => this.setState({ showAddBranches: false })}
+					poNumber={data && data.po.po_number}
+				/>
 			</React.Fragment>
 		);
 	}
 }
 
-const mapStateToProps = state => ({
-	selectedBranches: state.record.selectedBranches
-});
 const mapDispatchToProps = {
-	setSelectedBranches,
-	setSelectedCustomer
+	setSelectedJobCode
 };
 
 export default connect(
-	mapStateToProps,
+	null,
 	mapDispatchToProps
 )(PO);

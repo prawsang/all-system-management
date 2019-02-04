@@ -9,6 +9,7 @@ import POTable from "../tables/po";
 import history from "@/common/history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { CustomerData } from "../data/";
 
 class Branch extends React.Component {
 	state = {
@@ -17,9 +18,10 @@ class Branch extends React.Component {
 	};
 	render() {
 		const { data } = this.props;
-		const { 
-			// edit, 
-			activeTable } = this.state;
+		const {
+			// edit,
+			activeTable
+		} = this.state;
 		if (data) {
 			if (!data.branch) return <p>ไม่พบรายการ</p>;
 		}
@@ -50,25 +52,7 @@ class Branch extends React.Component {
 									</div>
 								</form>
 								<hr />
-								<div>
-                                    <h5 className="no-mt has-mb-10">
-                                        Customer
-                                        <span 
-                                            className="is-clickable accent has-ml-10 is-6"
-                                            onClick={() => history.push(`/single/customer/${data.branch.customer_code}`)}
-                                        >
-                                            <FontAwesomeIcon icon={faExternalLinkAlt}/>
-                                        </span>
-                                    </h5>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Customer Code:</label>
-										<span>{data.branch.customer.customer_code}</span>
-									</div>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Customer Name:</label>
-										<span>{data.branch.customer.name}</span>
-									</div>
-								</div>
+								<CustomerData data={data.branch.customer} />
 								<hr />
 								<div>
 									<h5 className="has-mb-10 has-mt-10">Jobs</h5>
