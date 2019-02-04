@@ -60,7 +60,8 @@ router.get("/:id/details", (req, res) => {
 			},
 			{
 				model: User,
-				as: "user"
+				as: "user",
+				attributes: { exclude: ["password"] }
 			}
 		]
 	})
