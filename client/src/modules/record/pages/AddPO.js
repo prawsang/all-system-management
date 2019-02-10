@@ -72,95 +72,91 @@ class AddPO extends React.Component {
 				<h3>บันทึกใบสั่งซื้อ (PO)</h3>
 				<div className="panel">
 					<div className="panel-content">
-						<div className="form">
-							<div className="is-flex is-fullwidth is-ai-flex-end">
-								<div className="field">
-									<label className="label">PO Number</label>
-									<input
-										className="input is-fullwidth"
-										placeholder="PO Number"
-										value={poNumber}
-										onChange={e => this.setState({ poNumber: e.target.value })}
-									/>
-								</div>
-								<div className="field is-flex is-ai-flex-end has-ml-10">
-									<div className="is-flex is-ai-center">
-										<label className="label">ติดตั้งแล้ว:</label>
-										<input
-											className="checkbox"
-											onChange={() =>
-												this.setState({ installed: !installed })
-											}
-											type="checkbox"
-											checked={installed}
-											name="installed"
-										/>
-									</div>
-								</div>
-							</div>
-							<label className="label">Description</label>
+						<div className="is-flex is-fullwidth is-ai-flex-end">
 							<div className="field">
-								<textarea
-									className="input textarea is-fullwidth"
-									placeholder="Description"
-									value={description}
-									onChange={e => this.setState({ description: e.target.value })}
-								/>
-							</div>
-							<div className="field">
-								<label className="label">PO Date</label>
+								<label className="label">PO Number</label>
 								<input
 									className="input is-fullwidth"
-									placeholder="Date"
-									type="date"
-									value={date}
-									onChange={e => this.setState({ date: e.target.value })}
+									placeholder="PO Number"
+									value={poNumber}
+									onChange={e => this.setState({ poNumber: e.target.value })}
 								/>
 							</div>
-							<hr />
-							<CustomerSearch />
-							<JobSelect disabled={!selectedCustomer} />
-							<BranchSearch disabled={selectedJobCode === "" || !selectedJobCode} />
-							<div style={{ margin: "2em 0" }}>
-								<h6>สาขาที่เลือกไว้</h6>
-								{selectedBranches.length > 0 ? (
-									<ul className="no-mt">
-										{selectedBranches.map((e, i) => (
-											<li key={i + e.name}>
-												{e.name}
-												<span
-													className="danger has-ml-05 is-clickable"
-													onClick={() =>
-														setSelectedBranches(
-															selectedBranches
-																.slice(0, i)
-																.concat(
-																	selectedBranches.slice(
-																		i + 1,
-																		selectedBranches.length
-																	)
+							<div className="field is-flex is-ai-flex-end has-ml-10">
+								<div className="is-flex is-ai-center">
+									<label className="label">ติดตั้งแล้ว:</label>
+									<input
+										className="checkbox"
+										onChange={() => this.setState({ installed: !installed })}
+										type="checkbox"
+										checked={installed}
+										name="installed"
+									/>
+								</div>
+							</div>
+						</div>
+						<label className="label">Description</label>
+						<div className="field">
+							<textarea
+								className="input textarea is-fullwidth"
+								placeholder="Description"
+								value={description}
+								onChange={e => this.setState({ description: e.target.value })}
+							/>
+						</div>
+						<div className="field">
+							<label className="label">PO Date</label>
+							<input
+								className="input is-fullwidth"
+								placeholder="Date"
+								type="date"
+								value={date}
+								onChange={e => this.setState({ date: e.target.value })}
+							/>
+						</div>
+						<hr />
+						<CustomerSearch />
+						<JobSelect disabled={!selectedCustomer} />
+						<BranchSearch disabled={selectedJobCode === "" || !selectedJobCode} />
+						<div style={{ margin: "2em 0" }}>
+							<h6>สาขาที่เลือกไว้</h6>
+							{selectedBranches.length > 0 ? (
+								<ul className="no-mt">
+									{selectedBranches.map((e, i) => (
+										<li key={i + e.name}>
+											{e.name}
+											<span
+												className="danger has-ml-05 is-clickable"
+												onClick={() =>
+													setSelectedBranches(
+														selectedBranches
+															.slice(0, i)
+															.concat(
+																selectedBranches.slice(
+																	i + 1,
+																	selectedBranches.length
 																)
-														)
-													}
-												>
-													<FontAwesomeIcon icon={faTrash} />
-												</span>
-											</li>
-										))}
-									</ul>
-								) : (
-									<p className="is-gray-3">ยังไม่ได้เลือกสาขา</p>
-								)}
-							</div>
-							<div className="field">
-								<button
-									className="button"
-									type="submit"
-									onClick={() => this.handleSubmit()}
-								>
-									บันทึกใบสั่งซื้อ
-								</button>
-							</div>
+															)
+													)
+												}
+											>
+												<FontAwesomeIcon icon={faTrash} />
+											</span>
+										</li>
+									))}
+								</ul>
+							) : (
+								<p className="is-gray-3">ยังไม่ได้เลือกสาขา</p>
+							)}
+						</div>
+						<div className="field">
+							<button
+								className="button"
+								type="submit"
+								onClick={() => this.handleSubmit()}
+							>
+								บันทึกใบสั่งซื้อ
+							</button>
 						</div>
 					</div>
 				</div>
