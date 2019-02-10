@@ -151,7 +151,7 @@ router.post("/add", async (req, res) => {
 		date,
 		has_po
 	});
-	if (validationErrors) {
+	if (validationErrors.length > 0) {
 		res.status(400).send(validationErrors);
 		return;
 	}
@@ -166,7 +166,7 @@ router.post("/add", async (req, res) => {
 		staff_code,
 		type,
 		return_by: type === "BORROW" ? return_by : null,
-		install_date: type === "INSTALLATION" ? return_by : null,
+		install_date: type === "INSTALLATION" ? install_date : null,
 		status: "PENDING",
 		remarks,
 		date,
@@ -203,7 +203,7 @@ router.put("/:id/edit", async (req, res) => {
 		date,
 		has_po
 	});
-	if (validationErrors) {
+	if (validationErrors.length > 0) {
 		res.status(400).send(validationErrors);
 		return;
 	}
@@ -225,7 +225,7 @@ router.put("/:id/edit", async (req, res) => {
 			staff_code,
 			type,
 			return_by: type === "BORROW" ? return_by : null,
-			install_date: type === "INSTALLATION" ? return_by : null,
+			install_date: type === "INSTALLATION" ? install_date : null,
 			date
 		},
 		{

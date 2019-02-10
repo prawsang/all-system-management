@@ -69,25 +69,10 @@ class Withdraw extends React.Component {
 			return;
 		}
 
-		let url = "";
-		switch (type) {
-			case INSTALLATION:
-				url = `/withdrawal/${id}/add-items/install`;
-				break;
-			case BORROW:
-				url = `/withdrawal/${id}/add-items/borrow`;
-				break;
-			case TRANSFER:
-				url = `/withdrawal/${id}/add-items/transfer`;
-				break;
-			default:
-				return;
-		}
-
 		try {
 			await Axios.request({
 				method: "PUT",
-				url,
+				url: `/withdrawal/${id}/add-items`,
 				data: {
 					serial_no: serialNos
 				}

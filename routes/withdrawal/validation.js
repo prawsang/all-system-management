@@ -83,21 +83,18 @@ checkWithdrawalFields = async values => {
 
 	// check if branch is in the specified PO (if any)
 	if (po_number) {
-		const branchInPO = await validation.checkBranchInPo(branch_id, po_number);
+		const branchInPO = await checkBranchInPo(branch_id, po_number);
 		if (!branchInPO) {
 			errors.push({ message: "This branch is not associated with this PO" });
-			return;
 		}
 	}
 	// check if branch is in the specified job (if any)
 	if (job_code) {
-		const branchInJob = await validation.checkBranchInJob(branch_id, job_code);
+		const branchInJob = await checkBranchInJob(branch_id, job_code);
 		if (!branchInJob) {
 			errors.push({ message: "This branch is not associated with this job code" });
-			return;
 		}
 	}
-
 	if (errors.length > 0) return errors;
 	else return null;
 };

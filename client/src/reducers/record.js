@@ -5,6 +5,7 @@ import {
 	SET_SELECTED_JOB_CODE,
 	FETCH_JOBS
 } from "@/common/action-types";
+import { RESET_RECORD_DATA } from "../common/action-types";
 
 const initialState = {
 	selectedCustomer: null,
@@ -40,6 +41,14 @@ const record = (state = initialState, action) => {
 			return {
 				...state,
 				jobs: action.payload.jobs
+			};
+		case RESET_RECORD_DATA:
+			return {
+				selectedCustomer: null,
+				selectedBranches: [],
+				selectedPO: null,
+				selectedJobCode: "",
+				jobs: []
 			};
 		default:
 			return state;

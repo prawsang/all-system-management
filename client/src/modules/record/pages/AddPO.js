@@ -6,7 +6,7 @@ import CustomerSearch from "../components/search/CustomerSearch";
 import BranchSearch from "../components/search/BranchSearch";
 import JobSelect from "../components/JobSelect";
 import { connect } from "react-redux";
-import { setSelectedBranches } from "@/actions/record";
+import { setSelectedBranches, resetRecordData } from "@/actions/record";
 import history from "@/common/history";
 
 class AddPO extends React.Component {
@@ -51,6 +51,12 @@ class AddPO extends React.Component {
 				}
 			})
 			.catch(err => console.log(err, "add"));
+	}
+	componentDidMount() {
+		this.props.resetRecordData();
+	}
+	componentWillUnmount() {
+		this.props.resetRecordData();
 	}
 
 	render() {
@@ -169,7 +175,8 @@ const mapStateToProps = state => ({
 	selectedJobCode: state.record.selectedJobCode
 });
 const mapDispatchToProps = {
-	setSelectedBranches
+	setSelectedBranches,
+	resetRecordData
 };
 
 export default connect(

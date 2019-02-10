@@ -3,7 +3,8 @@ import {
 	SET_SELECTED_BRANCHES,
 	SET_SELECTED_PO,
 	SET_SELECTED_JOB_CODE,
-	FETCH_JOBS
+	FETCH_JOBS,
+	RESET_RECORD_DATA
 } from "@/common/action-types";
 import Axios from "axios";
 
@@ -67,5 +68,11 @@ export const setSelectedJobCode = jobCode => {
 			jobCode
 		},
 		type: SET_SELECTED_JOB_CODE
+	};
+};
+
+export const resetRecordData = () => {
+	return {
+		type: RESET_RECORD_DATA
 	};
 };
