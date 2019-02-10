@@ -11,8 +11,8 @@ class Item extends React.Component {
 		const { data } = this.props;
 		// const { edit } = this.state;
 		if (data) {
-            if (!data.item) return <p>ไม่พบรายการ</p>
-        }
+			if (!data.item) return <p>ไม่พบรายการ</p>;
+		}
 		return (
 			<React.Fragment>
 				<h3>Item: {data && data.item.serial_no}</h3>
@@ -35,6 +35,16 @@ class Item extends React.Component {
 										<span>{data.item.model.type}</span>
 									</div>
 									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">เสีย:</label>
+										<span>
+											{data.item.broken ? (
+												<span className="danger is-bold">เสีย</span>
+											) : (
+												"ไม่เสีย"
+											)}
+										</span>
+									</div>
+									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Remarks:</label>
 										<span>{data.item.remarks}</span>
 									</div>
@@ -48,7 +58,11 @@ class Item extends React.Component {
 											<span
 												className="accent is-clickable"
 												onClick={() =>
-													history.push(`/single/job/${data.item.reserve_job.job_code}`)
+													history.push(
+														`/single/job/${
+															data.item.reserve_job.job_code
+														}`
+													)
 												}
 											>
 												{data.item.reserve_job.name} (
@@ -62,7 +76,11 @@ class Item extends React.Component {
 											<span
 												className="accent is-clickable"
 												onClick={() =>
-													history.push(`/single/branch/${data.item.reserve_branch.id}`)
+													history.push(
+														`/single/branch/${
+															data.item.reserve_branch.id
+														}`
+													)
 												}
 											>
 												{data.item.reserve_branch.name}{" "}
@@ -70,10 +88,10 @@ class Item extends React.Component {
 													`(${data.item.reserve_branch.branch_code})`}
 											</span>
 										</div>
-                                    )}
-                                    {(!data.item.reserve_branch && !data.item.reserve_job) && (
-                                        <span>This item is not reserved</span>
-                                    )}
+									)}
+									{!data.item.reserve_branch && !data.item.reserve_job && (
+										<span>This item is not reserved</span>
+									)}
 								</div>
 								<hr />
 							</div>
