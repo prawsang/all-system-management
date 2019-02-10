@@ -6,6 +6,7 @@ import Job from "./pages/job";
 import Item from "./pages/item";
 import Customer from "./pages/customer";
 import Withdrawal from "./pages/withdrawal/";
+import AddItemsToWithdrawal from "./pages/withdrawal/addItems";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
 class Single extends React.Component {
@@ -22,6 +23,10 @@ class Single extends React.Component {
 						component={CustomerWrapper}
 					/>{" "}
 					<Route path="/single/customer/:customer_code" component={CustomerWrapper} />
+					<Route
+						path="/single/withdrawal/:id/add-items"
+						component={AddItemsToWithdrawal}
+					/>
 					<Route path="/single/withdrawal/:id" component={WithdrawalWrapper} />
 				</Switch>
 			</div>

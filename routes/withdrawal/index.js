@@ -1,22 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const Item = require("../models/Item");
-const Model = require("../models/Model");
-const Branch = require("../models/Branch");
-const Job = require("../models/Job");
-const Customer = require("../models/Customer");
-const User = require("../models/User");
-const Withdrawal = require("../models/Withdrawal");
-const PurchaseOrder = require("../models/PurchaseOrder");
+const Item = require("../../models/Item");
+const Model = require("../../models/Model");
+const Branch = require("../../models/Branch");
+const Job = require("../../models/Job");
+const Customer = require("../../models/Customer");
+const User = require("../../models/User");
+const Withdrawal = require("../../models/Withdrawal");
+const PurchaseOrder = require("../../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const db = require("../config/database");
-const tools = require("../utils/tools");
+const db = require("../../config/database");
+const tools = require("../../utils/tools");
 
-const installItems = require("./stock_status").installItems;
-const transferItems = require("./stock_status").transferItems;
-const borrowItems = require("./stock_status").borrowItems;
-const returnItems = require("./stock_status").returnItems;
+const installItems = require("../stock_status").installItems;
+const transferItems = require("../stock_status").transferItems;
+const borrowItems = require("../stock_status").borrowItems;
+const returnItems = require("../stock_status").returnItems;
+
+const validation = require("./validation");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
@@ -121,72 +123,6 @@ router.get("/without-po", async (req, res) => {
 	res.send(query);
 });
 
-checkBranchInPo = (branch_id, po_number) => {
-	return PurchaseOrder.count({
-		where: {
-			po_number: {
-				[Op.eq]: po_number
-			}
-		},
-		include: {
-			model: Branch,
-			where: {
-				id: {
-					[Op.eq]: branch_id
-				}
-			}
-		}
-	})
-		.then(count => (count == 0 ? false : true))
-		.catch(err => res.status(500).send(err));
-};
-checkBranchInJob = (branch_id, job_code) => {
-	return Job.count({
-		where: {
-			job_code: {
-				[Op.eq]: job_code
-			}
-		},
-		include: {
-			model: Branch,
-			where: {
-				id: {
-					[Op.eq]: branch_id
-				}
-			}
-		}
-	})
-		.then(count => (count == 0 ? false : true))
-		.catch(err => res.status(500).send(err));
-};
-checkWithdrawalFields = values => {
-	const {
-		job_code,
-		branch_id,
-		po_number,
-		staff_code,
-		type,
-		return_by,
-		install_date,
-		date,
-		has_po
-	} = values;
-	let errors = [];
-
-	if (!job_code && !po_number) errors.push({ message: "Job code or PO number is required." });
-	if (branch_id == null) errors.push({ message: "Branch is required." });
-	if (!type) errors.push({ message: "Withdrawal type is required." });
-	if (!staff_code) errors.push({ message: "Staff code is required." });
-	if (!date) errors.push({ message: "Date is required." });
-	if (type == "INSTALLATION" && !install_date)
-		errors.push({ message: "Installation date is required." });
-	if (type == "BORROW" && !return_by) errors.push({ message: "Please specify return date." });
-	if (!has_po && po_number)
-		errors.push({ message: "Cannot specify PO Number to withdrawals without a PO." });
-	if (errors.length > 0) return errors;
-	else return null;
-};
-
 // Add Withdrawal
 router.post("/add", async (req, res) => {
 	const {
@@ -204,7 +140,7 @@ router.post("/add", async (req, res) => {
 	} = req.body;
 
 	// Check required fields
-	const validationErrors = checkWithdrawalFields({
+	const validationErrors = validation.checkWithdrawalFields({
 		job_code,
 		branch_id,
 		po_number,
@@ -218,23 +154,6 @@ router.post("/add", async (req, res) => {
 	if (validationErrors) {
 		res.status(400).send(validationErrors);
 		return;
-	}
-
-	// check if branch is in the specified PO (if any)
-	if (po_number) {
-		const branchInPO = await checkBranchInPo(branch_id, po_number);
-		if (!branchInPO) {
-			res.status(400).send([{ message: "This branch is not associated with this PO" }]);
-			return;
-		}
-	}
-	// check if branch is in the specified job (if any)
-	if (job_code) {
-		const branchInJob = await checkBranchInJob(branch_id, job_code);
-		if (!branchInJob) {
-			res.status(400).send([{ message: "This branch is not associated with this job code" }]);
-			return;
-		}
 	}
 
 	// po_number and job_code cannot coexist
@@ -273,7 +192,7 @@ router.put("/:id/edit", async (req, res) => {
 		has_po
 	} = req.body;
 	// Check required fields
-	const validationErrors = checkWithdrawalFields({
+	const validationErrors = validation.checkWithdrawalFields({
 		job_code,
 		branch_id,
 		po_number,
@@ -288,47 +207,11 @@ router.put("/:id/edit", async (req, res) => {
 		res.status(400).send(validationErrors);
 		return;
 	}
-
-	// Check if the withdrawal is pending
-	let pending = true;
-	await Withdrawal.findOne({
-		where: {
-			id: {
-				[Op.eq]: id
-			}
-		}
-	})
-		.then(withdrawal => {
-			if (withdrawal.status != "PENDING") {
-				res.status(400).send([
-					{
-						message:
-							"This withdrawal/service report/DO is printed and cannot be edited."
-					}
-				]);
-				pending = false;
-			}
-		})
-		.catch(err => res.status(500).send(err));
-	if (!pending) return;
-
-	// check if branch is in the specified PO (if any)
-	if (po_number) {
-		const branchInPO = await checkBranchInPo(branch_id, po_number);
-		if (!branchInPO) {
-			res.status(400).send([{ message: "This branch is not associated with this PO." }]);
-			return;
-		}
-	}
-	// check if branch is in the specified job (if any)
-	if (job_code) {
-		const branchInJob = await checkBranchInJob(branch_id, job_code);
-		if (!branchInJob) {
-			res.status(400).send([
-				{ message: "This branch is not associated with this job code." }
-			]);
-			return;
-		}
+	// Check if Pending
+	const isPending = validation.checkStatus(id, "PENDING");
+	if (!isPending) {
+		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
+		return;
 	}
 
 	// po_number and job_code cannot coexist
@@ -336,6 +219,7 @@ router.put("/:id/edit", async (req, res) => {
 	Withdrawal.update(
 		{
 			job_code: po_number ? null : job_code,
+			branch_id,
 			po_number: has_po ? po_number : null,
 			do_number,
 			staff_code,
@@ -398,12 +282,12 @@ changeStatus = (id, status) => {
 		.then(rows => null)
 		.catch(err => res.status(500).send(err));
 };
-
 router.put("/:id/change-status", async (req, res) => {
 	const { id } = req.params;
 	const { status } = req.body;
 	let items = [];
-	//Check current status
+	let errors = [];
+	// Check current status
 	let currentStatus = "";
 	await Withdrawal.findOne({
 		where: {
@@ -420,7 +304,11 @@ router.put("/:id/change-status", async (req, res) => {
 			currentStatus = withdrawal.status;
 			withdrawal.items.map(e => items.push(e.serial_no));
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => errors.push(err));
+	if (errors.length != 0) {
+		res.status(500).send(errors);
+		return;
+	}
 
 	if (status == "PRINTED") {
 		if (currentStatus != "PENDING") {
@@ -442,6 +330,7 @@ router.put("/:id/change-status", async (req, res) => {
 			res.status(500).send(changeStatusErrors);
 			return;
 		} else {
+			// return all items
 			const r = await returnItems(items);
 			if (r.errors) res.status(400).send(r.errors);
 			res.sendStatus(200);
@@ -454,19 +343,43 @@ router.put("/:id/change-status", async (req, res) => {
 });
 
 // Add items to withdrawal
-router.put("/:id/add-items/:type", async (req, res) => {
+router.put("/:id/add-items", async (req, res) => {
 	const { serial_no } = req.body;
-	const { id, type } = req.params;
+	const { id } = req.params;
+
+	// Check if Pending
+	const isPending = validation.checkStatus(id, "PENDING");
+	if (!isPending) {
+		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
+		return;
+	}
 
 	let validSerials = null;
 	let r = null;
 	let errors = [];
 
-	if (type === "install") {
+	let type = "";
+	await Withdrawal.findOne({
+		where: {
+			id: {
+				[Op.eq]: id
+			}
+		}
+	})
+		.then(withdrawal => {
+			type = withdrawal.type;
+		})
+		.catch(err => errors.push(err));
+	if (errors.length > 0) {
+		res.status(500).send(errors);
+		return;
+	}
+
+	if (type === "INSTALLATION") {
 		r = await installItems(serial_no);
-	} else if (type === "transfer") {
+	} else if (type === "TRANSFER") {
 		r = await transferItems(serial_no);
-	} else if (type === "borrow") {
+	} else if (type === "BORROW") {
 		r = await borrowItems(serial_no);
 	} else return;
 	validSerials = r.updatedSerials;
@@ -511,55 +424,110 @@ router.put("/:id/add-items/:type", async (req, res) => {
 	else res.sendStatus(200);
 });
 
+// Remove Items from Withdrawal
+router.put("/:id/remove-items", async (req, res) => {
+	const { serial_no } = req.body;
+	const { id } = req.params;
+
+	// Check if Pending
+	const isPending = validation.checkStatus(id, "PENDING");
+	if (!isPending) {
+		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
+		return;
+	}
+
+	let errors = [];
+	const r = await returnItems(serial_no);
+	errors = r.errors;
+
+	await Promise.all(
+		r.updatedSerials.map(async no => {
+			await db
+				.query(
+					`DELETE FROM item_withdrawal 
+				WHERE serial_no = '${no}'
+				AND withdrawal_id = ${id}`,
+					{
+						type: db.QueryTypes.DELETE
+					}
+				)
+				.then(rows => null)
+				.catch(err => errors.push(err));
+		})
+	);
+	if (errors.length > 0) res.status(400).send(errors);
+	else res.sendStatus(200);
+});
+
+removeAllItemsFromWithdrawal = id => {
+	let errors = [];
+	db.transaction(t => {
+		return Item.update(
+			{
+				status: "IN_STOCK"
+			},
+			{
+				include: {
+					model: Withdrawal,
+					where: {
+						id: {
+							[Op.eq]: id
+						}
+					}
+				},
+				transaction: t
+			}
+		).then(item =>
+			db.query(`DELETE FROM item_withdrawal WHERE withdrawal_id = '${id}'`, {
+				type: db.QueryTypes.DELETE,
+				transaction: t
+			})
+		);
+	})
+		.then(res =>
+			// destroy the withdrawal if all the items are returned
+			Withdrawal.destroy({
+				where: {
+					id: {
+						[Op.eq]: id
+					}
+				}
+			})
+				.then(rows => null)
+				.catch(err => errors.push(err))
+		)
+		.catch(err => errors.push(err));
+	return { errors };
+};
+
 // Delete Withdrawal (only if it is pending)
 router.delete("/:id", async (req, res) => {
 	const { id } = req.params;
-	// Check if the withdrawal has been printed
-	let pending = false;
-	await Withdrawal.findOne({
-		where: {
-			id: {
-				[Op.eq]: id
-			}
-		}
-	})
-		.then(withdrawal => {
-			if (withdrawal.status != "PENDING") {
-				res.status(400).send([
-					{
-						message:
-							"This withdrawal/service report/DO is printed and cannot be deleted."
-					}
-				]);
-				pending = true;
-			}
-		})
-		.catch(err => res.status(500).send(err));
-	if (pending) return;
+	// Check if Pending
+	const isPending = validation.checkStatus(id, "PENDING");
+	if (!isPending) {
+		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
+		return;
+	}
 
-	Withdrawal.destroy({
-		where: {
-			id: {
-				[Op.eq]: id
-			}
-		}
-	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+	// Delete items from the withdrawal
+	const r = await removeAllItemsFromWithdrawal(id);
+	if (r.errors.length > 0) {
+		res.status(500).send(r.errors);
+	} else {
+		res.sendStatus(200);
+	}
 });
 
-// Force delete withdrawal (superadmins only)
-router.delete("/:id/force-delete", (req, res) => {
+// Force delete withdrawal (no status check) (superadmins only)
+router.delete("/:id/force-delete", async (req, res) => {
 	const { id } = req.params;
-	Withdrawal.destroy({
-		where: {
-			id: {
-				[Op.eq]: id
-			}
-		}
-	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+	const r = await removeAllItemsFromWithdrawal(id);
+	if (r.errors.length > 0) {
+		res.status(500).send(r.errors);
+	} else {
+		res.sendStatus(200);
+	}
 });
 
 module.exports = router;

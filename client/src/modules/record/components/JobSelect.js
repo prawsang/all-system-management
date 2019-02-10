@@ -6,7 +6,7 @@ const JobSelect = ({ disabled, selectedJobCode, setSelectedJobCode, jobs }) => (
 	<div className={`field ${disabled && "is-disabled"}`}>
 		<div className="select no-mb">
 			<select
-				value={selectedJobCode ? selectedJobCode.job_code : ""}
+				value={selectedJobCode ? selectedJobCode : ""}
 				onChange={e => setSelectedJobCode(e.target.value)}
 				disabled={disabled}
 			>

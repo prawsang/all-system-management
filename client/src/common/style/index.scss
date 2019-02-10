@@ -216,6 +216,9 @@ body {
 	.panel {
 		box-shadow: 0 3px 12px $gray-1;
 		max-width: 90%;
+		&.dropdown {
+			box-shadow: 0 3px 12px $gray-4;
+		}
 	}
 }
 

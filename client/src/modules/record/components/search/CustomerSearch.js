@@ -10,7 +10,7 @@ class CustomerSearch extends React.Component {
 	};
 	render() {
 		const { showResults, customer } = this.state;
-		const { selectedCustomer, setSelectedCustomer } = this.props;
+		const { selectedCustomer, setSelectedCustomer, disabled } = this.props;
 		return (
 			<SearchField
 				value={selectedCustomer ? selectedCustomer.name : customer}
@@ -22,6 +22,7 @@ class CustomerSearch extends React.Component {
 				searchUrl="/customer/get-all"
 				searchTerm={customer}
 				searchName="name"
+				disabled={disabled}
 				showResults={() => this.setState({ showResults: true })}
 				hideResults={() => this.setState({ showResults: false })}
 				list={data => (

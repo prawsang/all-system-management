@@ -5,13 +5,15 @@ import { BranchData, CustomerData, JobData } from "../../data/";
 import Modal from "@/common/components/Modal";
 import EditModal from "./EditModal";
 import RemarksModal from "./RemarksModal";
+import ChangeCustomer from "./ChangeCustomer";
 import Axios from "axios";
 
 class Withdrawal extends React.PureComponent {
 	state = {
 		edit: false,
 		showCancelConfirm: false,
-		editRemarks: false
+		editRemarks: false,
+		changeCustomer: false
 	};
 
 	cancelWithdrawal() {
@@ -29,7 +31,7 @@ class Withdrawal extends React.PureComponent {
 
 	render() {
 		const { data } = this.props;
-		const { edit, showCancelConfirm, editRemarks } = this.state;
+		const { edit, showCancelConfirm, editRemarks, changeCustomer } = this.state;
 		if (data) {
 			if (!data.withdrawal) return <p>ไม่พบรายการ</p>;
 		}
@@ -132,22 +134,40 @@ class Withdrawal extends React.PureComponent {
 									</div>
 								</div>
 								<hr />
-								<CustomerData data={data.withdrawal.branch.customer} />
-								<hr />
-								<JobData
-									data={
-										data.withdrawal.po
-											? data.withdrawal.po.job
-											: data.withdrawal.job
-									}
-								/>
-								<hr />
-								<BranchData data={data.withdrawal.branch} />
+								<button
+									className="button has-mb-10"
+									onClick={() => this.setState({ changeCustomer: true })}
+									disabled={data.withdrawal.status !== "PENDING"}
+								>
+									Change
+								</button>
+								<div style={{ marginBottom: "2em" }}>
+									<CustomerData data={data.withdrawal.branch.customer} />
+								</div>
+								<div style={{ marginBottom: "2em" }}>
+									{data.po && <small>ข้อมูล Job มาจาก PO</small>}
+									<JobData
+										data={
+											data.withdrawal.po
+												? data.withdrawal.po.job
+												: data.withdrawal.job
+										}
+									/>
+								</div>
+								<div style={{ marginBottom: "2em" }}>
+									<BranchData data={data.withdrawal.branch} />
+								</div>
 								<hr />
 							</div>
 							<Table
 								data={data}
-								table={data => <ItemsTable data={data.withdrawal} />}
+								table={data => (
+									<ItemsTable
+										data={data.withdrawal}
+										showDelete={true}
+										withdrawalId={data.withdrawal.id}
+									/>
+								)}
 								className="no-pt"
 								title="Items"
 								noPage={true}
@@ -161,6 +181,11 @@ class Withdrawal extends React.PureComponent {
 								data={data.withdrawal}
 								active={editRemarks}
 								close={() => this.setState({ editRemarks: false })}
+							/>
+							<ChangeCustomer
+								data={data.withdrawal}
+								active={changeCustomer}
+								close={() => this.setState({ changeCustomer: false })}
 							/>
 							<CancelConfirm
 								onSubmit={() => this.cancelWithdrawal()}

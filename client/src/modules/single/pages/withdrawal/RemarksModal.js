@@ -9,7 +9,7 @@ class RemarksModal extends React.Component {
 	componentDidMount() {
 		const { data } = this.props;
 		this.setState({
-			remarks: data ? data.remarks : ""
+			remarks: data.remarks ? data.remarks : ""
 		});
 	}
 	editRemarks() {

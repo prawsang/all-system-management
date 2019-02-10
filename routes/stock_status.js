@@ -221,19 +221,11 @@ returnItems = async serial_no => {
 router.put("/return", async (req, res) => {
 	const { serial_no } = req.body;
 	const r = await returnItems(serial_no);
-
-	await Promise.all(
-		r.updatedSerials.map(async no => {
-			await db
-				.query(`DELETE FROM item_withdrawal WHERE serial_no = ${no}`, {
-					type: db.QueryTypes.DELETE
-				})
-				.then(rows => null)
-				.catch(err => errors.push(err));
-		})
-	);
-	if (errors.length > 0) res.status(400).send(errors);
-	else res.sendStatus(200);
+	if (r.errors) {
+		res.status(400).send(r.errors);
+	} else {
+		res.sendStatus(200);
+	}
 });
 
 // Mark Broken/Not Broken
