@@ -1,3 +1,10 @@
+const Withdrawal = require("../../models/Withdrawal");
+const PurchaseOrder = require("../../models/PurchaseOrder");
+const Branch = require("../../models/Branch");
+const Job = require("../../models/Job");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
+
 checkBranchInPo = async (branch_id, po_number) => {
 	let branchInPO = false;
 	let errors = [];
@@ -106,7 +113,7 @@ checkStatus = async (id, status) => {
 		}
 	})
 		.then(withdrawal => {
-			if (withdrawal.status != status) {
+			if (withdrawal.status !== status) {
 				isEqual = false;
 			}
 		})

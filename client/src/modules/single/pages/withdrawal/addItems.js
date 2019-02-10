@@ -2,6 +2,7 @@ import React from "react";
 import Axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import history from "@/common/history";
 
 class AddItemsToWithdrawal extends React.Component {
 	state = {
@@ -26,7 +27,9 @@ class AddItemsToWithdrawal extends React.Component {
 			data: {
 				serial_no: serialNos
 			}
-		});
+		})
+			.then(res => history.push(`/single/withdrawal/${id}`))
+			.catch(err => console.log(err));
 	}
 
 	render() {

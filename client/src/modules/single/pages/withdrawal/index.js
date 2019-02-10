@@ -7,6 +7,7 @@ import EditModal from "./EditModal";
 import RemarksModal from "./RemarksModal";
 import ChangeCustomer from "./ChangeCustomer";
 import Axios from "axios";
+import { Link } from "react-router-dom";
 
 class Withdrawal extends React.PureComponent {
 	state = {
@@ -158,13 +159,21 @@ class Withdrawal extends React.PureComponent {
 									<BranchData data={data.withdrawal.branch} />
 								</div>
 								<hr />
+								<Link to={`/single/withdrawal/${data.withdrawal.id}/add-items`}>
+									<button
+										className="button has-mb-10"
+										disabled={data.withdrawal.status !== "PENDING"}
+									>
+										Add Items
+									</button>
+								</Link>
 							</div>
 							<Table
 								data={data}
 								table={data => (
 									<ItemsTable
 										data={data.withdrawal}
-										showDelete={true}
+										showDelete={data.withdrawal.status === "PENDING"}
 										withdrawalId={data.withdrawal.id}
 									/>
 								)}

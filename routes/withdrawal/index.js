@@ -208,7 +208,7 @@ router.put("/:id/edit", async (req, res) => {
 		return;
 	}
 	// Check if Pending
-	const isPending = validation.checkStatus(id, "PENDING");
+	const isPending = await validation.checkStatus(id, "PENDING");
 	if (!isPending) {
 		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
 		return;
@@ -332,7 +332,7 @@ router.put("/:id/change-status", async (req, res) => {
 		} else {
 			// return all items
 			const r = await returnItems(items);
-			if (r.errors) res.status(400).send(r.errors);
+			if (r.errors.length > 0) res.status(400).send(r.errors);
 			res.sendStatus(200);
 			return;
 		}
@@ -348,7 +348,7 @@ router.put("/:id/add-items", async (req, res) => {
 	const { id } = req.params;
 
 	// Check if Pending
-	const isPending = validation.checkStatus(id, "PENDING");
+	const isPending = await validation.checkStatus(id, "PENDING");
 	if (!isPending) {
 		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
 		return;
@@ -430,7 +430,7 @@ router.put("/:id/remove-items", async (req, res) => {
 	const { id } = req.params;
 
 	// Check if Pending
-	const isPending = validation.checkStatus(id, "PENDING");
+	const isPending = await validation.checkStatus(id, "PENDING");
 	if (!isPending) {
 		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
 		return;
@@ -504,7 +504,7 @@ removeAllItemsFromWithdrawal = id => {
 router.delete("/:id", async (req, res) => {
 	const { id } = req.params;
 	// Check if Pending
-	const isPending = validation.checkStatus(id, "PENDING");
+	const isPending = await validation.checkStatus(id, "PENDING");
 	if (!isPending) {
 		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
 		return;
