@@ -16,6 +16,7 @@ const tools = require("../utils/tools");
 const installItems = require("./stock_status").installItems;
 const transferItems = require("./stock_status").transferItems;
 const borrowItems = require("./stock_status").borrowItems;
+const returnItems = require("./stock_status").returnItems;
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
@@ -334,7 +335,7 @@ router.put("/:id/edit", async (req, res) => {
 	// If po_number is specified, job_code will be null
 	Withdrawal.update(
 		{
-			job_code: po_number && null,
+			job_code: po_number ? null : job_code,
 			po_number: has_po ? po_number : null,
 			do_number,
 			staff_code,
@@ -401,7 +402,7 @@ changeStatus = (id, status) => {
 router.put("/:id/change-status", async (req, res) => {
 	const { id } = req.params;
 	const { status } = req.body;
-
+	let items = [];
 	//Check current status
 	let currentStatus = "";
 	await Withdrawal.findOne({
@@ -409,9 +410,16 @@ router.put("/:id/change-status", async (req, res) => {
 			id: {
 				[Op.eq]: id
 			}
+		},
+		include: {
+			model: Item,
+			as: "items"
 		}
 	})
-		.then(withdrawal => (currentStatus = withdrawal.status))
+		.then(withdrawal => {
+			currentStatus = withdrawal.status;
+			withdrawal.items.map(e => items.push(e.serial_no));
+		})
 		.catch(err => res.status(500).send(err));
 
 	if (status == "PRINTED") {
@@ -425,6 +433,7 @@ router.put("/:id/change-status", async (req, res) => {
 				return;
 			} else {
 				res.sendStatus(200);
+				return;
 			}
 		}
 	} else if (status == "CANCELLED") {
@@ -433,7 +442,10 @@ router.put("/:id/change-status", async (req, res) => {
 			res.status(500).send(changeStatusErrors);
 			return;
 		} else {
+			const r = await returnItems(items);
+			if (r.errors) res.status(400).send(r.errors);
 			res.sendStatus(200);
+			return;
 		}
 	} else if (status == "PENDING") {
 		res.status(400).send([{ message: "Cannot change status to PENDING." }]);

@@ -13,7 +13,7 @@ const Field = ({
 	placeholder
 }) => (
 	<div className="field is-flex is-ai-center">
-		<label className="is-bold has-mr-05">{label}:</label>
+		<label className="label">{label}:</label>
 		<input
 			className={`${
 				type === "text" || type === "date" ? "input" : type

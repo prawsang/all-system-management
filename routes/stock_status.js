@@ -202,36 +202,54 @@ router.put("/reserve", async (req, res) => {
 
 // NO WITHDRAW
 // Return
-// BORROWED -> RETURNED
-// Removes the withdrawal_id of the items
-router.put("/return", async (req, res) => {
-	const { serial_no } = req.body;
+// ANY -> IN_STOCK
+returnItems = async serial_no => {
 	let errors = [];
+	let updatedSerials = [];
 	await Promise.all(
 		serial_no.map(async no => {
-			let valid = await checkStockStatus(no, "BORROWED");
-			if (valid) {
-				const results = await changeStockStatus(no, "IN_STOCK", { withdrawal_id: null });
-				if (results.errors) errors.push(results.errors);
-			} else {
-				errors.push({ message: "This item is not borrowed.", value: no });
-			}
+			const results = await changeStockStatus(no, "IN_STOCK");
+			if (results.errors) errors.push(results.errors);
+			else updatedSerials.push(no);
+		})
+	);
+	return {
+		updatedSerials,
+		errors
+	};
+};
+router.put("/return", async (req, res) => {
+	const { serial_no } = req.body;
+	const r = await returnItems(serial_no);
+
+	await Promise.all(
+		r.updatedSerials.map(async no => {
+			await db
+				.query(`DELETE FROM item_withdrawal WHERE serial_no = ${no}`, {
+					type: db.QueryTypes.DELETE
+				})
+				.then(rows => null)
+				.catch(err => errors.push(err));
 		})
 	);
 	if (errors.length > 0) res.status(400).send(errors);
 	else res.sendStatus(200);
 });
 
-// Mark Broken
-router.put("/broken", async (req, res) => {
+// Mark Broken/Not Broken
+router.put("/broken/:broken", async (req, res) => {
 	const { serial_no } = req.body;
+	const { broken } = req.params;
 	let errors = [];
-
+	if (broken == null) {
+		res.status(400).send([{ message: "Please specify whether the item is broken or not." }]);
+		return;
+	}
 	await Promise.all(
 		serial_no.map(async no => {
 			Item.update(
 				{
-					broken: true
+					broken
 				},
 				{
 					where: {
@@ -251,5 +269,6 @@ module.exports = {
 	router,
 	installItems,
 	transferItems,
-	borrowItems
+	borrowItems,
+	returnItems
 };
