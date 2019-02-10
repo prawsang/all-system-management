@@ -5,6 +5,7 @@ import Nav from "./components/Nav";
 import Report from "../modules/report";
 import Record from "../modules/record";
 import Single from "../modules/single";
+import SearchItem from "../modules/searchitem";
 
 class AppRouter extends React.Component {
 	render() {
@@ -17,6 +18,7 @@ class AppRouter extends React.Component {
 							<Route path="/single" component={Single} />
 							<Route path="/record" component={Record} />
 							<Route path="/report" component={Report} />
+							<Route path="/search-item" component={SearchItem} />
 							<Route path="/" component={Home} />
 						</Switch>
 					</Router>

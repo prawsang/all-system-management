@@ -9,7 +9,8 @@ import {
 	faEdit,
 	faAngleLeft,
 	faAngleRight,
-	faTimes
+	faTimes,
+	faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import history from "@/common/history";
 import logo from "@/assets/logo.png";
@@ -46,6 +47,10 @@ class Menu extends React.Component {
 					<small className="is-6 is-bold">All System Corporation</small>
 				</div>
 				<ul className="side-bar-menu">
+					<SideBarLink link="/search-item">
+						<FontAwesomeIcon className="icon has-mr-05" icon={faSearch} />
+						ค้นหาของ
+					</SideBarLink>
 					<li
 						className="side-bar-menu-item is-clickable"
 						onClick={e =>
@@ -55,7 +60,7 @@ class Menu extends React.Component {
 							})
 						}
 					>
-						<div className="is-active is-flex is-jc-space-between">
+						<div className="is-flex is-jc-space-between">
 							<div>
 								<FontAwesomeIcon className="icon has-mr-05" icon={faTable} />
 								รายงาน
