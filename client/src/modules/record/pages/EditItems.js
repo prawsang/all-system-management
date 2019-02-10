@@ -96,7 +96,7 @@ class EditItems extends React.Component {
 				<div className="panel">
 					<div className="panel-content">
 						<div className="field is-flex is-ai-center">
-							<label className="is-bold has-mr-05">Action: </label>
+							<label className="label">Action: </label>
 							<div className="select no-mb">
 								<select
 									value={action}
@@ -112,16 +112,13 @@ class EditItems extends React.Component {
 						</div>
 						{action === RESERVE && (
 							<div className="has-mb-10">
-								<label
-									className="label has-mb-05 is-bold"
-									style={{ display: "block" }}
-								>
+								<label className="label" style={{ display: "block" }}>
 									ข้อมูลลูกค้าที่จอง
 								</label>
 								<CustomerSearch />
 								<JobSelect disabled={!selectedCustomer} />
 								<div className="field is-flex is-ai-center">
-									<label className="label has-mr-05 is-bold">มีสาขา</label>
+									<label className="label">มีสาขา</label>
 									<input
 										className="checkbox"
 										type="checkbox"
@@ -139,7 +136,7 @@ class EditItems extends React.Component {
 								/>
 							</div>
 						)}
-						<label className="label has-mb-05 is-bold" style={{ display: "block" }}>
+						<label className="label" style={{ display: "block" }}>
 							Serial No.
 						</label>
 						<form onSubmit={e => this.handleAddSerial(e)}>
@@ -155,14 +152,14 @@ class EditItems extends React.Component {
 								</button>
 							</div>
 						</form>
-						<label className="is-bold has-mt-10" style={{ display: "block" }}>
+						<small className="label" style={{ display: "block" }}>
 							Scanned Serial No.
-						</label>
+						</small>
 
 						{serialNos.length > 0 ? (
 							<div className="has-mt-10">
 								{serialNos.map((e, i) => (
-									<div key={i + e} className="has-mt-05">
+									<div key={i + e} className="has-mb-05">
 										{i + 1}) <span className="is-bold">{e}</span>
 										<button
 											className="is-danger has-ml-10 button"
@@ -183,7 +180,7 @@ class EditItems extends React.Component {
 								))}
 							</div>
 						) : (
-							<p className="is-gray-3 has-mt-10">ยังไม่ได้ Scan</p>
+							<p className="is-gray-3">ยังไม่ได้ Scan</p>
 						)}
 						<button className="button has-mt-10" onClick={() => this.handleSubmit()}>
 							ยื่นยันการแก้ไขรายการ

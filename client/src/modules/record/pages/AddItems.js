@@ -70,7 +70,7 @@ class AddItems extends React.Component {
 				<div className="panel">
 					<div className="panel-content">
 						<div className="field is-flex is-ai-center">
-							<label className="label has-mr-05 is-bold">Type:</label>
+							<label className="label">Type:</label>
 							<div className="select no-mb">
 								<select
 									value={type}
@@ -90,7 +90,7 @@ class AddItems extends React.Component {
 							</div>
 						</div>
 						<div className="field is-flex is-ai-center">
-							<label className="label has-mr-05 is-bold">Model:</label>
+							<label className="label">Model:</label>
 							<div className={`select no-mb ${type === "" && "is-disabled"}`}>
 								<select
 									value={model}
@@ -113,19 +113,15 @@ class AddItems extends React.Component {
 							</div>
 						</div>
 						<div className="field">
-							<label className="label has-mb-05 is-bold" style={{ display: "block" }}>
-								Remarks:
-							</label>
-							<input
-								className="input is-fullwidth"
+							<label className="label">Remarks:</label>
+							<textarea
+								className="input textarea is-fullwidth"
 								placeholder="Remarks"
 								value={remarks}
 								onChange={e => this.setState({ remarks: e.target.value })}
 							/>
 						</div>
-						<label className="label has-mb-05 is-bold" style={{ display: "block" }}>
-							Serial No.
-						</label>
+						<label className="label">Serial No.</label>
 						<form onSubmit={e => this.handleAddSerial(e)}>
 							<div className="field is-flex">
 								<input
@@ -139,35 +135,30 @@ class AddItems extends React.Component {
 								</button>
 							</div>
 						</form>
-						<label className="is-bold has-mt-10" style={{ display: "block" }}>
-							Scanned Serial No.
-						</label>
-
+						<label className="label">Scanned Serial No.</label>
 						{serialNos.length > 0 ? (
-							<div className="has-mt-10">
-								{serialNos.map((e, i) => (
-									<div key={i + e} className="has-mt-05">
-										{i + 1}) <span className="is-bold">{e}</span>
-										<button
-											className="is-danger has-ml-10 button"
-											style={{ padding: "5px 10px" }}
-											onClick={() =>
-												this.setState({
-													serialNos: serialNos
-														.slice(0, i)
-														.concat(
-															serialNos.slice(i + 1, serialNos.length)
-														)
-												})
-											}
-										>
-											<FontAwesomeIcon icon={faTrash} />
-										</button>
-									</div>
-								))}
-							</div>
+							serialNos.map((e, i) => (
+								<div key={i + e} className="has-mb-05">
+									{i + 1}) <span className="is-bold">{e}</span>
+									<button
+										className="is-danger has-ml-10 button"
+										style={{ padding: "5px 10px" }}
+										onClick={() =>
+											this.setState({
+												serialNos: serialNos
+													.slice(0, i)
+													.concat(
+														serialNos.slice(i + 1, serialNos.length)
+													)
+											})
+										}
+									>
+										<FontAwesomeIcon icon={faTrash} />
+									</button>
+								</div>
+							))
 						) : (
-							<p className="is-gray-3 has-mt-10">ยังไม่ได้ Scan</p>
+							<p className="is-gray-3">ยังไม่ได้ Scan</p>
 						)}
 						<button className="button has-mt-10" onClick={() => this.handleSubmit()}>
 							ยื่นยันการรับของ

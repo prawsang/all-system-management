@@ -1,8 +1,6 @@
 .field {
 	position: relative;
-	&:not(:last-child) {
-		margin-bottom: 1em;
-	}
+	margin-bottom: 1em;
 	.panel.menu {
 		border-radius: 10px;
 		color: $gray-2;
@@ -15,6 +13,16 @@
 	}
 }
 
+.label {
+	display: block;
+	font-weight: bold;
+	margin-bottom: 1em;
+	margin-right: 0.5em;
+}
+.field.is-flex .label {
+	margin-bottom: 0;
+}
+
 .form {
 	&:not(:last-child) {
 		margin-bottom: 1.5em;
@@ -22,19 +30,20 @@
 }
 
 .input {
-	border-width: 0 0 2px 0;
+	border: 1px solid $gray-4;
+	background-color: white;
+	border-radius: 999px;
 	color: $gray-2;
 	font-size: 1em;
 	font-family: $base-fonts;
-	padding: 10px;
+	padding: 0.5em 0.5em 0.5em 1em;
 	-webkit-appearance: none;
 	&::placeholder {
 		color: $gray-3;
 	}
 	&:focus {
-		background-color: $gray-5;
-		border-bottom-color: $primary;
-		box-shadow: none;
+		border-color: transparent;
+		box-shadow: 0 0 10px $primary-fade;
 		outline: none;
 	}
 	&:disabled {
@@ -43,15 +52,17 @@
 	}
 
 	&.is-danger {
-		border-bottom-color: $danger;
+		background-color: $danger-fade;
+		border-color: $danger;
 		&:focus {
-			border-bottom-color: $danger-dark;
+			box-shadow: 0 0 10px $danger-fade;
 		}
 	}
 }
 .textarea {
+	border-radius: 15px;
+	padding: 1em;
 	min-height: 150px;
-	border-bottom-color: $gray-4;
 }
 @media screen and (max-width: 767px) {
 	.input {

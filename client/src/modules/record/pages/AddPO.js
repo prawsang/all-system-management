@@ -67,8 +67,9 @@ class AddPO extends React.Component {
 				<div className="panel">
 					<div className="panel-content">
 						<div className="form">
-							<div className="is-flex is-fullwidth">
+							<div className="is-flex is-fullwidth is-ai-flex-end">
 								<div className="field">
+									<label className="label">PO Number</label>
 									<input
 										className="input is-fullwidth"
 										placeholder="PO Number"
@@ -76,43 +77,46 @@ class AddPO extends React.Component {
 										onChange={e => this.setState({ poNumber: e.target.value })}
 									/>
 								</div>
-								<div className="field is-flex is-ai-center has-ml-10">
-									<label className="is-bold has-mr-05">ติดตั้งแล้ว:</label>
-									<input
-										className="checkbox"
-										onChange={() => this.setState({ installed: !installed })}
-										type="checkbox"
-										checked={installed}
-										name="installed"
-									/>
+								<div className="field is-flex is-ai-flex-end has-ml-10">
+									<div className="is-flex is-ai-center">
+										<label className="label">ติดตั้งแล้ว:</label>
+										<input
+											className="checkbox"
+											onChange={() =>
+												this.setState({ installed: !installed })
+											}
+											type="checkbox"
+											checked={installed}
+											name="installed"
+										/>
+									</div>
 								</div>
 							</div>
-							<div className="is-flex">
-								<div className="field col-6">
-									<textarea
-										className="input textarea is-fullwidth"
-										placeholder="Description"
-										value={description}
-										onChange={e =>
-											this.setState({ description: e.target.value })
-										}
-									/>
-								</div>
-								<div className="field col-6 has-ml-05">
-									<input
-										className="input is-fullwidth"
-										placeholder="Date"
-										type="date"
-										value={date}
-										onChange={e => this.setState({ date: e.target.value })}
-									/>
-								</div>
+							<label className="label">Description</label>
+							<div className="field">
+								<textarea
+									className="input textarea is-fullwidth"
+									placeholder="Description"
+									value={description}
+									onChange={e => this.setState({ description: e.target.value })}
+								/>
 							</div>
+							<div className="field">
+								<label className="label">PO Date</label>
+								<input
+									className="input is-fullwidth"
+									placeholder="Date"
+									type="date"
+									value={date}
+									onChange={e => this.setState({ date: e.target.value })}
+								/>
+							</div>
+							<hr />
 							<CustomerSearch />
 							<JobSelect disabled={!selectedCustomer} />
 							<BranchSearch disabled={selectedJobCode === "" || !selectedJobCode} />
-							<h6>สาขาที่เลือกไว้</h6>
-							<div>
+							<div style={{ margin: "2em 0" }}>
+								<h6>สาขาที่เลือกไว้</h6>
 								{selectedBranches.length > 0 ? (
 									<ul className="no-mt">
 										{selectedBranches.map((e, i) => (
@@ -139,7 +143,7 @@ class AddPO extends React.Component {
 										))}
 									</ul>
 								) : (
-									<p className="is-gray-3 has-mb-10">ยังไม่ได้เลือกสาขา</p>
+									<p className="is-gray-3">ยังไม่ได้เลือกสาขา</p>
 								)}
 							</div>
 							<div className="field">

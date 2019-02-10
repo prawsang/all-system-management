@@ -156,8 +156,7 @@ class Withdraw extends React.Component {
 								onChange={e => this.setState({ installDate: e.target.value })}
 							/>
 						)}
-						<hr className="accent" />
-						{/* <div className="" */}
+						<hr />
 						<Field
 							type="text"
 							placeholder="PO Number"
@@ -172,39 +171,50 @@ class Withdraw extends React.Component {
 							value={doNumber}
 							onChange={e => this.setState({ doNumber: e.target.value })}
 						/>
-						<hr className="accent" />
+						<hr />
 						<CustomerSearch />
 						<JobSelect disabled={!selectedCustomer} />
 						<BranchSearch
 							disabled={selectedJobCode === "" || !selectedJobCode}
 							single={true}
 						/>
-						<div>
-							<label className="label has-mb-05 is-bold" style={{ display: "block" }}>
-								Serial No.
+						<hr />
+						<div className="field">
+							<label className="label" style={{ display: "block" }}>
+								Remarks:
 							</label>
-							<form onSubmit={e => this.handleAddSerial(e)}>
-								<div className="field is-flex">
-									<input
-										value={serialNo}
-										onChange={e => this.setState({ serialNo: e.target.value })}
-										className="input is-fullwidth"
-										placeholder="Serial No."
-									/>
-									<button className="button has-ml-05" type="submit">
-										Add
-									</button>
-								</div>
-							</form>
+							<textarea
+								type="text"
+								value={remarks}
+								onChange={e => this.setState({ remarks: e.target.value })}
+								placeholder="Remarks"
+								className="input textarea is-fullwidth"
+							/>
 						</div>
-						<label className="is-bold has-mt-10" style={{ display: "block" }}>
-							Scanned Serial No.
+						<hr />
+						<label className="label" style={{ display: "block" }}>
+							Serial No.
 						</label>
-
-						{serialNos.length > 0 ? (
-							<div className="has-mt-10">
-								{serialNos.map((e, i) => (
-									<div key={i + e} className="has-mt-05">
+						<form onSubmit={e => this.handleAddSerial(e)}>
+							<div className="field is-flex">
+								<input
+									value={serialNo}
+									onChange={e => this.setState({ serialNo: e.target.value })}
+									className="input is-fullwidth"
+									placeholder="Serial No."
+								/>
+								<button className="button has-ml-05" type="submit">
+									Add
+								</button>
+							</div>
+						</form>
+						<div style={{ margin: "2em 0" }}>
+							<small className="label" style={{ display: "block" }}>
+								Scanned Serial No.
+							</small>
+							{serialNos.length > 0 ? (
+								serialNos.map((e, i) => (
+									<div key={i + e} className="has-mb-05">
 										{i + 1}) <span className="is-bold">{e}</span>
 										<button
 											className="is-danger has-ml-10 button"
@@ -222,22 +232,10 @@ class Withdraw extends React.Component {
 											<FontAwesomeIcon icon={faTrash} />
 										</button>
 									</div>
-								))}
-							</div>
-						) : (
-							<p className="is-gray-3 has-mt-10">ยังไม่ได้ Scan</p>
-						)}
-						<div className="field has-mt-10">
-							<label className="label has-mb-10 is-bold" style={{ display: "block" }}>
-								Remarks:
-							</label>
-							<textarea
-								type="text"
-								value={remarks}
-								onChange={e => this.setState({ remarks: e.target.value })}
-								placeholder="Remarks"
-								className="input textarea is-fullwidth"
-							/>
+								))
+							) : (
+								<p className="is-gray-3 has-mt-10">ยังไม่ได้ Scan</p>
+							)}
 						</div>
 						<button className="button has-mt-10" onClick={() => this.handleSubmit()}>
 							ยืนยันการเบิกสินค้า
@@ -251,7 +249,7 @@ class Withdraw extends React.Component {
 
 const Field = ({ value, onChange, placeholder, className, label, type, inputClass }) => (
 	<div className={className ? className : "field is-flex is-ai-center"}>
-		<label className="label has-mr-05 is-bold">{label}:</label>
+		<label className="label">{label}:</label>
 		<input
 			type={type ? type : "text"}
 			value={value}

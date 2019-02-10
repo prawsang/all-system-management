@@ -4,7 +4,7 @@ import { setSelectedJobCode } from "@/actions/record";
 
 const JobSelect = ({ disabled, selectedJobCode, setSelectedJobCode, jobs }) => (
 	<div className={`field ${disabled && "is-disabled"}`}>
-		<div className="select">
+		<div className="select no-mb">
 			<select
 				value={selectedJobCode ? selectedJobCode.job_code : ""}
 				onChange={e => setSelectedJobCode(e.target.value)}
