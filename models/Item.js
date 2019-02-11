@@ -9,10 +9,18 @@ const Item = db.define(
 	{
 		serial_no: {
 			type: Sequelize.STRING,
-			primaryKey: true
+			primaryKey: true,
+			validate: {
+				notEmpty: true,
+				notContains: "/"
+			}
 		},
 		model_id: {
-			type: Sequelize.INTEGER
+			type: Sequelize.INTEGER,
+			validate: {
+				notNull: true,
+				notEmpty: true
+			}
 		},
 		remarks: {
 			type: Sequelize.STRING
@@ -25,16 +33,36 @@ const Item = db.define(
 		},
 		status: {
 			type: Sequelize.ENUM,
-			values: ["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "IN_SERVICE_STOCK"]
+			values: ["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "IN_SERVICE_STOCK"],
+			validate: {
+				notNull: true,
+				notEmpty: true,
+				isIn: [["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "IN_SERVICE_STOCK"]]
+			}
 		},
 		broken: {
-			type: Sequelize.BOOLEAN
+			type: Sequelize.BOOLEAN,
+			validator: {
+				notNull: true
+			}
 		}
 	},
 	{
-		freezeTableName: "stock"
+		freezeTableName: "stock",
+		validate: {
+			reserveInfoRequiredForReservedItems() {
+				if (
+					this.status == "RESERVED" &&
+					(!this.reserve_job_code || this.reserve_job_code != "")
+				) {
+					throw new Error("Job code must be provided for reserved items.");
+				}
+			}
+		}
 	}
 );
+
+// Associations
 Item.belongsTo(Model, {
 	foreignKey: "model_id"
 });

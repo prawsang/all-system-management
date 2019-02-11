@@ -8,11 +8,20 @@ const Model = db.define("models", {
 		autoIncrement: true
 	},
 	name: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		validate: {
+			notNull: true,
+			notEmpty: true
+		}
 	},
 	type: {
 		type: Sequelize.ENUM,
-		values: ["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER"]
+		values: ["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER"],
+		validate: {
+			notNull: true,
+			notEmpty: true,
+			isIn: [["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER"]]
+		}
 	}
 });
 

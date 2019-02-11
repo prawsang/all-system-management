@@ -9,32 +9,48 @@ const PurchaseOrder = db.define("purchase_orders", {
 		primaryKey: true
 	},
 	job_code: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		validate: {
+			notNull: true,
+			notEmpty: true
+		}
 	},
 	description: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		validate: {
+			notNull: true,
+			notEmpty: true
+		}
 	},
 	date: {
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
+		validate: {
+			notNull: true,
+			notEmpty: true
+		}
 	},
 	installed: {
-		type: Sequelize.BOOLEAN
+		type: Sequelize.BOOLEAN,
+		validate: {
+			notNull: true
+		}
 	}
 });
 
+// Associations
 PurchaseOrder.belongsTo(Job, {
 	foreignKey: "job_code",
 	as: "job"
 });
-PurchaseOrder.belongsToMany(Branch,{
-	through: 'branch_po',
-	foreignKey: 'po_number',
-	otherKey: 'branch_id'
+PurchaseOrder.belongsToMany(Branch, {
+	through: "branch_po",
+	foreignKey: "po_number",
+	otherKey: "branch_id"
 });
-Branch.belongsToMany(PurchaseOrder,{
-	through: 'branch_po',
-	foreignKey: 'branch_id',
-	otherKey: 'po_number'
+Branch.belongsToMany(PurchaseOrder, {
+	through: "branch_po",
+	foreignKey: "branch_id",
+	otherKey: "po_number"
 });
 
 module.exports = PurchaseOrder;
