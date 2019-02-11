@@ -12,23 +12,23 @@ const User = db.define("users", {
 	},
 	name: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	},
 	password: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	},
 	department: {
 		type: Sequelize.ENUM,
 		values: ["ADMIN"],
+		allowNull: true,
 		validate: {
-			notNull: true,
 			notEmpty: true,
 			isIn: [["ADMIN"]]
 		}

@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Branch = require("./Branch");
 const Job = require("./Job");
+const Op = Sequelize.Op;
 
 const PurchaseOrder = db.define("purchase_orders", {
 	po_number: {
@@ -10,32 +11,51 @@ const PurchaseOrder = db.define("purchase_orders", {
 	},
 	job_code: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	},
 	description: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	},
 	date: {
 		type: Sequelize.DATE,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	},
 	installed: {
 		type: Sequelize.BOOLEAN,
-		validate: {
-			notNull: true
-		}
+		allowNull: false
 	}
 });
+
+// Class Methods
+PurchaseOrder.checkBranchInPo = (branch_id, po_number) => {
+	return PurchaseOrder.count({
+		where: {
+			po_number: {
+				[Op.eq]: po_number
+			}
+		},
+		include: {
+			model: Branch,
+			where: {
+				id: {
+					[Op.eq]: branch_id
+				}
+			}
+		}
+	})
+		.then(count => (count == 0 ? false : true))
+		.catch(err => false);
+};
 
 // Associations
 PurchaseOrder.belongsTo(Job, {

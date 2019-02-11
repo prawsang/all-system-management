@@ -3,6 +3,7 @@ const db = require("../config/database");
 const Model = require("./Model");
 const Job = require("./Job");
 const Branch = require("./Branch");
+const Op = Sequelize.Op;
 
 const Item = db.define(
 	"stock",
@@ -17,8 +18,8 @@ const Item = db.define(
 		},
 		model_id: {
 			type: Sequelize.INTEGER,
+			allowNull: false,
 			validate: {
-				notNull: true,
 				notEmpty: true
 			}
 		},
@@ -34,17 +35,15 @@ const Item = db.define(
 		status: {
 			type: Sequelize.ENUM,
 			values: ["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "IN_SERVICE_STOCK"],
+			allowNull: false,
 			validate: {
-				notNull: true,
 				notEmpty: true,
 				isIn: [["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "IN_SERVICE_STOCK"]]
 			}
 		},
 		broken: {
 			type: Sequelize.BOOLEAN,
-			validator: {
-				notNull: true
-			}
+			allowNull: false
 		}
 	},
 	{
@@ -61,6 +60,64 @@ const Item = db.define(
 		}
 	}
 );
+
+// Class Methods
+Item.changeStatus = async params => {
+	const { serial_no, validStatus, toStatus, otherInfo } = params;
+	let updatedSerials = [];
+	let errors = [];
+	if (serial_no.length == 0)
+		return { updatedSerials, errors: [{ msg: "Serial No. cannot be empty." }] };
+
+	await Promise.all(
+		serial_no.map(async no => {
+			let valid = true;
+			if (validStatus) {
+				valid = await Item.checkStatus(no, validStatus);
+			}
+			if (valid) {
+				await Item.update(
+					{
+						status: toStatus,
+						...otherInfo
+					},
+					{
+						where: {
+							serial_no: {
+								[Op.eq]: no
+							}
+						}
+					}
+				)
+					.then(res => updatedSerials.push(no))
+					.catch(err => errors.push(err));
+			} else {
+				errors.push({ msg: `This item is not ${validStatus[0]}`, value: no });
+			}
+		})
+	);
+	return {
+		updatedSerials,
+		errors
+	};
+};
+
+Item.checkStatus = (serial_no, status) => {
+	if (typeof status == "string") status = [status];
+	return Item.findOne({
+		where: {
+			serial_no: {
+				[Op.eq]: serial_no
+			}
+		}
+	})
+		.then(item => {
+			if (item) {
+				if (status.indexOf(item.status) >= 0) return true;
+			}
+		})
+		.catch(err => false);
+};
 
 // Associations
 Item.belongsTo(Model, {

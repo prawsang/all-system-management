@@ -9,16 +9,16 @@ const Model = db.define("models", {
 	},
 	name: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	},
 	type: {
 		type: Sequelize.ENUM,
 		values: ["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER"],
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true,
 			isIn: [["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER"]]
 		}

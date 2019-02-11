@@ -9,8 +9,8 @@ const StoreType = db.define("store_types", {
 	},
 	name: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	}

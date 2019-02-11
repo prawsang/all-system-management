@@ -15,8 +15,8 @@ const Branch = db.define("branches", {
 	},
 	name: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	},
@@ -25,15 +25,15 @@ const Branch = db.define("branches", {
 	},
 	province: {
 		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	},
 	store_type_id: {
 		type: Sequelize.INTEGER,
+		allowNull: false,
 		validate: {
-			notNull: true,
 			notEmpty: true
 		}
 	}
