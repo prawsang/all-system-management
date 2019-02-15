@@ -9,6 +9,7 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
 const tools = require("../utils/tools");
+const { check, validationResult } = require("express-validator/check");
 
 router.get("/get-all", async (req, res) => {
 	let { limit, page, search, search_term } = req.query;
@@ -88,32 +89,36 @@ router.get("/:po_number/branches", async (req, res) => {
 	res.send(query);
 });
 
-checkPOFields = values => {
-	const { po_number, description, installed, date, job_code } = values;
-	let errors = [];
-	if (!po_number) errors.push({ message: "PO Number is required." });
-	if (!job_code) errors.push({ message: "Job Code is required." });
-	if (!description) errors.push({ message: "Description is required." });
-	if (installed === null)
-		errors.push({ message: "Please specify if this PO has been installed." });
-	if (!date) errors.push({ message: "PO date is required." });
-	if (errors.length > 0) return errors;
-	else return null;
-};
+const poValidation = [
+	check("po_number")
+		.not()
+		.isEmpty()
+		.withMessage("PO Number cannot be empty."),
+	check("job_code")
+		.not()
+		.isEmpty()
+		.withMessage("Job code cannot be empty."),
+	check("description")
+		.not()
+		.isEmpty()
+		.withMessage("PO description must be provided."),
+	check("installed")
+		.isBoolean()
+		.withMessage("Please specified whether this PO is installed."),
+	check("date")
+		.not()
+		.isEmpty()
+		.withMessage("PO date must be provided.")
+];
+
 // Add PO information
-router.post("/add", (req, res) => {
-	const { po_number, description, installed, date, job_code } = req.body;
-	const validationErrors = checkPOFields({
-		po_number,
-		description,
-		installed,
-		date,
-		job_code
-	});
-	if (validationErrors) {
-		res.status(400).send(validationErrors);
-		return;
+router.post("/add", poValidation, (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
 	}
+
+	const { po_number, description, installed, date, job_code } = req.body;
 	PurchaseOrder.create({
 		po_number,
 		description,
@@ -127,20 +132,13 @@ router.post("/add", (req, res) => {
 
 // Edit PO information (date and job_code cannot be edited)
 router.put("/:po_number/edit", (req, res) => {
-	const { po_number } = req.params;
-	const { description, installed, date, job_code } = req.body;
-	console.log(req.params);
-	const validationErrors = checkPOFields({
-		po_number,
-		description,
-		installed,
-		date,
-		job_code
-	});
-	if (validationErrors) {
-		res.status(400).send(validationErrors);
-		return;
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
 	}
+
+	const { po_number } = req.params;
+	const { description, installed } = req.body;
 	PurchaseOrder.update(
 		{
 			description,
@@ -181,7 +179,6 @@ router.post("/:po_number/add-branches", async (req, res) => {
 	const { branch_id } = req.body;
 
 	let errors = [];
-	console.log(branch_id);
 	await Promise.all(
 		branch_id.map(async id => {
 			await PurchaseOrder.count({
@@ -200,7 +197,6 @@ router.post("/:po_number/add-branches", async (req, res) => {
 				}
 			})
 				.then(count => {
-					console.log(count);
 					if (count == 0) {
 						db.query(
 							"INSERT INTO branch_po (branch_id, po_number)\

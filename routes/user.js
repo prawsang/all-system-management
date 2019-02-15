@@ -46,7 +46,7 @@ const userValidation = [
 	check("department")
 		.not()
 		.isEmpty()
-		.isIn([["ADMIN"]])
+		.isIn(["ADMIN"])
 		.withMessage("Invalid or empty department"),
 	check("name")
 		.not()

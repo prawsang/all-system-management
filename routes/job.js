@@ -7,6 +7,7 @@ const Customer = require("../models/Customer");
 const Branch = require("../models/Branch");
 const StoreType = require("../models/StoreType");
 const tools = require("../utils/tools");
+const { check, validationResult } = require("express-validator/check");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
@@ -33,7 +34,7 @@ router.get("/:job_code/details", (req, res) => {
 	Job.findOne({
 		include: {
 			model: Customer,
-			as: 'customer'
+			as: "customer"
 		},
 		where: {
 			job_code: {
@@ -46,7 +47,7 @@ router.get("/:job_code/details", (req, res) => {
 });
 
 // Get branches for job
-router.get("/:job_code/branches", async (req,res) => {
+router.get("/:job_code/branches", async (req, res) => {
 	const { job_code } = req.params;
 	const { limit, page, search, search_term } = req.query;
 	const query = await tools.countAndQuery({
@@ -54,18 +55,21 @@ router.get("/:job_code/branches", async (req,res) => {
 		page,
 		search,
 		search_term,
-		include: [{
-			model: Job,
-			as: 'jobs',
-			where: {
-				job_code: {
-					[Op.eq]: job_code
+		include: [
+			{
+				model: Job,
+				as: "jobs",
+				where: {
+					job_code: {
+						[Op.eq]: job_code
+					}
 				}
+			},
+			{
+				model: StoreType,
+				as: "store_type"
 			}
-		},{
-			model: StoreType,
-			as: 'store_type'
-		}],
+		],
 		model: Branch
 	});
 	if (query.errors) {
@@ -73,42 +77,48 @@ router.get("/:job_code/branches", async (req,res) => {
 		return;
 	}
 	res.send(query);
-})
+});
+
+const jobValidation = [
+	check("job_code")
+		.not()
+		.isEmpty()
+		.withMessage("Job code cannot be empty."),
+	check("name")
+		.not()
+		.isEmpty()
+		.withMessage("Job name cannot be empty."),
+	check("customer_code")
+		.not()
+		.isEmpty()
+		.withMessage("Customer must be provided.")
+];
 
 // Add Job
-router.post("/add", (req, res) => {
+router.post("/add", jobValidation, (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+
 	const { name, job_code, customer_code } = req.body;
-	if (!job_code) {
-		res.status(400).send([{message: "Job Code is required."}]);
-		return;
-	}
-	if (!name) {
-		res.status(400).send([{message: "Name is required."}]);
-		return;
-	}
-	if (!customer_code) {
-		res.status(400).send([{message: "Customer Code is required."}]);
-		return;
-	}
-	Branch.create(
-		{
-			job_code,
-			name,
-			customer_code
-		}
-	)
+	Branch.create({
+		job_code,
+		name,
+		customer_code
+	})
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err));
 });
 
 // Edit Job
-router.put("/:job_code/edit", (req, res) => {
-	const { job_code } = req.params;
-	const { name } = req.body;
-	if (!name) {
-		res.status(400).send([{message: "Name is required."}]);
-		return;
+router.put("/:job_code/edit", jobValidation, (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
 	}
+
+	const { job_code } = req.params;
 	Branch.update(
 		{
 			name
@@ -129,8 +139,15 @@ router.put("/:job_code/edit", (req, res) => {
 router.delete("/:job_code/remove-branch", (req, res) => {
 	const { job_code } = req.params;
 	const { branch_id } = req.query;
-	db.query("DELETE FROM branch_job \
-    WHERE branch_id = " + branch_id + "AND job_code = '" + job_code + "'", { type: db.QueryTypes.DELETE })
+	db.query(
+		"DELETE FROM branch_job \
+    WHERE branch_id = " +
+			branch_id +
+			"AND job_code = '" +
+			job_code +
+			"'",
+		{ type: db.QueryTypes.DELETE }
+	)
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err));
 });
@@ -156,11 +173,16 @@ router.post("/:job_code/add-branch", (req, res) => {
 	})
 		.then(count => {
 			if (count == 0) {
-				db.query("INSERT INTO branch_job (branch_id, job_code)\
-                        VALUES (" + `${branch_id},'${job_code}'` + ")", { type: db.QueryTypes.INSERT })
+				db.query(
+					"INSERT INTO branch_job (branch_id, job_code)\
+                        VALUES (" +
+						`${branch_id},'${job_code}'` +
+						")",
+					{ type: db.QueryTypes.INSERT }
+				)
 					.then(rows => res.sendStatus(200))
 					.catch(err => res.status(500).send(err));
-			} else res.status(400).send([{message: "Branch exists for this job"}]);
+			} else res.status(400).send([{ message: "Branch exists for this job" }]);
 		})
 		.catch(err => res.status(500).send(err));
 });
