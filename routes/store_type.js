@@ -3,6 +3,7 @@ const router = express.Router();
 const StoreType = require("../models/StoreType");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
+const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
@@ -20,13 +21,21 @@ router.route("/get-all").get(async (req, res) => {
 	res.send(query);
 });
 
+const storeTypeValidation = [
+	check("name")
+		.not()
+		.isEmpty()
+		.withMessage("Store type name must be provided.")
+];
+
 // Add New Store Type
-router.post("/add", (req, res) => {
-	const { name } = req.body;
-	if (!name) {
-		res.status(400).send([{message: "Name is required."}]);
-		return;
+router.post("/add", storeTypeValidation, (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ errors: errors.array() });
 	}
+
+	const { name } = req.body;
 	StoreType.create({
 		name
 	})
@@ -35,16 +44,19 @@ router.post("/add", (req, res) => {
 });
 
 // Edit Store Type
-router.put("/:id/edit", (req, res) => {
+router.put("/:id/edit", storeTypeValidation, (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ errors: errors.array() });
+	}
+
 	const { id } = req.params;
 	const { name } = req.body;
-	if (!name) {
-		res.status(400).send([{message: "Name is required."}]);
-		return;
-	}
-	StoreType.update({
-			name,
-		},{
+	StoreType.update(
+		{
+			name
+		},
+		{
 			where: {
 				id: {
 					[Op.eq]: id

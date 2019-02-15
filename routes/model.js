@@ -4,6 +4,7 @@ const Model = require("../models/Model");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const tools = require("../utils/tools");
+const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {
 	let { limit, page, search, search_term } = req.query;
@@ -54,17 +55,24 @@ router.route("/type/:type").get(async (req, res) => {
 	res.send(query);
 });
 
+const modelValidation = [
+	check("name")
+		.not()
+		.isEmpty()
+		.withMessage("Model name cannot be empty."),
+	check("type")
+		.isIn(["POS", "SCANNER", "KEYBOARD", "CASH_DRAWER", "MONITOR"])
+		.withMessage("Invalid type")
+];
+
 // Add New Model
-router.post("/add", (req, res) => {
+router.post("/add", modelValidation, (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+
 	const { name, type } = req.body;
-	if (!name) {
-		res.status(400).send([{ message: "Name is required." }]);
-		return;
-	}
-	if (!type) {
-		res.status(400).send([{ message: "Model type is required." }]);
-		return;
-	}
 	Model.create({
 		name,
 		type
@@ -75,16 +83,12 @@ router.post("/add", (req, res) => {
 
 // Edit Model
 router.put("/:id/edit", (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+
 	const { id } = req.params;
-	const { name, type } = req.body;
-	if (!name) {
-		res.status(400).send([{ message: "Name is required." }]);
-		return;
-	}
-	if (!type) {
-		res.status(400).send([{ message: "Model type is required." }]);
-		return;
-	}
 	Model.update(
 		{
 			name,

@@ -10,6 +10,7 @@ const Withdrawal = require("../models/Withdrawal");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const tools = require("../utils/tools");
+const { check, validationResult } = require("express-validator/check");
 
 router.use("/", require("./stock_status").router);
 
@@ -247,13 +248,21 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 	res.send(query);
 });
 
+const stockValidation = [
+	check("model_id")
+		.not()
+		.isEmpty()
+		.withMessage("Model must be provided.")
+];
+
 // Add items to stock
-router.post("/add", async (req, res) => {
-	const { model_id, remarks, serial_no } = req.body;
-	if (!model_id) {
-		res.status(400).send([{ message: "Model is required." }]);
-		return;
+router.post("/add", stockValidation, async (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
 	}
+	const { model_id, remarks, serial_no } = req.body;
+
 	let errors = [];
 	await Promise.all(
 		serial_no.map(async no => {
@@ -271,13 +280,14 @@ router.post("/add", async (req, res) => {
 });
 
 // Edit Item
-router.put("/:serial_no/edit", (req, res) => {
+router.put("/:serial_no/edit", stockValidation, (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ errors: errors.array() });
+	}
+
 	const { serial_no } = req.params;
 	const { model_id, remarks } = req.body;
-	if (!model_id) {
-		res.status(400).send([{ message: "Model is required." }]);
-		return;
-	}
 	Item.update(
 		{
 			model_id,

@@ -7,6 +7,7 @@ const Customer = require("../models/Customer");
 const Branch = require("../models/Branch");
 const StoreType = require("../models/StoreType");
 const tools = require("../utils/tools");
+const { check, validationResult } = require("express-validator/check");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
@@ -17,7 +18,7 @@ router.get("/get-all", async (req, res) => {
 		search_term,
 		search,
 		model: Customer
-	})
+	});
 	if (query.errors) {
 		res.status(500).send(query.errors);
 		return;
@@ -29,7 +30,7 @@ router.get("/:customer_code/details", (req, res) => {
 	Customer.findOne({
 		include: {
 			model: Job,
-			as: 'jobs'
+			as: "jobs"
 		},
 		where: {
 			customer_code: {
@@ -56,12 +57,12 @@ router.get("/:customer_code/branches", async (req, res) => {
 		},
 		include: {
 			model: StoreType,
-			as: 'store_type'
+			as: "store_type"
 		},
 		search,
 		search_term,
 		model: Branch
-	})
+	});
 	if (query.errors) {
 		res.status(500).send(query.errors);
 		return;
@@ -69,17 +70,24 @@ router.get("/:customer_code/branches", async (req, res) => {
 	res.send(query);
 });
 
+const customerValidation = [
+	check("customer_code")
+		.not()
+		.isEmpty()
+		.withMessage("Customer code cannot be empty."),
+	check("name")
+		.not()
+		.isEmpty()
+		.withMessage("Customer name cannot be empty.")
+];
+
 // Add New Customer
-router.post("/add", (req, res) => {
+router.post("/add", customerValidation, (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
 	const { customer_code, name } = req.body;
-	if (!customer_code) {
-		res.status(400).send([{message: "Customer Code is required."}]);
-		return;
-	}
-	if (!name) {
-		res.status(400).send([{message: "Name is required."}]);
-		return;
-	}
 	Customer.create({
 		customer_code,
 		name
@@ -89,16 +97,17 @@ router.post("/add", (req, res) => {
 });
 
 // Edit Customer
-router.put("/:customer_code/edit", (req, res) => {
+router.put("/:customer_code/edit", customerValidation, (req, res) => {
+	const validationErrors = validationResult(req);
+	if (!validationErrors.isEmpty()) {
+		return res.status(422).json({ errors: validationErrors.array() });
+	}
+
 	const { customer_code } = req.params;
 	const { name } = req.body;
-	if (!name) {
-		res.status(400).send([{message: "Name is required."}]);
-		return;
-	}
 	Customer.update(
 		{
-			name,
+			name
 		},
 		{
 			where: {
@@ -111,7 +120,6 @@ router.put("/:customer_code/edit", (req, res) => {
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err));
 });
-
 
 // Delete customer
 router.delete("/:customer_code/delete", (req, res) => {

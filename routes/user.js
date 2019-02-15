@@ -3,10 +3,11 @@ const router = express.Router();
 const User = require("../models/User");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
+const { check, validationResult } = require("express-validator/check");
 
 router.get("/get-all", async (req, res) => {
-    const { limit, page, search, search_term } = req.query;
+	const { limit, page, search, search_term } = req.query;
 	const query = await tools.query({
 		limit,
 		page,
@@ -33,81 +34,86 @@ router.get("/:staff_code/details", (req, res) => {
 			}
 		}
 	})
-		.then(user => res.send({user}))
+		.then(user => res.send({ user }))
 		.catch(err => res.status(500).send(err));
 });
 
-checkUserFields = (values) => {
-    const { name, staff_code, department, password } = values;
-    let errors = [];
-    if (!name) errors.push({message: "Name is required."});
-    if (!staff_code) errors.push({message: "Staff Code is required."});
-    if (!department) errors.push({message: "Department is required."});
-    if (!password) errors.push({message: "Password is required."});
-    if (errors.length > 0) return errors;
-    else return null;
-}
+const userValidation = [
+	check("staff_code")
+		.not()
+		.isEmpty()
+		.withMessage("Staff code cannot be empty."),
+	check("department")
+		.not()
+		.isEmpty()
+		.isIn(["ADMIN"])
+		.withMessage("Invalid or empty department"),
+	check("name")
+		.not()
+		.isEmpty()
+		.withMessage("Name cannot be empty."),
+	check("password")
+		.not()
+		.isEmpty()
+		.withMessage("Password cannot be empty.")
+];
 
 // Add New User
-router.post("/add", (req, res) => {
-    const { name, staff_code, department } = req.body;
-    let { password } = req.body;
-    const validationErrors = checkUserFields({
-        name,
-        staff_code,
-        department,
-        password
-    });
-    if (validationErrors) {
-        res.status(400).send(validationErrors);
-        return;
-    }
-    bcrypt.hash(password, 12)
-        .then(hashedPassword => {
-            User.create({
-                staff_code,
-                name,
-                department,
-                password: hashedPassword
-            })
-                .then(rows => res.sendStatus(200))
-                .catch(err => console.log(err.errors));
-        })
-        .catch(err => res.status(500).send(err));
+router.post("/add", userValidation, (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ errors: errors.array() });
+	}
+
+	const { name, staff_code, department } = req.body;
+	let { password } = req.body;
+	bcrypt
+		.hash(password, 12)
+		.then(hashedPassword => {
+			User.create({
+				staff_code,
+				name,
+				department,
+				password: hashedPassword
+			})
+				.then(rows => res.sendStatus(200))
+				.catch(err => console.log(err.errors));
+		})
+		.catch(err => res.status(500).send(err));
 });
 
 // Edit User
 router.put("/:staff_code/edit", (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).json({ errors: errors.array() });
+	}
+
 	const { staff_code } = req.params;
-    const { name, department } = req.body;
-    let { password } = req.body;
-    const validationErrors = checkUserFields({
-        name,
-        staff_code,
-        department,
-        password
-    });
-    if (validationErrors) {
-        res.status(400).send(validationErrors);
-        return;
-    }
-    bcrypt.hash(password, 12)
-        .then(hashedPassword => {
-            User.update({
-                name,
-                department,
-                password: hashedPassword
-            },{
-                where: {
-                    staff_code: {
-                        [Op.eq]: staff_code
-                    }
-                }
-            })
-                .then(rows => res.sendStatus(200))
-                .catch(err => res.status(500).send(err));
-        })
-        .catch(err => res.status(500).send(err));
+	const { name, department } = req.body;
+	let { password } = req.body;
+
+	bcrypt
+		.hash(password, 12)
+		.then(hashedPassword => {
+			User.update(
+				{
+					name,
+					department,
+					password: hashedPassword
+				},
+				{
+					where: {
+						staff_code: {
+							[Op.eq]: staff_code
+						}
+					}
+				}
+			)
+				.then(rows => res.sendStatus(200))
+				.catch(err => res.status(500).send(err));
+		})
+		.catch(err => res.status(500).send(err));
 });
 
 // Delete user

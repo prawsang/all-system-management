@@ -4,16 +4,34 @@ const db = require("../config/database");
 const User = db.define("users", {
 	staff_code: {
 		type: Sequelize.STRING,
-		primaryKey: true
+		primaryKey: true,
+		validate: {
+			notEmpty: true,
+			notContains: "/"
+		}
 	},
 	name: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		allowNull: false,
+		validate: {
+			notEmpty: true
+		}
 	},
 	password: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		allowNull: false,
+		validate: {
+			notEmpty: true
+		}
 	},
 	department: {
-		type: Sequelize.STRING
+		type: Sequelize.ENUM,
+		values: ["ADMIN"],
+		allowNull: true,
+		validate: {
+			notEmpty: true,
+			isIn: [["ADMIN"]]
+		}
 	}
 });
 
