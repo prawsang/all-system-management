@@ -216,9 +216,15 @@ body {
 	.panel {
 		box-shadow: 0 3px 12px $gray-1;
 		max-width: 90%;
+		min-width: 500px;
 		&.dropdown {
 			box-shadow: 0 3px 12px $gray-4;
 		}
+	}
+}
+@media screen and (max-width: 767px) {
+	.modal-background .panel {
+		min-width: 300px;
 	}
 }
 
