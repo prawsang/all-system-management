@@ -4,10 +4,11 @@ const StoreType = require("../models/StoreType");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");
+const tools = require("../utils/tools");
 
 router.route("/get-all").get(async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
-	const query = await tools.query({
+	const query = await tools.countAndQuery({
 		limit,
 		page,
 		search,

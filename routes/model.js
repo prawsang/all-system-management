@@ -61,7 +61,7 @@ const modelValidation = [
 		.isEmpty()
 		.withMessage("Model name cannot be empty."),
 	check("type")
-		.isIn(["POS", "SCANNER", "KEYBOARD", "CASH_DRAWER", "MONITOR"])
+		.isIn(["POS", "SCANNER", "KEYBOARD", "CASH_DRAWER", "MONITOR", "PRINTER"])
 		.withMessage("Invalid type")
 ];
 
@@ -89,6 +89,7 @@ router.put("/:id/edit", (req, res) => {
 	}
 
 	const { id } = req.params;
+	const { name, type } = req.body;
 	Model.update(
 		{
 			name,
