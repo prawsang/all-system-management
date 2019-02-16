@@ -9,6 +9,8 @@ import ChangeCustomer from "./ChangeCustomer";
 import Axios from "axios";
 import { Link } from "react-router-dom";
 import history from "@/common/history";
+import { setCurrentWithdrawal, setItems } from "@/actions/withdrawal";
+import { connect } from "react-redux";
 
 class Withdrawal extends React.PureComponent {
 	state = {
@@ -40,6 +42,12 @@ class Withdrawal extends React.PureComponent {
 		})
 			.then(res => history.push("/"))
 			.catch(err => console.log(err));
+	}
+
+	handlePrint() {
+		const { data } = this.props;
+		this.props.setCurrentWithdrawal(data.withdrawal);
+		this.props.setItems(data.withdrawal.items);
 	}
 
 	render() {
@@ -210,6 +218,21 @@ class Withdrawal extends React.PureComponent {
 								title="Items"
 								noPage={true}
 							/>
+							<div className="panel-content">
+								<div className="buttons">
+									<button
+										className="button"
+										onClick={() => {
+											this.handlePrint();
+											history.push(
+												`${data.withdrawal.id}/print/service-report`
+											);
+										}}
+									>
+										ออก Service Report
+									</button>
+								</div>
+							</div>
 							<EditModal
 								data={data.withdrawal}
 								active={edit}
@@ -271,4 +294,12 @@ const DeleteConfirm = ({ onSubmit, close, active }) => (
 	</Modal>
 );
 
-export default Withdrawal;
+const mapDispatchToProps = {
+	setCurrentWithdrawal,
+	setItems
+};
+
+export default connect(
+	null,
+	mapDispatchToProps
+)(Withdrawal);
