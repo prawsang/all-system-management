@@ -8,11 +8,13 @@ import RemarksModal from "./RemarksModal";
 import ChangeCustomer from "./ChangeCustomer";
 import Axios from "axios";
 import { Link } from "react-router-dom";
+import history from "@/common/history";
 
 class Withdrawal extends React.PureComponent {
 	state = {
 		edit: false,
 		showCancelConfirm: false,
+		showDeleteConfirm: false,
 		editRemarks: false,
 		changeCustomer: false
 	};
@@ -30,9 +32,25 @@ class Withdrawal extends React.PureComponent {
 			.catch(err => console.log(err));
 	}
 
+	deleteWithdrawal() {
+		const { data } = this.props;
+		Axios.request({
+			method: "DELETE",
+			url: `/withdrawal/${data.withdrawal.id}`
+		})
+			.then(res => history.push("/"))
+			.catch(err => console.log(err));
+	}
+
 	render() {
 		const { data } = this.props;
-		const { edit, showCancelConfirm, editRemarks, changeCustomer } = this.state;
+		const {
+			edit,
+			showCancelConfirm,
+			editRemarks,
+			changeCustomer,
+			showDeleteConfirm
+		} = this.state;
 		if (data) {
 			if (!data.withdrawal) return <p>ไม่พบรายการ</p>;
 		}
@@ -55,6 +73,17 @@ class Withdrawal extends React.PureComponent {
 									>
 										Cancel Withdrawal
 									</button>
+									{/* <button
+										className="button is-danger"
+										onClick={() =>
+											this.setState({
+												showDeleteConfirm: true
+											})
+										}
+										disabled={data.withdrawal.status !== "PENDING"}
+									>
+										Delete
+									</button> */}
 								</div>
 								<div>
 									<h5 className="no-mt has-mb-10">
@@ -201,6 +230,11 @@ class Withdrawal extends React.PureComponent {
 								close={() => this.setState({ showCancelConfirm: false })}
 								active={showCancelConfirm}
 							/>
+							<DeleteConfirm
+								onSubmit={() => this.deleteWithdrawal()}
+								close={() => this.setState({ showDeleteConfirm: false })}
+								active={showDeleteConfirm}
+							/>
 						</React.Fragment>
 					)}
 				</div>
@@ -218,6 +252,20 @@ const CancelConfirm = ({ onSubmit, close, active }) => (
 			</button>
 			<button className="button is-light" onClick={close}>
 				ไม่ Cancel
+			</button>
+		</div>
+	</Modal>
+);
+
+const DeleteConfirm = ({ onSubmit, close, active }) => (
+	<Modal title="Confirm" close={close} active={active}>
+		<p>เมื่อลบใบเบิกแล้ว จะไม่สามารถนำกลับมาได้อีก</p>
+		<div className="buttons">
+			<button className="button is-danger" onClick={onSubmit}>
+				Delete
+			</button>
+			<button className="button is-light" onClick={close}>
+				Cancel
 			</button>
 		</div>
 	</Modal>
