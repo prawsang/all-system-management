@@ -7,6 +7,7 @@ import Item from "./pages/item";
 import Customer from "./pages/customer";
 import Withdrawal from "./pages/withdrawal/";
 import AddItemsToWithdrawal from "./pages/withdrawal/addItems";
+import Print from "./pages/withdrawal/print/";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
 class Single extends React.Component {
@@ -23,6 +24,7 @@ class Single extends React.Component {
 						component={CustomerWrapper}
 					/>{" "}
 					<Route path="/single/customer/:customer_code" component={CustomerWrapper} />
+					<Route path="/single/withdrawal/:id/print" component={Print} />
 					<Route
 						path="/single/withdrawal/:id/add-items"
 						component={AddItemsToWithdrawal}
