@@ -15,12 +15,25 @@ class NewModel extends React.Component {
 			});
 		}
 	}
+	componentDidUpdate(prevProps, prevState) {
+		if (prevProps !== this.props) {
+			if (prevProps.data !== this.props.data) {
+				const { modalType, data } = this.props;
+				if (modalType === "EDIT") {
+					this.setState({
+						modelName: data.name,
+						type: data.type
+					});
+				}
+			}
+		}
+	}
 	handleSubmit() {
 		const { modelName, type } = this.state;
 		const { modalType, data } = this.props;
 		Axios.request({
 			method: modalType === "EDIT" ? "PUT" : "POST",
-			url: modalType === "EDIT" ? `model/${data.id}/edit` : "/model/add",
+			url: modalType === "EDIT" ? `/model/${data.id}/edit` : "/model/add",
 			data: {
 				name: modelName,
 				type
@@ -31,6 +44,7 @@ class NewModel extends React.Component {
 	}
 	render() {
 		const { modelName, type } = this.state;
+		const { modalType } = this.props;
 		return (
 			<div>
 				<div className="field">
@@ -60,7 +74,7 @@ class NewModel extends React.Component {
 					</div>
 				</div>
 				<button className="button" onClick={() => this.handleSubmit()}>
-					Add
+					{modalType === "EDIT" ? "Edit" : "Add"}
 				</button>
 			</div>
 		);

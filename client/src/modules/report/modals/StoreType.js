@@ -13,12 +13,24 @@ class NewStoreType extends React.Component {
 			});
 		}
 	}
+	componentDidUpdate(prevProps, prevState) {
+		if (prevProps !== this.props) {
+			if (prevProps.data !== this.props.data) {
+				const { modalType, data } = this.props;
+				if (modalType === "EDIT") {
+					this.setState({
+						storeTypeName: data.name
+					});
+				}
+			}
+		}
+	}
 	handleSubmit() {
 		const { storeTypeName } = this.state;
 		const { modalType, data } = this.props;
 		Axios.request({
 			method: modalType === "EDIT" ? "PUT" : "POST",
-			url: modalType === "EDIT" ? `store-type/${data.id}/edit` : "/store-type/add",
+			url: modalType === "EDIT" ? `/store-type/${data.id}/edit` : "/store-type/add",
 			data: {
 				name: storeTypeName
 			}
@@ -28,6 +40,7 @@ class NewStoreType extends React.Component {
 	}
 	render() {
 		const { storeTypeName } = this.state;
+		const { modalType } = this.props;
 		return (
 			<div>
 				<div className="field">
@@ -40,7 +53,7 @@ class NewStoreType extends React.Component {
 					/>
 				</div>
 				<button className="button" onClick={() => this.handleSubmit()}>
-					Add
+					{modalType === "EDIT" ? "Edit" : "Add"}
 				</button>
 			</div>
 		);

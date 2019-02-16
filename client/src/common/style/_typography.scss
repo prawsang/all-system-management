@@ -78,6 +78,11 @@ body {
 	font-size: 0.75em;
 }
 
+/* Line break */
+.has-no-line-break {
+	white-space: nowrap;
+}
+
 .content {
 	/* images */
 	img {

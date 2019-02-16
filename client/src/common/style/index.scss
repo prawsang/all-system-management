@@ -88,11 +88,20 @@ body {
 }
 
 /* Padding */
+.no-padding {
+	padding: 0 !important;
+}
 .no-pt {
 	padding-top: 0 !important;
 }
 .no-pb {
 	padding-bottom: 0 !important;
+}
+.no-pr {
+	padding-right: 0 !important;
+}
+.no-pl {
+	padding-left: 0 !important;
 }
 
 /* Margin */
