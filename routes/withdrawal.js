@@ -163,6 +163,19 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		remarks,
 		has_po
 	} = req.body;
+	const moreValidation = Withdrawal.validate({
+		job_code,
+		po_number,
+		do_number,
+		type,
+		return_by,
+		install_date,
+		has_po
+	});
+	if (moreValidation.errors.length > 0) {
+		res.status(400).send(errors);
+		return;
+	}
 
 	// po_number and job_code cannot coexist
 	// If po_number is specified, job_code will be null
@@ -204,6 +217,19 @@ router.put("/:id/edit", async (req, res) => {
 		install_date,
 		has_po
 	} = req.body;
+	const moreValidation = Withdrawal.validate({
+		job_code,
+		po_number,
+		do_number,
+		type,
+		return_by,
+		install_date,
+		has_po
+	});
+	if (moreValidation.errors.length > 0) {
+		res.status(400).send(errors);
+		return;
+	}
 
 	// Check if Pending
 	const isPending = await validation.checkStatus(id, "PENDING");
@@ -267,7 +293,7 @@ router.put("/:id/change-status", async (req, res) => {
 	const isPending = await Withdrawal.checkStatus(id, "PENDING");
 	if (status == "PRINTED") {
 		if (!isPending) {
-			res.status(400).send([{ message: "This withdrawal is not pending." }]);
+			res.statusStatus(200);
 			return;
 		} else {
 			const changeStatus = await Withdrawal.changeStatus(id, status);
@@ -403,47 +429,33 @@ router.put("/:id/remove-items", checkSerial, async (req, res) => {
 });
 
 // Delete Withdrawal (only if it is pending)
-router.delete("/:id", async (req, res) => {
-	const { id } = req.params;
-	// Check if Pending
-	const isPending = await Withdrawal.checkStatus(id, "PENDING");
-	if (!isPending) {
-		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
-		return;
-	}
+// router.delete("/:id", async (req, res) => {
+// 	const { id } = req.params;
+// 	// Check if Pending
+// 	const isPending = await Withdrawal.checkStatus(id, "PENDING");
+// 	if (!isPending) {
+// 		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
+// 		return;
+// 	}
 
-	// await Item.findAll({
-	// 	include: {
-	// 		model: Withdrawal,
-	// 		as: "withdrawals",
-	// 		where: {
-	// 			id: {
-	// 				[Op.eq]: id
-	// 			}
-	// 		}
-	// 	}
-	// })
-	// 	.then(items => res.send(items))
-	// 	.catch(err => console.log(err));
+// 	// Delete items from the withdrawal
+// 	const r = await Withdrawal.removeAllItemsAndDelete(id);
+// 	if (r.errors.length > 0) {
+// 		res.status(500).send(r.errors);
+// 	} else {
+// 		res.sendStatus(200);
+// 	}
+// });
 
-	// Delete items from the withdrawal
-	const r = await Withdrawal.removeAllItemsAndDelete(id);
-	if (r.errors.length > 0) {
-		res.status(500).send(r.errors);
-	} else {
-		res.sendStatus(200);
-	}
-});
-
-// Force delete withdrawal (no status check) (superadmins only)
-router.delete("/:id/force-delete", async (req, res) => {
-	const { id } = req.params;
-	const r = await Withdrawal.removeAllItemsAndDelete(id);
-	if (r.errors.length > 0) {
-		res.status(500).send(r.errors);
-	} else {
-		res.sendStatus(200);
-	}
-});
+// // Force delete withdrawal (no status check) (superadmins only)
+// router.delete("/:id/force-delete", async (req, res) => {
+// 	const { id } = req.params;
+// 	const r = await Withdrawal.removeAllItemsAndDelete(id);
+// 	if (r.errors.length > 0) {
+// 		res.status(500).send(r.errors);
+// 	} else {
+// 		res.sendStatus(200);
+// 	}
+// });
 
 module.exports = router;

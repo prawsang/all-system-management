@@ -8,116 +8,101 @@ const Item = require("./Item");
 const Op = Sequelize.Op;
 const returnItems = require("../routes/stock_status").returnItems;
 
-const Withdrawal = db.define(
-	"withdrawals",
-	{
-		id: {
-			type: Sequelize.INTEGER,
-			primaryKey: true,
-			autoIncrement: true
-		},
-		branch_id: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			validate: {
-				notEmpty: true
-			}
-		},
-		job_code: {
-			type: Sequelize.STRING
-		},
-		po_number: {
-			type: Sequelize.STRING
-		},
-		do_number: {
-			type: Sequelize.STRING
-		},
-		staff_code: {
-			type: Sequelize.STRING,
-			allowNull: false,
-			validate: {
-				notEmpty: true
-			}
-		},
-		type: {
-			type: Sequelize.ENUM,
-			values: ["INSTALLATION", "BORROW", "TRANSFER"],
-			allowNull: false,
-			validate: {
-				notEmpty: true,
-				isIn: [["INSTALLATION", "BORROW", "TRANSFER"]]
-			}
-		},
-		date: {
-			type: Sequelize.DATE,
-			allowNull: false,
-			validate: {
-				notEmpty: true
-			}
-		},
-		install_date: {
-			type: Sequelize.DATE
-		},
-		status: {
-			type: Sequelize.ENUM,
-			values: ["PENDING", "PRINTED", "CANCELLED"],
-			allowNull: false,
-			validate: {
-				notEmpty: true,
-				isIn: [["PENDING", "PRINTED", "CANCELLED"]]
-			}
-		},
-		remarks: {
-			type: Sequelize.STRING
-		},
-		return_by: {
-			type: Sequelize.DATE
-		},
-		has_po: {
-			type: Sequelize.BOOLEAN,
-			allowNull: false
+const Withdrawal = db.define("withdrawals", {
+	id: {
+		type: Sequelize.INTEGER,
+		primaryKey: true,
+		autoIncrement: true
+	},
+	branch_id: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+		validate: {
+			notEmpty: true
 		}
 	},
-	{
+	job_code: {
+		type: Sequelize.STRING
+	},
+	po_number: {
+		type: Sequelize.STRING
+	},
+	do_number: {
+		type: Sequelize.STRING
+	},
+	staff_code: {
+		type: Sequelize.STRING,
+		allowNull: false,
 		validate: {
-			borrowMustHaveReturnDate() {
-				if (this.type == "BORROW" && (!this.return_by || this.return_by == "")) {
-					throw new Error("Return date is required for borrowing.");
-				}
-			},
-			installationMustHaveInstallDate() {
-				if (
-					this.type == "INSTALLATION" &&
-					(!this.install_date || this.install_date == "")
-				) {
-					throw new Error("Installation date is required for installation.");
-				}
-			},
-			installationMustHavePO() {
-				if (this.type == "INSTALLATION" && !this.has_po) {
-					throw new Error("Installation must have PO.");
-				}
-			},
-			typesOtherThanInstallationCannotHavePOorDO() {
-				if (this.type != "INSTALLATION" && this.has_po) {
-					throw new Error("Withdrawals of types other than installation cannot have PO.");
-				}
-				if (this.type != "INSTALLATION" && (this.do_number || this.do_number != "")) {
-					throw new Error("Withdrawals of types other than installation cannot have DO.");
-				}
-			},
-			eitherJobCodeOrPONumber() {
-				if (this.job_code && this.po_number) {
-					throw new Error("Specify either job code or PO number, but not both.");
-				} else if (!this.job_code && !this.po_number) {
-					throw new Error("Either job code or PO number must be provided.");
-				}
-			}
+			notEmpty: true
 		}
+	},
+	type: {
+		type: Sequelize.ENUM,
+		values: ["INSTALLATION", "BORROW", "TRANSFER"],
+		allowNull: false,
+		validate: {
+			notEmpty: true,
+			isIn: [["INSTALLATION", "BORROW", "TRANSFER"]]
+		}
+	},
+	date: {
+		type: Sequelize.DATE,
+		allowNull: false,
+		validate: {
+			notEmpty: true
+		}
+	},
+	install_date: {
+		type: Sequelize.DATE
+	},
+	status: {
+		type: Sequelize.ENUM,
+		values: ["PENDING", "PRINTED", "CANCELLED"],
+		allowNull: false,
+		validate: {
+			notEmpty: true,
+			isIn: [["PENDING", "PRINTED", "CANCELLED"]]
+		}
+	},
+	remarks: {
+		type: Sequelize.STRING
+	},
+	return_by: {
+		type: Sequelize.DATE
+	},
+	has_po: {
+		type: Sequelize.BOOLEAN,
+		allowNull: false
 	}
-);
+});
 
 // Class Methods
+Withdrawal.validate = data => {
+	const { type, return_by, install_date, po_number, do_number, job_code, has_po } = data;
+	let errors = [];
+	if (type == "BORROW" && (!return_by || return_by == "")) {
+		errors.push({ msg: "Return date is required for borrowing." });
+	}
+	if (type == "INSTALLATION" && (!install_date || install_date == "")) {
+		errors.push({ msg: "Installation date is required for installation." });
+	}
+	if (type == "INSTALLATION" && !has_po) {
+		errors.push({ msg: "Installation must have PO." });
+	}
+	if (type !== "INSTALLATION" && has_po) {
+		errors.push({ msg: "Withdrawals of types other than installation cannot have PO." });
+	}
+	if (type !== "INSTALLATION" && (do_number && do_number !== "")) {
+		errors.push({ msg: "Withdrawals of types other than installation cannot have DO." });
+	}
+	if (job_code && job_code !== "" && (po_number && po_number !== "")) {
+		errors.push({ msg: "Specify either job code or PO number, but not both." });
+	} else if ((!job_code || job_code === "") && (!po_number || po_number === "")) {
+		errors.push({ msg: "Either job code or PO number must be provided." });
+	}
+	return { errors };
+};
 Withdrawal.getType = withdrawal_id => {
 	return Withdrawal.findOne({
 		where: {
@@ -143,50 +128,6 @@ Withdrawal.checkStatus = (id, status) => {
 			} else return true;
 		})
 		.catch(err => false);
-};
-Withdrawal.removeAllItemsAndDelete = id => {
-	let errors = [];
-	db.transaction(t => {
-		let serials = [];
-		return db
-			.query(
-				`
-				SELECT stock.serial_no
-				FROM item_withdrawal, stock, withdrawals
-				WHERE item_withdrawal.withdrawal_id = 19
-				AND stock.serial_no = item_withdrawal.serial_no
-				AND withdrawals.id = item_withdrawal.withdrawal_id
-		`,
-				{
-					type: db.QueryTypes.SELECT,
-					transaction: t
-				}
-			)
-			.then(rows => {
-				rows.map(row => serials.push(row.serial_no));
-				return db
-					.query(`DELETE FROM item_withdrawal WHERE withdrawal_id = '${id}'`, {
-						type: db.QueryTypes.DELETE,
-						transaction: t
-					})
-					.then(res => returnItems(serials));
-			})
-			.catch(err => console.log(err));
-	})
-		.then(res =>
-			// destroy the withdrawal if all the items are returned
-			Withdrawal.destroy({
-				where: {
-					id: {
-						[Op.eq]: id
-					}
-				}
-			})
-				.then(rows => null)
-				.catch(err => errors.push(err))
-		)
-		.catch(err => errors.push(err));
-	return { errors };
 };
 Withdrawal.checkItem = (id, serial_no) => {
 	return Withdrawal.count({
@@ -222,7 +163,7 @@ Withdrawal.changeStatus = (id, status) => {
 		}
 	)
 		.then(rows => ({ errors: [] }))
-		.catch(err => ({ errors: err }));
+		.catch(err => ({ errors: [err] }));
 };
 
 // Associations
