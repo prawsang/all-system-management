@@ -1,5 +1,6 @@
 import React from "react";
 import history from "@/common/history";
+import { formatDate } from "@/common/date";
 
 const WithdrawalsTable = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
@@ -27,7 +28,7 @@ const WithdrawalsTable = ({ data }) => (
 								event.stopPropagation();
 							}}
 						>
-							<td>{e.id}</td>
+							<td className="has-no-line-break">{e.id}</td>
 							<td>
 								{e.branch.name}{" "}
 								{e.branch.branch_code && `(${e.branch.branch_code})`}
@@ -36,9 +37,9 @@ const WithdrawalsTable = ({ data }) => (
 								{e.branch.customer.name} ({e.branch.customer.customer_code})
 							</td>
 							<td>{e.type}</td>
-							<td>{e.date}</td>
-							<td>{e.install_date}</td>
-							<td>{e.return_date}</td>
+							<td>{formatDate(e.date)}</td>
+							<td className="has-no-line-break">{formatDate(e.install_date)}</td>
+							<td className="has-no-line-break">{formatDate(e.return_by)}</td>
 							<td>{e.status}</td>
 						</tr>
 					)))}

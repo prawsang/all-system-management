@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import history from "@/common/history";
 import { setCurrentWithdrawal, setItems } from "@/actions/withdrawal";
 import { connect } from "react-redux";
+import { formatDate } from "@/common/date";
 
 class Withdrawal extends React.PureComponent {
 	state = {
@@ -110,7 +111,7 @@ class Withdrawal extends React.PureComponent {
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Date:</label>
-										<span>{data.withdrawal.date}</span>
+										<span>{formatDate(data.withdrawal.date)}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">PO:</label>
@@ -140,7 +141,7 @@ class Withdrawal extends React.PureComponent {
 									{data.withdrawal.type === "BORROW" && (
 										<div className="has-mb-10">
 											<label className="is-bold has-mr-05">Return By:</label>
-											<span>{data.withdrawal.return_by}</span>
+											<span>{formatDate(data.withdrawal.return_by)}</span>
 										</div>
 									)}
 									{data.withdrawal.type === "INSTALLATION" && (
@@ -148,7 +149,7 @@ class Withdrawal extends React.PureComponent {
 											<label className="is-bold has-mr-05">
 												Install Date:
 											</label>
-											<span>{data.withdrawal.install_date}</span>
+											<span>{formatDate(data.withdrawal.install_date)}</span>
 										</div>
 									)}
 								</div>

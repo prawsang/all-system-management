@@ -9,6 +9,7 @@ import { JobData } from "../../data";
 import AddBranchModal from "./AddBranchModal";
 import { connect } from "react-redux";
 import { setSelectedJobCode } from "@/actions/record";
+import { formatDate } from "@/common/date";
 
 class PO extends React.PureComponent {
 	state = {
@@ -65,7 +66,7 @@ class PO extends React.PureComponent {
 									</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Date:</label>
-										<span>{data.po.date}</span>
+										<span>{formatDate(data.po.date)}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Installed:</label>

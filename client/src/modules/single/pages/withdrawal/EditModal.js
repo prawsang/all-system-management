@@ -89,13 +89,15 @@ class EditModal extends React.Component {
 					text={data.has_po || "ไม่มี PO"}
 					onChange={e => this.setState({ poNumber: e.target.value })}
 				/>
-				<Field
-					editable={true}
-					type="text"
-					label="DO Number"
-					value={doNumber}
-					onChange={e => this.setState({ doNumber: e.target.value })}
-				/>
+				{data.type === "INSTALLATION" && (
+					<Field
+						editable={true}
+						type="text"
+						label="DO Number"
+						value={doNumber}
+						onChange={e => this.setState({ doNumber: e.target.value })}
+					/>
+				)}
 				<div className="buttons">
 					<button className="button" onClick={() => this.handleEdit()}>
 						ยืนยันการแก้ไข
