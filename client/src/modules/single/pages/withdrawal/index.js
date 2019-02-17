@@ -79,7 +79,7 @@ class Withdrawal extends React.PureComponent {
 										}
 										disabled={data.withdrawal.status === "CANCELLED"}
 									>
-										Cancel Withdrawal
+										Cancel
 									</button>
 									{/* <button
 										className="button is-danger"
@@ -219,6 +219,7 @@ class Withdrawal extends React.PureComponent {
 								noPage={true}
 							/>
 							<div className="panel-content">
+								<h4>พิมพ์</h4>
 								<div className="buttons">
 									<button
 										className="button"
@@ -228,10 +229,41 @@ class Withdrawal extends React.PureComponent {
 												`${data.withdrawal.id}/print/service-report`
 											);
 										}}
+										disabled={data.withdrawal.type !== "INSTALLATION"}
 									>
 										ออก Service Report
 									</button>
+									<button
+										className="button"
+										onClick={() => {
+											this.handlePrint();
+											history.push(`${data.withdrawal.id}/print/do`);
+										}}
+										disabled={
+											data.withdrawal.type !== "INSTALLATION" ||
+											data.withdrawal.do_number === "" ||
+											!data.withdrawal.do_number
+										}
+									>
+										ออก DO
+									</button>
+									{(data.withdrawal.do_number === "" ||
+										!data.withdrawal.do_number) &&
+										data.withdrawal.type === "INSTALLATION" && (
+											<p className="is-gray-3 no-mb">
+												ต้องใส่ DO Number ก่อนออก DO
+											</p>
+										)}
 								</div>
+								<button
+									className="button"
+									onClick={() => {
+										this.handlePrint();
+										history.push(`${data.withdrawal.id}/print/general`);
+									}}
+								>
+									พิมพ์ใบเบิก
+								</button>
 							</div>
 							<EditModal
 								data={data.withdrawal}

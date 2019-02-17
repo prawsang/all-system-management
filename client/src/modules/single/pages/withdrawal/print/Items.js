@@ -1,11 +1,12 @@
 import React from "react";
+import { connect } from "react-redux";
 
 const Items = ({ items }) => (
 	<table className="is-fullwidth has-mb-10">
 		<thead>
 			<tr>
 				<td>Type</td>
-				<td>Serials</td>
+				<td>Serial No.</td>
 				<td>Total</td>
 			</tr>
 		</thead>
@@ -80,4 +81,11 @@ const Items = ({ items }) => (
 	</table>
 );
 
-export default Items;
+const mapStateToProps = state => ({
+	items: state.withdrawal.items
+});
+
+export default connect(
+	mapStateToProps,
+	null
+)(Items);
