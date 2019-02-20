@@ -47,17 +47,7 @@ const Item = db.define(
 		}
 	},
 	{
-		freezeTableName: "stock",
-		validate: {
-			reserveInfoRequiredForReservedItems() {
-				if (
-					this.status == "RESERVED" &&
-					(!this.reserve_job_code || this.reserve_job_code != "")
-				) {
-					throw new Error("Job code must be provided for reserved items.");
-				}
-			}
-		}
+		freezeTableName: "stock"
 	}
 );
 

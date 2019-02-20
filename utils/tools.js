@@ -34,6 +34,8 @@ getModelPluralName = model => {
 			return "users";
 		case Withdrawal:
 			return "withdrawals";
+		default:
+			return "rows";
 	}
 };
 

@@ -5,6 +5,7 @@ const Job = require("../models/Job");
 const Customer = require("../models/Customer");
 const StoreType = require("../models/StoreType");
 const PurchaseOrder = require("../models/PurchaseOrder");
+const BranchPO = require("../models/junction/BranchPO");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../config/database");
@@ -159,16 +160,17 @@ router.put("/:po_number/edit", (req, res) => {
 // Remove Branch from PO
 router.delete("/:po_number/remove-branch", (req, res) => {
 	const { po_number } = req.params;
-	const { branch_id } = req.body;
-	db.query(
-		"DELETE FROM branch_po \
-    WHERE branch_id = " +
-			branch_id +
-			"AND po_number = '" +
-			po_number +
-			"'",
-		{ type: db.QueryTypes.DELETE }
-	)
+	const { branch_id } = req.query;
+	BranchPO.destroy({
+		where: {
+			po_number: {
+				[Op.eq]: po_number
+			},
+			branch_id: {
+				[Op.eq]: branch_id
+			}
+		}
+	})
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err));
 });
@@ -181,35 +183,10 @@ router.post("/:po_number/add-branches", async (req, res) => {
 	let errors = [];
 	await Promise.all(
 		branch_id.map(async id => {
-			await PurchaseOrder.count({
-				where: {
-					po_number: {
-						[Op.eq]: po_number
-					}
-				},
-				include: {
-					model: Branch,
-					where: {
-						id: {
-							[Op.eq]: id
-						}
-					}
-				}
-			})
-				.then(count => {
-					if (count == 0) {
-						db.query(
-							"INSERT INTO branch_po (branch_id, po_number)\
-								VALUES (" +
-								`${id},'${po_number}'` +
-								")",
-							{ type: db.QueryTypes.INSERT }
-						)
-							.then(rows => null)
-							.catch(err => errors.push(err));
-					} else errors.push({ message: "Branch exists for this PO" });
-				})
-				.catch(err => errors.push(err));
+			BranchPO.findOrCreate({
+				branch_id: id,
+				po_number
+			}).catch(err => errors.push({ msg: `This branch (${no}) cannot be added to the PO.` }));
 		})
 	);
 	if (errors.length > 0) {
@@ -222,13 +199,23 @@ router.post("/:po_number/add-branches", async (req, res) => {
 // Delete PO (Superadmins Only)
 router.delete("/:po_number", (req, res) => {
 	const { po_number } = req.params;
-	PurchaseOrder.destroy({
-		where: {
-			po_number: {
-				[Op.eq]: po_number
+	db.transaction(t =>
+		BranchPO.destroy({
+			where: {
+				po_number: {
+					[Op.eq]: po_number
+				}
 			}
-		}
-	})
+		}).then(
+			PurchaseOrder.destroy({
+				where: {
+					po_number: {
+						[Op.eq]: po_number
+					}
+				}
+			})
+		)
+	)
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err));
 });

@@ -132,7 +132,11 @@ router.delete("/:customer_code/delete", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err =>
+			res
+				.status(500)
+				.send({ errors: [{ msg: "This customer cannot be deleted.", errors: err }] })
+		);
 });
 
 module.exports = router;

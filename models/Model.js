@@ -16,11 +16,11 @@ const Model = db.define("models", {
 	},
 	type: {
 		type: Sequelize.ENUM,
-		values: ["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER"],
+		values: ["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER", "OTHER"],
 		allowNull: false,
 		validate: {
 			notEmpty: true,
-			isIn: [["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER"]]
+			isIn: [["POS", "PRINTER", "MONITOR", "KEYBOARD", "CASH_DRAWER", "SCANNER", "OTHER"]]
 		}
 	}
 });

@@ -4,6 +4,10 @@ const Branch = require("../models/Branch");
 const Job = require("../models/Job");
 const PurchaseOrder = require("../models/PurchaseOrder");
 const Withdrawal = require("../models/Withdrawal");
+const Item = require("../models/Item");
+const ItemWithdrawal = require("../models/junction/ItemWithdrawal");
+const BranchJob = require("../models/junction/BranchJob");
+const BranchPO = require("../models/junction/BranchPO");
 const Customer = require("../models/Customer");
 const StoreType = require("../models/StoreType");
 const Sequelize = require("sequelize");
@@ -64,22 +68,27 @@ router.get("/:id/items/", async (req, res) => {
 	const { id } = req.params;
 	const { limit, page, search, search_term } = req.query;
 
-	const queryString = `FROM stock, models, withdrawals, branches, item_withdrawal\
-		WHERE withdrawals.branch_id = ${id}\
-		AND branches.id = ${id}\
-		AND item_withdrawal.withdrawal_id = withdrawals.id\
-		AND item_withdrawal.serial_no = stock.serial_no\
-		AND stock.model_id = models.id`;
-
-	const query = await tools.countAndQueryWithString({
-		select: "SELECT stock.serial_no, models.type, models.name, install_date",
-		from_where: queryString,
-		search,
-		search_table: "stock",
-		search_term,
+	const query = await tools.countAndQuery({
 		limit,
 		page,
-		rows_name: "items"
+		include: [
+			{
+				model: Withdrawal,
+				where: {
+					branch_id: {
+						[Op.eq]: id
+					}
+				},
+				as: "withdrawal"
+			},
+			{
+				model: Item,
+				as: "item"
+			}
+		],
+		search,
+		search_term,
+		model: ItemWithdrawal
 	});
 	if (query.errors) {
 		res.status(500).send(query.errors);
@@ -126,17 +135,17 @@ router.get("/:id/po", async (req, res) => {
 	const { id } = req.params;
 	let { limit, page, search, search_term } = req.query;
 
-	const query = await tools.countAndQueryWithString({
+	const query = await tools.countAndQuery({
 		limit,
 		page,
 		search,
-		search_table: "purchase_orders",
 		search_term,
-		select: "SELECT branch_po.po_number, description, date",
-		from_where: `FROM branch_po, purchase_orders
-			WHERE branch_po.branch_id = ${id}
-			AND branch_po.po_number = purchase_orders.po_number`,
-		rows_name: "po"
+		where: {
+			branch_id: {
+				[Op.eq]: id
+			}
+		},
+		model: BranchPO
 	});
 	if (query.errors) {
 		res.status(500).send(query.errors);
@@ -177,7 +186,7 @@ router.post("/add", branchValidation, (req, res) => {
 		address,
 		province
 	})
-		.then(rows => res.sendStatus(200))
+		.then(rows => res.send(rows))
 		.catch(err => res.status(500).send(err));
 });
 
@@ -215,118 +224,153 @@ router.delete("/:id/remove-job", (req, res) => {
 	const { id } = req.params;
 	const { job_code } = req.body;
 	if (!job_code) {
-		res.status(400).send([{ message: "Job code is required" }]);
+		res.status(400).send([{ msg: "Job code is required." }]);
+		return;
 	}
-	db.query(
-		"DELETE FROM branch_job \
-    WHERE branch_id = " + id + "AND job_code = '" + job_code + "'",
-		{ type: db.QueryTypes.DELETE }
-	)
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
-});
-
-// Add Job to branch if Job doesn't exist for that branch
-router.post("/:id/add-job", (req, res) => {
-	const { id } = req.params;
-	const { job_code } = req.body;
-	if (!job_code) {
-		res.status(400).send([{ message: "Job code is required" }]);
-	}
-	Branch.count({
+	BranchJob.destroy({
 		where: {
-			id: {
+			branch_id: {
 				[Op.eq]: id
-			}
-		},
-		include: {
-			model: Job,
-			where: {
-				job_code: {
-					[Op.eq]: job_code
-				}
+			},
+			job_code: {
+				[Op.eq]: job_code
 			}
 		}
 	})
-		.then(count => {
-			if (count == 0) {
-				db.query(
-					"INSERT INTO branch_job (branch_id, job_code)\
-                        VALUES (" +
-						`${id},'${job_code}'` +
-						")",
-					{ type: db.QueryTypes.INSERT }
+		.then(rows => res.sendStatus(200))
+		.catch(err =>
+			res.status(500).json({
+				errors: [{ msg: `This job (${job_code}) cannot be removed from the branch.` }]
+			})
+		);
+});
+
+// Add Job to branch if Job doesn't exist for that branch
+router.post("/:id/add-job", async (req, res) => {
+	const { id } = req.params;
+	const { job_code } = req.body;
+	if (!job_code) {
+		res.status(400).json({ errors: [{ msg: "Job code is required." }] });
+		return;
+	}
+	let errors = [];
+	await Promise.all(
+		job_code.map(e =>
+			BranchJob.findOrCreate({
+				job_code,
+				branch_id: id
+			})
+				.then(r => res.sendStatus(200))
+				.catch(err =>
+					errors.push({
+						errors: [
+							{ msg: `This job (${job_code}) cannot be removed from the branch.` }
+						]
+					})
 				)
-					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err));
-			} else res.status(400).send([{ message: "Job exists for this branch" }]);
-		})
-		.catch(err => res.status(500).send(err));
+		)
+	);
+	if (errors.length > 0) {
+		res.status(500).json({ errors });
+	} else {
+		res.sendStatus(200);
+	}
 });
 
 // Remove PO from branch
 router.delete("/:id/remove-po", (req, res) => {
 	const { id } = req.params;
 	const { po_number } = req.query;
-	db.query(
-		"DELETE FROM branch_po \
-    WHERE branch_id = " +
-			id +
-			"AND po_number = '" +
-			po_number +
-			"'",
-		{ type: db.QueryTypes.DELETE }
-	)
+	if (!po_number) {
+		res.status(400).json({ errors: [{ msg: "Job code is required." }] });
+		return;
+	}
+	BranchPO.destroy({
+		where: {
+			branch_id: {
+				[Op.eq]: id
+			},
+			po_number: {
+				[Op.eq]: po_number
+			}
+		}
+	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err =>
+			res.status(500).json({
+				errors: [{ msg: `This PO (${po_number}) cannot be removed from the branch.` }]
+			})
+		);
 });
 // Add PO to branch if PO doesn't exist for that branch
 router.post("/:id/add-po", (req, res) => {
 	const { id } = req.params;
 	const { po_number } = req.body;
-	Branch.count({
-		where: {
-			id: {
-				[Op.eq]: id
-			}
-		},
-		include: {
-			model: PurchaseOrder,
-			where: {
-				po_number: {
-					[Op.eq]: po_number
-				}
-			}
-		}
+	if (!job_code) {
+		res.status(400).json({ errors: [{ msg: "Job code is required." }] });
+		return;
+	}
+	BranchPO.findOrCreate({
+		branch_id: id,
+		po_number
 	})
-		.then(count => {
-			if (count == 0) {
-				db.query(
-					"INSERT INTO branch_po (branch_id, po_number)\
-                        VALUES (" +
-						`${id},'${po_number}'` +
-						")",
-					{ type: db.QueryTypes.INSERT }
-				)
-					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err));
-			} else res.status(400).send([{ message: "PO exists for this branch" }]);
-		})
-		.catch(err => res.status(500).send(err));
+		.then(r => res.sendStatus(200))
+		.catch(err =>
+			res
+				.status(400)
+				.json({ errors: [{ msg: "PO cannot be added to this branch", errors: err }] })
+		);
 });
 
 // Delete branch
 router.delete("/:id", (req, res) => {
 	const { id } = req.params;
-	Branch.destroy({
-		where: {
-			id: {
-				[Op.eq]: id
+	db.transaction(t =>
+		BranchJob.destroy(
+			{
+				where: {
+					branch_id: {
+						[Op.eq]: id
+					}
+				}
+			},
+			{
+				transaction: t
 			}
-		}
-	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		).then(r =>
+			BranchPO.destroy(
+				{
+					where: {
+						branch_id: {
+							[Op.eq]: id
+						}
+					}
+				},
+				{
+					transaction: t
+				}
+			).then(rr =>
+				Branch.destroy(
+					{
+						where: {
+							id: {
+								[Op.eq]: id
+							}
+						}
+					},
+					{
+						transaction: t
+					}
+				)
+			)
+		)
+	)
+		.then(r => res.sendStatus(200))
+		.catch(err =>
+			res
+				.status(500)
+				.json({ errors: [{ msg: "This branch cannot be deleted", errors: err }] })
+		);
 });
 
 module.exports = router;

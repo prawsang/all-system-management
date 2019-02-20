@@ -6,6 +6,7 @@ const Job = require("../models/Job");
 const Customer = require("../models/Customer");
 const Branch = require("../models/Branch");
 const StoreType = require("../models/StoreType");
+const BranchJob = require("../models/junction/BranchJob");
 const tools = require("../utils/tools");
 const { check, validationResult } = require("express-validator/check");
 
@@ -55,22 +56,22 @@ router.get("/:job_code/branches", async (req, res) => {
 		page,
 		search,
 		search_term,
+		where: {
+			job_code: {
+				[Op.eq]: job_code
+			}
+		},
 		include: [
 			{
-				model: Job,
-				as: "jobs",
-				where: {
-					job_code: {
-						[Op.eq]: job_code
-					}
+				model: Branch,
+				as: "branch",
+				include: {
+					model: StoreType,
+					as: "store_type"
 				}
-			},
-			{
-				model: StoreType,
-				as: "store_type"
 			}
 		],
-		model: Branch
+		model: BranchJob
 	});
 	if (query.errors) {
 		res.status(500).send(query.errors);
@@ -139,66 +140,71 @@ router.put("/:job_code/edit", jobValidation, (req, res) => {
 router.delete("/:job_code/remove-branch", (req, res) => {
 	const { job_code } = req.params;
 	const { branch_id } = req.query;
-	db.query(
-		"DELETE FROM branch_job \
-    WHERE branch_id = " +
-			branch_id +
-			"AND job_code = '" +
-			job_code +
-			"'",
-		{ type: db.QueryTypes.DELETE }
-	)
+	if (!branch_id) {
+		res.status(400).send({ errors: [{ msg: "Branch is required." }] });
+		return;
+	}
+	BranchJob.destroy({
+		where: {
+			branch_id: {
+				[Op.eq]: branch_id
+			},
+			job_code: {
+				[Op.eq]: job_code
+			}
+		}
+	})
 		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).send(err));
 });
 
 // Add branch to job if branch doesn't exist for that job
-router.post("/:job_code/add-branch", (req, res) => {
+router.post("/:job_code/add-branch", async (req, res) => {
 	const { job_code } = req.params;
 	const { branch_id } = req.body;
-	Job.count({
-		where: {
-			job_code: {
-				[Op.eq]: job_code
-			}
-		},
-		include: {
-			model: Branch,
-			where: {
-				id: {
-					[Op.eq]: branch_id
-				}
-			}
-		}
-	})
-		.then(count => {
-			if (count == 0) {
-				db.query(
-					"INSERT INTO branch_job (branch_id, job_code)\
-                        VALUES (" +
-						`${branch_id},'${job_code}'` +
-						")",
-					{ type: db.QueryTypes.INSERT }
+	if (!branch_id) {
+		res.status(400).send([{ msg: "Branch is required." }]);
+		return;
+	}
+	let errors = [];
+	await Promise.all(
+		branch_id.map(e =>
+			BranchJob.findOrCreate({
+				job_code,
+				branch_id
+			})
+				.then(r => res.sendStatus(200))
+				.catch(err =>
+					errors.push({ msg: `This branch (${branch_id}) cannot be added to this job.` })
 				)
-					.then(rows => res.sendStatus(200))
-					.catch(err => res.status(500).send(err));
-			} else res.status(400).send([{ message: "Branch exists for this job" }]);
-		})
-		.catch(err => res.status(500).send(err));
+		)
+	);
+	if (errors.length > 0) {
+		res.status(500).json({ errors });
+	} else {
+		res.sendStatus(200);
+	}
 });
 
 // Delete job
 router.delete("/:job_code", (req, res) => {
 	const { job_code } = req.params;
-	Branch.destroy({
-		where: {
-			job_code: {
-				[Op.eq]: job_code
+	db.transaction(t =>
+		BranchJob.destroy(
+			{
+				where: {
+					job_code: {
+						[Op.eq]: job_code
+					}
+				}
+			},
+			{
+				transaction: t
 			}
-		}
-	})
-		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		)
+	)
+		.then(r => res.sendStatus(200))
+		.catch(err => res.status(500).json({ errors: [{ msg: "This job cannot be deleted" }] }));
 });
 
 module.exports = router;

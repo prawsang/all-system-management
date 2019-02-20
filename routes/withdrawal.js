@@ -7,6 +7,7 @@ const Job = require("../models/Job");
 const Customer = require("../models/Customer");
 const User = require("../models/User");
 const Withdrawal = require("../models/Withdrawal");
+const ItemWithdrawal = require("../models/junction/ItemWithdrawal");
 const PurchaseOrder = require("../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -234,7 +235,7 @@ router.put("/:id/edit", async (req, res) => {
 	// Check if Pending
 	const isPending = await validation.checkStatus(id, "PENDING");
 	if (!isPending) {
-		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
+		res.status(400).json({ errors: [{ msg: "This withdrawal must be PENDING." }] });
 		return;
 	}
 
@@ -306,7 +307,7 @@ router.put("/:id/change-status", async (req, res) => {
 	} else if (status == "CANCELLED") {
 		const changeStatus = await Withdrawal.changeStatus(id, status);
 		if (changeStatus.errors.length > 0) {
-			res.status(500).send(changeStatus.errors);
+			res.status(500).json({ errors: changeStatus.errors });
 			return;
 		} else {
 			// return all items
@@ -325,11 +326,11 @@ router.put("/:id/change-status", async (req, res) => {
 				items = withdrawal.items;
 			});
 			const r = await Withdrawal.returnItems(items);
-			if (r.errors.length > 0) res.status(400).send(r.errors);
+			if (r.errors.length > 0) res.status(400).json({ errors: r.errors });
 			res.sendStatus(200);
 		}
 	} else if (status == "PENDING") {
-		res.status(400).send([{ message: "Cannot change status to PENDING." }]);
+		res.status(400).json({ errors: [{ msg: "Cannot change status to PENDING." }] });
 	}
 });
 
@@ -341,7 +342,7 @@ router.put("/:id/add-items", async (req, res) => {
 	// Check if Pending
 	const isPending = await Withdrawal.checkStatus(id, "PENDING");
 	if (!isPending) {
-		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
+		res.status(400).json([{ msg: "This withdrawal must be PENDING." }]);
 		return;
 	}
 
@@ -361,30 +362,26 @@ router.put("/:id/add-items", async (req, res) => {
 	} else if (type === "BORROW") {
 		r = await borrowItems(serial_no);
 	} else {
-		res.status(400).send("Withdrawal type is invalid.");
+		res.status(400).json({ errors: [{ msg: "Withdrawal type is invalid" }] });
 		return;
 	}
 	errors = r.errors;
 
 	await Promise.all(
 		r.updatedSerials.map(async no => {
-			const itemExists = await Withdrawal.checkItem(id, no);
-			if (!itemExists) {
-				db.query(
-					"INSERT INTO item_withdrawal (serial_no, withdrawal_id)\
-						VALUES (" +
-						`${no},'${id}'` +
-						")",
-					{ type: db.QueryTypes.INSERT }
-				)
-					.then(rows => null)
-					.catch(err => errors.push(err.errors));
-			} else {
-				errors.push({ msg: `Serial No. ${no} is already in this withdrawal.` });
-			}
+			ItemWithdrawal.findOrCreate({
+				serial_no: no,
+				withdrawal_id: id
+			})
+				.then(r => res.sendStatus(200))
+				.catch(err =>
+					errors.push({
+						msg: `Item ${no} cannot be added to the withdrawal.`
+					})
+				);
 		})
 	);
-	if (errors.length > 0) res.status(400).send(errors);
+	if (errors.length > 0) res.status(400).json({ errors });
 	else res.sendStatus(200);
 });
 
@@ -401,7 +398,7 @@ router.put("/:id/remove-items", checkSerial, async (req, res) => {
 	// Check if Pending
 	const isPending = await Withdrawal.checkStatus(id, "PENDING");
 	if (!isPending) {
-		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
+		res.status(400).json({ errors: [{ msg: "This withdrawal must be PENDING." }] });
 		return;
 	}
 
@@ -411,51 +408,119 @@ router.put("/:id/remove-items", checkSerial, async (req, res) => {
 
 	await Promise.all(
 		r.updatedSerials.map(async no => {
-			await db
-				.query(
-					`DELETE FROM item_withdrawal 
-				WHERE serial_no = '${no}'
-				AND withdrawal_id = ${id}`,
-					{
-						type: db.QueryTypes.DELETE
+			await ItemWithdrawal.destroy({
+				where: {
+					serial_no: {
+						[Op.eq]: serial_no
+					},
+					withdrawal_id: {
+						[Op.eq]: id
 					}
-				)
+				}
+			})
 				.then(rows => null)
 				.catch(err => errors.push(err));
 		})
 	);
-	if (errors.length > 0) res.status(400).send(errors);
+	if (errors.length > 0) res.status(400).json({ errors });
 	else res.sendStatus(200);
 });
 
+removeAllItemsAndDelete = id => {
+	db.transaction(t => {
+		return ItemWithdrawal.findAll(
+			{
+				where: {
+					withdrawal_id: {
+						[Op.eq]: id
+					}
+				}
+			},
+			{
+				transaction: t
+			}
+		).then(async rows => {
+			return Promise.all(
+				rows.map(e =>
+					Item.update(
+						{
+							status: "IN_STOCK"
+						},
+						{
+							where: {
+								serial_no: {
+									[Op.eq]: e.serial_no
+								}
+							},
+							transaction: t
+						}
+					)
+				)
+			).then(r =>
+				ItemWithdrawal.destroy(
+					{
+						where: {
+							withdrawal_id: {
+								[Op.eq]: id
+							}
+						}
+					},
+					{
+						transaction: t
+					}
+				).then(rr =>
+					Withdrawal.destroy(
+						{
+							where: {
+								id: {
+									[Op.eq]: id
+								}
+							}
+						},
+						{
+							transaction: t
+						}
+					)
+				)
+			);
+		});
+	})
+		.then(r => ({
+			errors: []
+		}))
+		.catch(err => ({
+			errors: [{ msg: "This withdrawal cannot be deleted." }]
+		}));
+};
+
 // Delete Withdrawal (only if it is pending)
-// router.delete("/:id", async (req, res) => {
-// 	const { id } = req.params;
-// 	// Check if Pending
-// 	const isPending = await Withdrawal.checkStatus(id, "PENDING");
-// 	if (!isPending) {
-// 		res.status(400).send([{ message: "This withdrawal must be PENDING." }]);
-// 		return;
-// 	}
+router.delete("/:id", async (req, res) => {
+	const { id } = req.params;
+	// Check if Pending
+	const isPending = await Withdrawal.checkStatus(id, "PENDING");
+	if (!isPending) {
+		res.status(400).json({ errors: [{ msg: "This withdrawal must be PENDING." }] });
+		return;
+	}
 
-// 	// Delete items from the withdrawal
-// 	const r = await Withdrawal.removeAllItemsAndDelete(id);
-// 	if (r.errors.length > 0) {
-// 		res.status(500).send(r.errors);
-// 	} else {
-// 		res.sendStatus(200);
-// 	}
-// });
+	// Delete items from the withdrawal
+	const r = await removeAllItemsAndDelete(id);
+	if (r.errors.length > 0) {
+		res.status(500).json(r.errors);
+	} else {
+		res.sendStatus(200);
+	}
+});
 
-// // Force delete withdrawal (no status check) (superadmins only)
-// router.delete("/:id/force-delete", async (req, res) => {
-// 	const { id } = req.params;
-// 	const r = await Withdrawal.removeAllItemsAndDelete(id);
-// 	if (r.errors.length > 0) {
-// 		res.status(500).send(r.errors);
-// 	} else {
-// 		res.sendStatus(200);
-// 	}
-// });
+// Force delete withdrawal (no status check) (superadmins only)
+router.delete("/:id/force-delete", async (req, res) => {
+	const { id } = req.params;
+	const r = await removeAllItemsAndDelete(id);
+	if (r.errors.length > 0) {
+		res.status(500).json(r.errors);
+	} else {
+		res.sendStatus(200);
+	}
+});
 
 module.exports = router;

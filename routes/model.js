@@ -61,7 +61,7 @@ const modelValidation = [
 		.isEmpty()
 		.withMessage("Model name cannot be empty."),
 	check("type")
-		.isIn(["POS", "SCANNER", "KEYBOARD", "CASH_DRAWER", "MONITOR", "PRINTER"])
+		.isIn(["POS", "SCANNER", "KEYBOARD", "CASH_DRAWER", "MONITOR", "PRINTER", "OTHER"])
 		.withMessage("Invalid type")
 ];
 
