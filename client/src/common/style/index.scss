@@ -214,11 +214,9 @@ body {
 }
 
 .modal-background {
-	align-items: center;
 	background-color: rgba(0, 0, 0, 0.7);
-	display: flex;
 	height: 100vh;
-	justify-content: center;
+	overflow-y: scroll;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -228,8 +226,12 @@ body {
 	z-index: 9999;
 	.panel {
 		box-shadow: 0 3px 12px $gray-1;
-		max-width: 90%;
+		margin: auto;
+		margin-top: 50px;
+		margin-bottom: 50px;
+		max-width: 60%;
 		min-width: 500px;
+		width: auto;
 		&.dropdown {
 			box-shadow: 0 3px 12px $gray-4;
 		}

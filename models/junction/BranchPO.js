@@ -29,7 +29,7 @@ const BranchPO = db.define(
 );
 
 BranchPO.belongsTo(Branch, {
-	foreignKey: "id",
+	foreignKey: "branch_id",
 	as: "branch"
 });
 BranchPO.belongsTo(PO, {

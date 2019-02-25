@@ -5,6 +5,7 @@ const Job = require("../models/Job");
 const PurchaseOrder = require("../models/PurchaseOrder");
 const Withdrawal = require("../models/Withdrawal");
 const Item = require("../models/Item");
+const Model = require("../models/Model");
 const ItemWithdrawal = require("../models/junction/ItemWithdrawal");
 const BranchJob = require("../models/junction/BranchJob");
 const BranchPO = require("../models/junction/BranchPO");
@@ -83,7 +84,11 @@ router.get("/:id/items/", async (req, res) => {
 			},
 			{
 				model: Item,
-				as: "item"
+				as: "item",
+				include: {
+					model: Model,
+					as: "model"
+				}
 			}
 		],
 		search,
@@ -145,6 +150,10 @@ router.get("/:id/po", async (req, res) => {
 				[Op.eq]: id
 			}
 		},
+		include: {
+			model: PurchaseOrder,
+			as: "po"
+		},
 		model: BranchPO
 	});
 	if (query.errors) {
@@ -170,6 +179,29 @@ const branchValidation = [
 		.toInt()
 ];
 
+// Add Job to branch if Job doesn't exist for that branch
+addJobToBranch = async (id, job_code, transaction) => {
+	let errors = [];
+	await Promise.all(
+		job_code.map(e =>
+			BranchJob.findOrCreate({
+				where: {
+					job_code,
+					branch_id: id
+				},
+				transaction
+			})
+				.then(r => res.sendStatus(200))
+				.catch(err =>
+					errors.push({
+						errors: [{ msg: `This job (${job_code}) cannot be added to the branch.` }]
+					})
+				)
+		)
+	);
+	return { errors };
+};
+
 // Add New Branch
 router.post("/add", branchValidation, (req, res) => {
 	const validationErrors = validationResult(req);
@@ -177,17 +209,30 @@ router.post("/add", branchValidation, (req, res) => {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
 
-	const { branch_code, customer_code, name, store_type_id, address, province } = req.body;
-	Branch.create({
+	const {
 		branch_code,
 		customer_code,
 		name,
 		store_type_id,
 		address,
-		province
-	})
-		.then(rows => res.send(rows))
-		.catch(err => res.status(500).send(err));
+		province,
+		job_code
+	} = req.body;
+	db.transaction(t =>
+		Branch.create(
+			{
+				branch_code,
+				customer_code,
+				name,
+				store_type_id,
+				address,
+				province
+			},
+			{
+				transaction: t
+			}
+		).then(async rows => addJobToBranch(rows.id, job_code, t))
+	).catch(err => console.log(err));
 });
 
 // Edit Branch
@@ -245,7 +290,6 @@ router.delete("/:id/remove-job", (req, res) => {
 		);
 });
 
-// Add Job to branch if Job doesn't exist for that branch
 router.post("/:id/add-job", async (req, res) => {
 	const { id } = req.params;
 	const { job_code } = req.body;
@@ -253,24 +297,10 @@ router.post("/:id/add-job", async (req, res) => {
 		res.status(400).json({ errors: [{ msg: "Job code is required." }] });
 		return;
 	}
-	let errors = [];
-	await Promise.all(
-		job_code.map(e =>
-			BranchJob.findOrCreate({
-				job_code,
-				branch_id: id
-			})
-				.then(r => res.sendStatus(200))
-				.catch(err =>
-					errors.push({
-						errors: [
-							{ msg: `This job (${job_code}) cannot be removed from the branch.` }
-						]
-					})
-				)
-		)
-	);
-	if (errors.length > 0) {
+
+	const r = await addJobToBranch(id, job_code);
+
+	if (r.errors.length > 0) {
 		res.status(500).json({ errors });
 	} else {
 		res.sendStatus(200);

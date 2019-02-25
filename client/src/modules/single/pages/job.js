@@ -4,7 +4,7 @@ import Table from "../components/Table";
 import ReservedItemsTable from "../tables/reserved";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
-import BranchesTable from "../tables/branches";
+import BranchesTable from "../tables/branchJunction";
 import history from "@/common/history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";

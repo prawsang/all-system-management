@@ -69,19 +69,20 @@ router.get("/:po_number/branches", async (req, res) => {
 		search_term,
 		include: [
 			{
-				model: PurchaseOrder,
-				where: {
-					po_number: {
-						[Op.eq]: po_number
-					}
+				model: Branch,
+				as: "branch",
+				include: {
+					model: StoreType,
+					as: "store_type"
 				}
-			},
-			{
-				model: StoreType,
-				as: "store_type"
 			}
 		],
-		model: Branch
+		where: {
+			po_number: {
+				[Op.eq]: po_number
+			}
+		},
+		model: BranchPO
 	});
 	if (query.errors) {
 		res.status(500).send(query.errors);
