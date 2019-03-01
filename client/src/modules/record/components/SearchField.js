@@ -48,7 +48,7 @@ class SearchField extends React.Component {
 						disabled={disabled}
 					/>
 					<button
-						className="button has-ml-05"
+						className="button has-ml-05 no-mb"
 						type="button"
 						onClick={() => this.handleSearch()}
 					>

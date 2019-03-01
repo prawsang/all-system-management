@@ -50,7 +50,7 @@ class EditBranch extends React.Component {
 		const { close, active } = this.props;
 
 		return (
-			<Modal active={active} close={close} title="Add New Job">
+			<Modal active={active} close={close} title="Edit Branch">
 				<div className="form">
 					<div className="field">
 						<label className="label">Branch Code</label>

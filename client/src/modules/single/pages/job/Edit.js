@@ -2,18 +2,19 @@ import React from "react";
 import Modal from "@/common/components/Modal";
 import Axios from "axios";
 
-class EditCustomer extends React.Component {
+class EditJob extends React.Component {
 	state = {
 		name: ""
 	};
 
 	edit() {
 		const { name } = this.state;
-		const { customer } = this.props;
+		const { job } = this.props;
 		Axios.request({
 			method: "PUT",
-			url: `/customer/${customer.customer_code}/edit`,
+			url: `/job/${job.job_code}/edit`,
 			data: {
+				customer_code: job.customer_code,
 				name
 			}
 		})
@@ -22,8 +23,8 @@ class EditCustomer extends React.Component {
 	}
 
 	componentDidMount() {
-		const { customer } = this.props;
-		this.setState({ name: customer.name });
+		const { job } = this.props;
+		this.setState({ name: job.name });
 	}
 
 	render() {
@@ -31,13 +32,13 @@ class EditCustomer extends React.Component {
 		const { close, active } = this.props;
 
 		return (
-			<Modal active={active} close={close} title="Edit Customer">
+			<Modal active={active} close={close} title="Edit Job">
 				<div className="form">
 					<div className="field">
-						<label className="label">Customer Name</label>
+						<label className="label">Job Name</label>
 						<input
 							className="input is-fullwidth"
-							placeholder="Customer Name"
+							placeholder="job Name"
 							onChange={e => this.setState({ name: e.target.value })}
 							value={name}
 						/>
@@ -56,4 +57,4 @@ class EditCustomer extends React.Component {
 	}
 }
 
-export default EditCustomer;
+export default EditJob;

@@ -1,26 +1,26 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../components/Table";
-import ReservedItemsTable from "../tables/reserved";
+import Table from "../../components/Table";
+import ReservedItemsTable from "../../tables/reserved";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
-import BranchesTable from "../tables/branchJunction";
+import BranchesTable from "../../tables/branchJunction";
 import history from "@/common/history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { CustomerData } from "../data/";
+import { CustomerData } from "../../data";
+import Edit from "./Edit";
+import AddBranch from "./AddBranch";
 
 class Job extends React.Component {
 	state = {
 		edit: false,
-		activeTable: 0 // 0 = branches, 1 = reserved items
+		activeTable: 0, // 0 = branches, 1 = reserved items
+		showAddBranch: false
 	};
 	render() {
 		const { data } = this.props;
-		const {
-			// edit,
-			activeTable
-		} = this.state;
+		const { edit, activeTable, showAddBranch } = this.state;
 		if (data) {
 			if (!data.job) return <p>ไม่พบรายการ</p>;
 		}
@@ -31,7 +31,19 @@ class Job extends React.Component {
 					{data && (
 						<React.Fragment>
 							<div className="panel-content no-pb">
-								<form>
+								<div>
+									<div style={{ float: "right" }}>
+										<button
+											className="button"
+											onClick={() =>
+												this.setState({
+													edit: true
+												})
+											}
+										>
+											Edit
+										</button>
+									</div>
 									<h5 className="no-mt has-mb-10">Job</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Job Code:</label>
@@ -41,10 +53,22 @@ class Job extends React.Component {
 										<label className="is-bold has-mr-05">Job Name:</label>
 										<span>{data.job.name}</span>
 									</div>
-								</form>
+								</div>
 								<hr />
 								<CustomerData data={data.job.customer} />
 								<hr />
+							</div>
+							<div style={{ float: "right", paddingRight: 30 }}>
+								<button
+									className={`button ${activeTable === 0 || "is-hidden"}`}
+									onClick={() =>
+										this.setState({
+											showAddBranch: true
+										})
+									}
+								>
+									Add Branch
+								</button>
 							</div>
 							<div className="tabs" style={{ paddingLeft: 30 }}>
 								<div
@@ -94,6 +118,16 @@ class Job extends React.Component {
 									)}
 								/>
 							</div>
+							<Edit
+								job={data.job}
+								close={() => this.setState({ edit: false })}
+								active={edit}
+							/>
+							<AddBranch
+								job={data.job}
+								close={() => this.setState({ showAddBranch: false })}
+								active={showAddBranch}
+							/>
 						</React.Fragment>
 					)}
 				</div>
