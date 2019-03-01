@@ -33,7 +33,8 @@ ItemWithdrawal.belongsTo(Item, {
 	as: "item"
 });
 ItemWithdrawal.belongsTo(Withdrawal, {
-	foreignKey: "id",
+	foreignKey: "withdrawal_id",
+	otherKey: "id",
 	as: "withdrawal"
 });
 

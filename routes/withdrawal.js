@@ -174,7 +174,7 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		has_po
 	});
 	if (moreValidation.errors.length > 0) {
-		res.status(400).send(errors);
+		res.status(400).send(moreValidation.errors);
 		return;
 	}
 
@@ -381,12 +381,15 @@ router.put("/:id/add-items", async (req, res) => {
 		return;
 	}
 	errors = r.errors;
+	console.log(r.updatedSerials);
 
 	await Promise.all(
 		r.updatedSerials.map(async no => {
 			ItemWithdrawal.findOrCreate({
-				serial_no: no,
-				withdrawal_id: id
+				where: {
+					serial_no: no,
+					withdrawal_id: id
+				}
 			})
 				.then(r => res.sendStatus(200))
 				.catch(err =>

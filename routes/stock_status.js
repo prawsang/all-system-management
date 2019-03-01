@@ -25,21 +25,21 @@ installItems = async (serial_no, branch_id, job_code) => {
 		serial_no.map(async no => {
 			const valid = await Item.checkStatus(no, ["IN_STOCK", "RESERVED"]);
 			if (!valid) {
-				errors.push({ msg: `The item ${no} is not ${validStatus[0]}` });
+				errors.push({ msg: `The item ${no} is not IN_STOCK` });
 			} else {
-				Item.findOne({
+				await Item.findOne({
 					where: {
 						serial_no: {
 							[Op.eq]: no
 						}
 					}
-				}).then(res => {
+				}).then(async res => {
 					if (res.reserve_branch_id && res.reserve_branch_id != branch_id) {
 						errors.push({ msg: `The item ${no} is reserved by another branch.` });
 					} else if (res.reserve_job_code && res.reserve_job_code != job_code) {
 						errors.push({ msg: `The item ${no} is reserved by another job.` });
 					} else {
-						Item.update(
+						await Item.update(
 							{
 								status: "INSTALLED",
 								reserve_branch_id: null,
@@ -60,6 +60,7 @@ installItems = async (serial_no, branch_id, job_code) => {
 			}
 		})
 	);
+	console.log(updatedSerials);
 	return {
 		updatedSerials,
 		errors
