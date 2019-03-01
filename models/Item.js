@@ -82,7 +82,7 @@ Item.changeStatus = async params => {
 					.then(res => updatedSerials.push(no))
 					.catch(err => errors.push(err));
 			} else {
-				errors.push({ msg: `This item is not ${validStatus[0]}`, value: no });
+				errors.push({ msg: `The ${no} item is not ${validStatus[0]}` });
 			}
 		})
 	);

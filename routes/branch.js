@@ -179,29 +179,6 @@ const branchValidation = [
 		.toInt()
 ];
 
-// Add Job to branch if Job doesn't exist for that branch
-addJobToBranch = async (id, job_code, transaction) => {
-	let errors = [];
-	await Promise.all(
-		job_code.map(e =>
-			BranchJob.findOrCreate({
-				where: {
-					job_code,
-					branch_id: id
-				},
-				transaction
-			})
-				.then(r => res.sendStatus(200))
-				.catch(err =>
-					errors.push({
-						errors: [{ msg: `This job (${job_code}) cannot be added to the branch.` }]
-					})
-				)
-		)
-	);
-	return { errors };
-};
-
 // Add New Branch
 router.post("/add", branchValidation, (req, res) => {
 	const validationErrors = validationResult(req);
@@ -218,21 +195,21 @@ router.post("/add", branchValidation, (req, res) => {
 		province,
 		job_code
 	} = req.body;
-	db.transaction(t =>
-		Branch.create(
-			{
-				branch_code,
-				customer_code,
-				name,
-				store_type_id,
-				address,
-				province
-			},
-			{
-				transaction: t
-			}
-		).then(async rows => addJobToBranch(rows.id, job_code, t))
-	).catch(err => console.log(err));
+	Branch.create(
+		{
+			branch_code,
+			customer_code,
+			name,
+			store_type_id,
+			address,
+			province
+		},
+		{
+			transaction: t
+		}
+	)
+		.then(rows => res.send(rows))
+		.catch(err => console.log(err));
 });
 
 // Edit Branch
@@ -297,10 +274,24 @@ router.post("/:id/add-job", async (req, res) => {
 		res.status(400).json({ errors: [{ msg: "Job code is required." }] });
 		return;
 	}
+	errors = [];
 
-	const r = await addJobToBranch(id, job_code);
+	await Promise.all(
+		job_code.map(e =>
+			BranchJob.findOrCreate({
+				where: {
+					job_code: e,
+					branch_id: id
+				}
+			}).catch(err =>
+				errors.push({
+					errors: [{ msg: `This job (${job_code}) cannot be added to the branch.` }]
+				})
+			)
+		)
+	);
 
-	if (r.errors.length > 0) {
+	if (errors.length > 0) {
 		res.status(500).json({ errors });
 	} else {
 		res.sendStatus(200);

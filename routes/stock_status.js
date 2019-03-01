@@ -16,17 +16,50 @@ const checkSerial = [
 // Install
 // IN_STOCK/RESERVED -> INSTALLED
 // Removes the reserve_job_code and reserve_branch_id of the items
-installItems = async serial_no => {
-	const res = await Item.changeStatus({
-		serial_no,
-		validStatus: ["IN_STOCK", "RESERVED"],
-		toStatus: "INSTALLED",
-		otherInfo: {
-			reserve_branch_id: null,
-			reserve_job_code: null
-		}
-	});
-	const { updatedSerials, errors } = res;
+// Check if the item is reserved by the provided job/branch
+installItems = async (serial_no, branch_id, job_code) => {
+	let errors = [];
+	let updatedSerials = [];
+
+	await Promise.all(
+		serial_no.map(async no => {
+			const valid = await Item.checkStatus(no, ["IN_STOCK", "RESERVED"]);
+			if (!valid) {
+				errors.push({ msg: `The item ${no} is not ${validStatus[0]}` });
+			} else {
+				Item.findOne({
+					where: {
+						serial_no: {
+							[Op.eq]: no
+						}
+					}
+				}).then(res => {
+					if (res.reserve_branch_id && res.reserve_branch_id != branch_id) {
+						errors.push({ msg: `The item ${no} is reserved by another branch.` });
+					} else if (res.reserve_job_code && res.reserve_job_code != job_code) {
+						errors.push({ msg: `The item ${no} is reserved by another job.` });
+					} else {
+						Item.update(
+							{
+								status: "INSTALLED",
+								reserve_branch_id: null,
+								reserve_job_code: null
+							},
+							{
+								where: {
+									serial_no: {
+										[Op.eq]: no
+									}
+								}
+							}
+						)
+							.then(res => updatedSerials.push(no))
+							.catch(err => errors.push(err));
+					}
+				});
+			}
+		})
+	);
 	return {
 		updatedSerials,
 		errors

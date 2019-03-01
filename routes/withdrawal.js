@@ -339,6 +339,21 @@ router.put("/:id/add-items", async (req, res) => {
 	const { serial_no } = req.body;
 	const { id } = req.params;
 
+	// Get Job Code and Branch ID
+	let job_code = "";
+	let branch_id = "";
+
+	await Withdrawal.findOne({
+		where: {
+			id: {
+				[Op.eq]: id
+			}
+		}
+	}).then(res => {
+		job_code = res.job_code;
+		branch_id = res.branch_id;
+	});
+
 	// Check if Pending
 	const isPending = await Withdrawal.checkStatus(id, "PENDING");
 	if (!isPending) {
@@ -356,7 +371,7 @@ router.put("/:id/add-items", async (req, res) => {
 	}
 
 	if (type === "INSTALLATION") {
-		r = await installItems(serial_no);
+		r = await installItems(serial_no, branch_id, job_code);
 	} else if (type === "TRANSFER") {
 		r = await transferItems(serial_no);
 	} else if (type === "BORROW") {
