@@ -121,7 +121,8 @@ router.put("/:job_code/edit", jobValidation, (req, res) => {
 	}
 
 	const { job_code } = req.params;
-	Branch.update(
+	const { name } = req.body;
+	Job.update(
 		{
 			name
 		},
@@ -171,12 +172,14 @@ router.post("/:job_code/add-branch", async (req, res) => {
 	await Promise.all(
 		branch_id.map(e =>
 			BranchJob.findOrCreate({
-				job_code,
-				branch_id
+				where: {
+					job_code,
+					branch_id: e
+				}
 			})
 				.then(r => res.sendStatus(200))
 				.catch(err =>
-					errors.push({ msg: `This branch (${branch_id}) cannot be added to this job.` })
+					errors.push({ msg: `This branch (${e}) cannot be added to this job.` })
 				)
 		)
 	);
