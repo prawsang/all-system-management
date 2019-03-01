@@ -40,24 +40,32 @@ getModelPluralName = model => {
 };
 
 configPrefs = data => {
-	const { include, where, search, search_term } = data;
+	const { where, search, search_term, search_junction } = data;
+	let { include } = data;
 
 	let prefs = {
 		include: include,
 		where: where ? where : {}
 	};
 	if (search && search_term) {
-		prefs.where[search] = {
-			[Op.iLike]: "%" + search_term + "%"
-		};
+		if (search_junction !== undefined) {
+			include[search_junction].where = {};
+			include[search_junction].where[search] = {
+				[Op.iLike]: "%" + search_term + "%"
+			};
+		} else {
+			prefs.where[search] = {
+				[Op.iLike]: "%" + search_term + "%"
+			};
+		}
 	}
-
 	return prefs;
 };
 
 module.exports = {
 	countAndQuery: async function(data) {
-		const { where, include, limit, page, search, model } = data;
+		// search_junction is the index of the included model in the include array
+		const { where, include, limit, page, search, model, search_junction } = data;
 		let search_term;
 		if (data.search_term) {
 			search_term = data.search_term.toLowerCase();
@@ -76,6 +84,7 @@ module.exports = {
 				configPrefs({
 					where,
 					include,
+					search_junction,
 					search,
 					search_term,
 					limit,

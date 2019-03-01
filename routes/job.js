@@ -71,6 +71,7 @@ router.get("/:job_code/branches", async (req, res) => {
 				}
 			}
 		],
+		search_junction: 0,
 		model: BranchJob
 	});
 	if (query.errors) {

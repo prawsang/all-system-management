@@ -93,6 +93,7 @@ router.get("/:id/items/", async (req, res) => {
 		],
 		search,
 		search_term,
+		search_junction: 1,
 		model: ItemWithdrawal
 	});
 	if (query.errors) {
@@ -150,10 +151,13 @@ router.get("/:id/po", async (req, res) => {
 				[Op.eq]: id
 			}
 		},
-		include: {
-			model: PurchaseOrder,
-			as: "po"
-		},
+		include: [
+			{
+				model: PurchaseOrder,
+				as: "po"
+			}
+		],
+		search_junction: 0,
 		model: BranchPO
 	});
 	if (query.errors) {
@@ -220,7 +224,7 @@ router.put("/:id/edit", branchValidation, (req, res) => {
 	}
 
 	const { id } = req.params;
-	const { branch_code, name, store_type_id, address, province, customer_code } = req.body;
+	const { branch_code, name, store_type_id, address, province } = req.body;
 	Branch.update(
 		{
 			branch_code,

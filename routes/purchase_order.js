@@ -82,6 +82,7 @@ router.get("/:po_number/branches", async (req, res) => {
 				[Op.eq]: po_number
 			}
 		},
+		search_junction: 0,
 		model: BranchPO
 	});
 	if (query.errors) {
