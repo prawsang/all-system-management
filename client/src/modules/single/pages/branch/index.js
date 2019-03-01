@@ -1,15 +1,16 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../components/Table";
-import ItemsTable from "../tables/items";
-import ReservedItemsTable from "../tables/reserved";
+import Table from "../../components/Table";
+import ItemsTable from "../../tables/items";
+import ReservedItemsTable from "../../tables/reserved";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
-import POTable from "../tables/po";
+import POTable from "../../tables/po";
 import history from "@/common/history";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { CustomerData } from "../data/";
+import { CustomerData } from "../../data";
+import Edit from "./Edit";
 
 class Branch extends React.Component {
 	state = {
@@ -18,10 +19,7 @@ class Branch extends React.Component {
 	};
 	render() {
 		const { data } = this.props;
-		const {
-			// edit,
-			activeTable
-		} = this.state;
+		const { edit, activeTable } = this.state;
 		if (data) {
 			if (!data.branch) return <p>ไม่พบรายการ</p>;
 		}
@@ -32,7 +30,19 @@ class Branch extends React.Component {
 					{data && (
 						<React.Fragment>
 							<div className="panel-content no-pb">
-								<form>
+								<div>
+									<div style={{ float: "right" }}>
+										<button
+											className="button"
+											onClick={() =>
+												this.setState({
+													edit: true
+												})
+											}
+										>
+											Edit
+										</button>
+									</div>
 									<h5 className="no-mt has-mb-10">Branch</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Branch Code:</label>
@@ -50,7 +60,7 @@ class Branch extends React.Component {
 										<label className="is-bold has-mr-05">Store Type:</label>
 										<span>{data.branch.store_type.name}</span>
 									</div>
-								</form>
+								</div>
 								<hr />
 								<CustomerData data={data.branch.customer} />
 								<hr />
@@ -145,6 +155,11 @@ class Branch extends React.Component {
 									)}
 								/>
 							</div>
+							<Edit
+								branch={data.branch}
+								close={() => this.setState({ edit: false })}
+								active={edit}
+							/>
 						</React.Fragment>
 					)}
 				</div>

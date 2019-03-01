@@ -2,12 +2,12 @@ import React from "react";
 import Modal from "@/common/components/Modal";
 import Axios from "axios";
 
-class AddJob extends React.Component {
+class EditCustomer extends React.Component {
 	state = {
 		name: ""
 	};
 
-	addJob() {
+	edit() {
 		const { name } = this.state;
 		const { customer } = this.props;
 		Axios.request({
@@ -43,7 +43,7 @@ class AddJob extends React.Component {
 						/>
 					</div>
 					<div className="buttons">
-						<button className="button" onClick={() => this.addJob()}>
+						<button className="button" onClick={() => this.edit()}>
 							Edit
 						</button>
 						<button className="button is-light" onClick={close}>
@@ -56,4 +56,4 @@ class AddJob extends React.Component {
 	}
 }
 
-export default AddJob;
+export default EditCustomer;
