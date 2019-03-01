@@ -39,22 +39,26 @@ class BranchSearch extends React.Component {
 							onClick={() => this.setState({ showResults: false })}
 						>
 							{data ? (
-								data.branches.length > 0 ? (
-									data.branches.map((e, i) => (
+								data.rows.length > 0 ? (
+									data.rows.map((e, i) => (
 										<span
 											key={e.name + i}
 											className="list-item is-clickable"
 											onClick={() => {
 												if (!single) {
-													setSelectedBranches([...selectedBranches, e]);
+													setSelectedBranches([
+														...selectedBranches,
+														e.branch
+													]);
 													this.setState({ branch: "" });
 												} else {
 													setSelectedBranches([e]);
-													this.setState({ branch: e.name });
+													this.setState({ branch: e.branch.name });
 												}
 											}}
 										>
-											{e.name} {e.branch_code && `(${e.branch_code})`}
+											{e.branch.name}{" "}
+											{e.branch.branch_code && `(${e.branch.branch_code})`}
 										</span>
 									))
 								) : (
