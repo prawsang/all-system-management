@@ -199,19 +199,14 @@ router.post("/add", branchValidation, (req, res) => {
 		province,
 		job_code
 	} = req.body;
-	Branch.create(
-		{
-			branch_code,
-			customer_code,
-			name,
-			store_type_id,
-			address,
-			province
-		},
-		{
-			transaction: t
-		}
-	)
+	Branch.create({
+		branch_code,
+		customer_code,
+		name,
+		store_type_id,
+		address,
+		province
+	})
 		.then(rows => res.send(rows))
 		.catch(err => console.log(err));
 });

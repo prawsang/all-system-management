@@ -104,7 +104,7 @@ router.post("/add", jobValidation, (req, res) => {
 	}
 
 	const { name, job_code, customer_code } = req.body;
-	Branch.create({
+	Job.create({
 		job_code,
 		name,
 		customer_code
