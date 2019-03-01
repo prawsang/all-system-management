@@ -11,15 +11,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { CustomerData } from "../../data";
 import Edit from "./Edit";
+import AddJob from "./AddJob";
 
 class Branch extends React.Component {
 	state = {
 		edit: false,
-		activeTable: 0 // 0 = items, 1 = po, 2 = reserved items
+		activeTable: 0, // 0 = items, 1 = po, 2 = reserved items
+		showAddJob: false
 	};
 	render() {
 		const { data } = this.props;
-		const { edit, activeTable } = this.state;
+		const { edit, activeTable, showAddJob } = this.state;
 		if (data) {
 			if (!data.branch) return <p>ไม่พบรายการ</p>;
 		}
@@ -65,20 +67,40 @@ class Branch extends React.Component {
 								<CustomerData data={data.branch.customer} />
 								<hr />
 								<div>
+									<div style={{ float: "right" }}>
+										<button
+											className="button"
+											onClick={() =>
+												this.setState({
+													showAddJob: true
+												})
+											}
+										>
+											Add
+										</button>
+									</div>
 									<h5 className="has-mb-10 has-mt-10">Jobs</h5>
 									<ul className="has-mb-10">
-										{data.branch.jobs.map((e, i) => (
-											<li key={i + e.job_code}>
-												<span
-													className="accent is-clickable"
-													onClick={() =>
-														history.push(`/single/job/${e.job_code}`)
-													}
-												>
-													{e.name} ({e.job_code})
-												</span>
-											</li>
-										))}
+										{data.branch.jobs.length > 0 ? (
+											data.branch.jobs.map((e, i) => (
+												<li key={i + e.job_code}>
+													<span
+														className="accent is-clickable"
+														onClick={() =>
+															history.push(
+																`/single/job/${e.job_code}`
+															)
+														}
+													>
+														{e.name} ({e.job_code})
+													</span>
+												</li>
+											))
+										) : (
+											<p style={{ marginLeft: "-1.25em" }}>
+												สาขานี้ยังไม่มี Job
+											</p>
+										)}
 									</ul>
 								</div>
 								<hr />
@@ -159,6 +181,11 @@ class Branch extends React.Component {
 								branch={data.branch}
 								close={() => this.setState({ edit: false })}
 								active={edit}
+							/>
+							<AddJob
+								branch={data.branch}
+								close={() => this.setState({ showAddJob: false })}
+								active={showAddJob}
 							/>
 						</React.Fragment>
 					)}
