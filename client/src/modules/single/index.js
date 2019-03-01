@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import PO from "./pages/po/";
 import Branch from "./pages/branch/";
 import Job from "./pages/job/";
-import Item from "./pages/item";
+import Item from "./pages/item/";
 import Customer from "./pages/customer/";
 import Withdrawal from "./pages/withdrawal/";
 import AddItemsToWithdrawal from "./pages/withdrawal/addItems";

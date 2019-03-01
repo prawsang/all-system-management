@@ -1,7 +1,8 @@
 import React from "react";
-import Table from "../components/Table";
-import WithdrawalsTable from "../tables/withdrawals";
+import Table from "../../components/Table";
+import WithdrawalsTable from "../../tables/withdrawals";
 import history from "@/common/history";
+import Edit from "./Edit";
 
 class Item extends React.Component {
 	state = {
@@ -9,7 +10,7 @@ class Item extends React.Component {
 	};
 	render() {
 		const { data } = this.props;
-		// const { edit } = this.state;
+		const { edit } = this.state;
 		if (data) {
 			if (!data.item) return <p>ไม่พบรายการ</p>;
 		}
@@ -21,6 +22,18 @@ class Item extends React.Component {
 						<React.Fragment>
 							<div className="panel-content no-pb">
 								<div>
+									<div style={{ float: "right" }}>
+										<button
+											className="button"
+											onClick={() =>
+												this.setState({
+													edit: true
+												})
+											}
+										>
+											Edit
+										</button>
+									</div>
 									<h5 className="no-mt has-mb-10">Item</h5>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Status:</label>
@@ -101,6 +114,11 @@ class Item extends React.Component {
 								className="no-pt"
 								title="ประวัติการเบิก"
 								noPage={true}
+							/>
+							<Edit
+								item={data.item}
+								close={() => this.setState({ edit: false })}
+								active={edit}
 							/>
 						</React.Fragment>
 					)}
