@@ -33,7 +33,7 @@ const ConfirmModal = ({ active, close, onConfirm, currentSerial }) => (
 	</Modal>
 );
 
-class ItemsTable extends React.Component {
+class ItemsJunctionTable extends React.Component {
 	state = {
 		showConfirm: false,
 		currentSerial: ""
@@ -55,20 +55,20 @@ class ItemsTable extends React.Component {
 					</thead>
 					<tbody className="is-hoverable">
 						{data &&
-							(data.items.length > 0 &&
-								data.items.map((e, i) => (
+							(data.rows.length > 0 &&
+								data.rows.map((e, i) => (
 									<tr
 										className={`is-hoverable is-clickable ${showDelete &&
 											"is-short"}`}
-										key={i + e.serial_no}
+										key={i + e.item.serial_no}
 										onClick={event => {
-											history.push(`/single/item/${e.serial_no}`);
+											history.push(`/single/item/${e.item.serial_no}`);
 											event.stopPropagation();
 										}}
 									>
-										<td>{e.serial_no}</td>
-										<td>{e.model.name}</td>
-										<td>{e.model.type}</td>
+										<td>{e.item.serial_no}</td>
+										<td>{e.item.model.name}</td>
+										<td>{e.item.model.type}</td>
 										{showInstallDate && <td>{e.withdrawal.install_date}</td>}
 										{showDelete && (
 											<td>
@@ -77,7 +77,7 @@ class ItemsTable extends React.Component {
 													onClick={event => {
 														this.setState({
 															showConfirm: true,
-															currentSerial: e.serial_no
+															currentSerial: e.item.serial_no
 														});
 														event.stopPropagation();
 													}}
@@ -105,4 +105,4 @@ class ItemsTable extends React.Component {
 	}
 }
 
-export default ItemsTable;
+export default ItemsJunctionTable;

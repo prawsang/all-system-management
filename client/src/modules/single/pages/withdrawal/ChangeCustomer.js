@@ -1,7 +1,12 @@
 import React from "react";
 import Modal from "@/common/components/Modal";
 import { connect } from "react-redux";
-import { setSelectedCustomer, setSelectedJobCode, setSelectedBranches } from "@/actions/record";
+import {
+	setSelectedCustomer,
+	setSelectedJobCode,
+	setSelectedBranches,
+	resetRecordData
+} from "@/actions/record";
 import CustomerSearch from "@/modules/record/components/search/CustomerSearch";
 import BranchSearch from "@/modules/record/components/search/BranchSearch";
 import JobSelect from "@/modules/record/components/JobSelect";
@@ -37,6 +42,13 @@ class ChangeCustomer extends React.Component {
 		})
 			.then(res => window.location.reload())
 			.catch(err => console.log(err));
+	}
+
+	componentDidMount() {
+		this.props.resetRecordData();
+	}
+	componentWillUnmount() {
+		this.props.resetRecordData();
 	}
 
 	render() {
@@ -79,7 +91,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
 	setSelectedCustomer,
 	setSelectedJobCode,
-	setSelectedBranches
+	setSelectedBranches,
+	resetRecordData
 };
 
 export default connect(

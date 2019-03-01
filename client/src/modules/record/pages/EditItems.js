@@ -6,6 +6,7 @@ import CustomerSearch from "../components/search/CustomerSearch";
 import BranchSearch from "../components/search/BranchSearch";
 import JobSelect from "../components/JobSelect";
 import { connect } from "react-redux";
+import { resetRecordData } from "@/actions/record";
 
 const RETURN = "RETURN";
 const BROKEN = "BROKEN";
@@ -41,7 +42,6 @@ class EditItems extends React.Component {
 				.then(res => this.resetPage())
 				.catch(err => {
 					console.log(err);
-					this.resetPage();
 				});
 		} else if (action === RETURN) {
 			Axios.request({
@@ -54,7 +54,6 @@ class EditItems extends React.Component {
 				.then(res => this.resetPage())
 				.catch(err => {
 					console.log(err);
-					this.resetPage();
 				});
 		} else if (action === RESERVE) {
 			Axios.request({
@@ -73,9 +72,15 @@ class EditItems extends React.Component {
 				.then(res => this.resetPage())
 				.catch(err => {
 					console.log(err);
-					this.resetPage();
 				});
 		}
+	}
+
+	componentDidMount() {
+		this.props.resetRecordData();
+	}
+	componentWillUnmount() {
+		this.props.resetRecordData();
 	}
 
 	resetPage() {
@@ -198,7 +203,11 @@ const mapStateToProps = state => ({
 	selectedJobCode: state.record.selectedJobCode
 });
 
+const mapDispatchToProps = {
+	resetRecordData
+};
+
 export default connect(
 	mapStateToProps,
-	null
+	mapDispatchToProps
 )(EditItems);

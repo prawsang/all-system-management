@@ -1,6 +1,6 @@
 import React from "react";
 import SearchField from "@/modules/record/components/SearchField";
-import { setSelectedBranches } from "@/actions/record";
+import { setSelectedBranches, resetRecordData } from "@/actions/record";
 import { connect } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +10,13 @@ class BranchSearch extends React.Component {
 		showResults: false,
 		branch: ""
 	};
+
+	componentDidMount() {
+		this.props.resetRecordData();
+	}
+	componentWillUnmount() {
+		this.props.resetRecordData();
+	}
 
 	render() {
 		const { showResults, branch } = this.state;
@@ -102,7 +109,8 @@ const mapStateToProps = state => ({
 	selectedCustomer: state.record.selectedCustomer
 });
 const mapDispatchToProps = {
-	setSelectedBranches
+	setSelectedBranches,
+	resetRecordData
 };
 
 export default connect(

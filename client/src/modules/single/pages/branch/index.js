@@ -1,14 +1,12 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "../../components/Table";
-import ItemsTable from "../../tables/items";
+import ItemsTable from "../../tables/itemsJunction";
 import ReservedItemsTable from "../../tables/reserved";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
 import POTable from "../../tables/po";
 import history from "@/common/history";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { CustomerData } from "../../data";
 import Edit from "./Edit";
 import AddJob from "./AddJob";

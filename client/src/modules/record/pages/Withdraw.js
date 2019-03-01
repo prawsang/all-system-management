@@ -6,6 +6,7 @@ import JobSelect from "../components/JobSelect";
 import BranchSearch from "../components/search/BranchSearch";
 import { connect } from "react-redux";
 import Axios from "axios";
+import { resetRecordData } from "@/actions/record";
 
 const INSTALLATION = "INSTALLATION";
 const BORROW = "BORROW";
@@ -80,6 +81,13 @@ class Withdraw extends React.Component {
 		} catch (err) {
 			console.log(err);
 		}
+	}
+
+	componentDidMount() {
+		this.props.resetRecordData();
+	}
+	componentWillUnmount() {
+		this.props.resetRecordData();
 	}
 
 	render() {
@@ -251,7 +259,11 @@ const mapStateToProps = state => ({
 	selectedJobCode: state.record.selectedJobCode
 });
 
+const mapDispatchToProps = {
+	resetRecordData
+};
+
 export default connect(
 	mapStateToProps,
-	null
+	mapDispatchToProps
 )(Withdraw);

@@ -34,7 +34,7 @@ export const setItems = data => {
 				items.cashDrawers.push(e);
 				break;
 			case "PRINTER":
-				items.pritners.push(e);
+				items.printers.push(e);
 				break;
 			default:
 				break;
