@@ -29,7 +29,8 @@ const BranchJob = db.define(
 );
 
 BranchJob.belongsTo(Branch, {
-	foreignKey: "id",
+	foreignKey: "branch_id",
+	otherKey: "id",
 	as: "branch"
 });
 BranchJob.belongsTo(Job, {
