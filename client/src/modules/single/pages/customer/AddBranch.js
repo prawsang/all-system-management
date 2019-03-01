@@ -9,8 +9,7 @@ class AddBranch extends React.Component {
 		address: "",
 		province: "",
 		storeTypeId: 0,
-		storeTypes: [],
-		selectedJobs: []
+		storeTypes: []
 	};
 	componentDidMount() {
 		Axios.get("/store-type/get-all")
@@ -18,24 +17,8 @@ class AddBranch extends React.Component {
 			.catch(err => console.log(err));
 	}
 
-	toggleSelectJob(checked, jobCode) {
-		const { selectedJobs } = this.state;
-		if (checked) {
-			this.setState({ selectedJobs: [...selectedJobs, jobCode] });
-		} else {
-			const find = selectedJobs.indexOf(jobCode);
-			if (find > -1) {
-				this.setState({
-					selectedJobs: selectedJobs
-						.slice(0, find)
-						.concat(selectedJobs.slice(find + 1, selectedJobs.length))
-				});
-			}
-		}
-	}
-
 	addBranch() {
-		const { branchCode, name, address, province, storeTypeId, selectedJobs } = this.state;
+		const { branchCode, name, address, province, storeTypeId } = this.state;
 		const { customer } = this.props;
 		Axios.request({
 			method: "POST",
@@ -43,13 +26,14 @@ class AddBranch extends React.Component {
 			data: {
 				customer_code: customer.customer_code,
 				branch_code: branchCode,
-				job_code: selectedJobs,
 				name,
 				address,
 				province,
 				store_type_id: storeTypeId
 			}
-		}).catch(err => console.log(err));
+		})
+			.then(res => window.location.reload())
+			.catch(err => console.log(err));
 	}
 
 	render() {
@@ -102,7 +86,7 @@ class AddBranch extends React.Component {
 						<label className="label">Store Type</label>
 						<div className="select">
 							<select
-								className="select is-fullwidth"
+								className="select is-fullwidth "
 								onChange={e => this.setState({ storeTypeId: e.target.value })}
 								value={storeTypeId}
 							>
@@ -113,29 +97,6 @@ class AddBranch extends React.Component {
 								))}
 							</select>
 						</div>
-					</div>
-					<div className="has-mb-10">
-						<label className="label">Jobs</label>
-						{customer &&
-							(customer.jobs.length > 0 ? (
-								customer.jobs.map((e, i) => (
-									<div
-										className="field is-flex is-ai-center has-mb-05"
-										key={e.name + i}
-									>
-										<input
-											className="checkbox"
-											type="checkbox"
-											onChange={ev =>
-												this.toggleSelectJob(ev.target.checked, e.job_code)
-											}
-										/>
-										<label className="has-ml-05">{e.name}</label>
-									</div>
-								))
-							) : (
-								<p>ลูกค้าท่านนี้ยังไม่มี Job</p>
-							))}
 					</div>
 					<div className="buttons">
 						<button className="button" onClick={() => this.addBranch()}>

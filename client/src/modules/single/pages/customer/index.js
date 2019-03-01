@@ -6,6 +6,8 @@ import { connect } from "react-redux";
 import JobsTable from "../../tables/jobs";
 import BranchesTable from "../../tables/branches";
 import AddBranch from "./AddBranch";
+import AddJob from "./AddJob";
+import Edit from "./Edit";
 
 class Customer extends React.Component {
 	state = {
@@ -17,7 +19,7 @@ class Customer extends React.Component {
 
 	showAddModal() {
 		const { activeTable } = this.state;
-		if (activeTable == 0) {
+		if (activeTable === 0) {
 			this.setState({ showAddBranchModal: true, showAddJobModal: false });
 		} else {
 			this.setState({ showAddBranchModal: false, showAddJobModal: true });
@@ -30,11 +32,7 @@ class Customer extends React.Component {
 
 	render() {
 		const { data } = this.props;
-		const {
-			// edit,
-			activeTable,
-			showAddBranchModal
-		} = this.state;
+		const { edit, activeTable, showAddBranchModal, showAddJobModal } = this.state;
 		if (data) {
 			if (!data.customer) return <p>ไม่พบรายการ</p>;
 		}
@@ -45,6 +43,18 @@ class Customer extends React.Component {
 					{data && (
 						<React.Fragment>
 							<div className="panel-content no-pb">
+								<div style={{ float: "right" }}>
+									<button
+										className="button"
+										onClick={() =>
+											this.setState({
+												edit: true
+											})
+										}
+									>
+										Edit
+									</button>
+								</div>
 								<div>
 									<h5 className="no-mt has-mb-10">Customer</h5>
 									<div className="has-mb-10">
@@ -116,9 +126,18 @@ class Customer extends React.Component {
 							</div>
 							<AddBranch
 								customer={data.customer}
-								jobs={data.customer.jobs}
 								close={() => this.hideAddModal()}
 								active={showAddBranchModal}
+							/>
+							<AddJob
+								customer={data.customer}
+								close={() => this.hideAddModal()}
+								active={showAddJobModal}
+							/>
+							<Edit
+								customer={data.customer}
+								close={() => this.setState({ edit: false })}
+								active={edit}
 							/>
 						</React.Fragment>
 					)}
