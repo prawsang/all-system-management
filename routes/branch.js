@@ -88,6 +88,12 @@ router.get("/:id/items/", async (req, res) => {
 				include: {
 					model: Model,
 					as: "model"
+				},
+				where: {
+					status: {
+						[Op.not]: "IN_STOCK",
+						[Op.not]: "RESERVED"
+					}
 				}
 			}
 		],

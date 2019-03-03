@@ -7,9 +7,9 @@ class FetchDataFromServer extends React.Component {
 		data: null
 	};
 	componentDidMount() {
-		const { url, currentPage, currentLimit, disabled } = this.props;
+		const { url, currentPage, currentLimit, disabled, params } = this.props;
 		if (!disabled) {
-			Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}`).then(res => {
+			Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}&${params}`).then(res => {
 				this.setState({ data: res.data });
 				console.log(res);
 			});
@@ -17,24 +17,28 @@ class FetchDataFromServer extends React.Component {
 	}
 	componentDidUpdate(prevProps, prevState) {
 		if (this.props !== prevProps) {
-			const { url, currentPage, currentLimit, disabled } = this.props;
+			const { url, currentPage, currentLimit, disabled, params } = this.props;
 			const {
 				url: prevUrl,
 				currentPage: prevCurrentPage,
 				currentLimit: prevCurrentLimit,
-				disabled: prevDisabled
+				disabled: prevDisabled,
+				params: prevParams
 			} = prevProps;
 			if (
 				url !== prevUrl ||
 				currentPage !== prevCurrentPage ||
 				currentLimit !== prevCurrentLimit ||
-				disabled !== prevDisabled
+				disabled !== prevDisabled ||
+				params !== prevParams
 			) {
 				if (!disabled) {
-					Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}`).then(res => {
-						this.setState({ data: res.data });
-						console.log(res);
-					});
+					Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}&${params}`).then(
+						res => {
+							this.setState({ data: res.data });
+							console.log(res);
+						}
+					);
 				}
 			}
 		}

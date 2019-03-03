@@ -34,32 +34,6 @@ router.route("/get-all").get(async (req, res) => {
 	res.send(query);
 });
 
-router.route("/type/:type").get(async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const { type } = req.params;
-	const query = await tools.countAndQuery({
-		limit,
-		page,
-		search,
-		search_term,
-		include: {
-			model: Model,
-			as: "model",
-			where: {
-				type: {
-					[Op.eq]: type
-				}
-			}
-		},
-		model: Item
-	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
-	}
-	res.send(query);
-});
-
 router.get("/:serial_no/details", (req, res) => {
 	const { serial_no } = req.params;
 	Item.findOne({
@@ -108,46 +82,44 @@ router.get("/:serial_no/details", (req, res) => {
 // Get item by status
 router.get("/status/:status", async (req, res) => {
 	const { status } = req.params;
-	const { limit, page, search, search_term } = req.query;
+	const { limit, page, search, search_term, type } = req.query;
 
 	// Show return_by if borrowed
-	const include =
-		status == "borrowed"
-			? [
-					{
-						model: Model,
-						as: "model"
-					},
-					{
-						model: Withdrawal,
-						as: "withdrawals",
-						include: [
-							{
-								model: Job,
-								as: "job"
-							},
-							{
-								model: Branch,
-								as: "branch",
-								include: {
-									model: Customer,
-									as: "customer"
-								}
-							}
-						],
-						where: {
-							type: {
-								[Op.eq]: "BORROW"
-							}
-						}
+	const borrowInclude = {
+		model: Withdrawal,
+		as: "withdrawals",
+		include: [
+			{
+				model: Job,
+				as: "job"
+			},
+			{
+				model: Branch,
+				as: "branch",
+				include: {
+					model: Customer,
+					as: "customer"
+				}
+			}
+		],
+		where: {
+			type: {
+				[Op.eq]: "BORROW"
+			}
+		}
+	};
+
+	const include = {
+		model: Model,
+		as: "model",
+		where: type
+			? {
+					type: {
+						[Op.eq]: type
 					}
-			  ]
-			: [
-					{
-						model: Model,
-						as: "model"
-					}
-			  ];
+			  }
+			: null
+	};
 
 	const query = await tools.countAndQuery({
 		limit,
@@ -159,7 +131,7 @@ router.get("/status/:status", async (req, res) => {
 				[Op.eq]: status.toUpperCase()
 			}
 		},
-		include,
+		include: status === "borrowed" ? [borrowInclude, include] : [include],
 		model: Item
 	});
 	if (query.errors) {
