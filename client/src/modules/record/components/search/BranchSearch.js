@@ -52,7 +52,7 @@ class BranchSearch extends React.Component {
 													]);
 													this.setState({ branch: "" });
 												} else {
-													setSelectedBranches([e]);
+													setSelectedBranches([e.branch]);
 													this.setState({ branch: e.branch.name });
 												}
 											}}

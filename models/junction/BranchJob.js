@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("../../config/database");
 const Job = require("../Job");
 const Branch = require("../Branch");
+const Op = Sequelize.Op;
 
 const BranchJob = db.define(
 	"branch_job",
@@ -27,6 +28,21 @@ const BranchJob = db.define(
 		freezeTableName: "branch_job"
 	}
 );
+
+BranchJob.checkBranchInJob = (branch_id, job_code) => {
+	return BranchJob.count({
+		where: {
+			branch_id: {
+				[Op.eq]: branch_id
+			},
+			job_code: {
+				[Op.eq]: job_code
+			}
+		}
+	})
+		.then(count => (count === 0 ? false : true))
+		.catch(err => false);
+};
 
 BranchJob.belongsTo(Branch, {
 	foreignKey: "branch_id",

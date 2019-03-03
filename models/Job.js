@@ -29,27 +29,6 @@ const Job = db.define("jobs", {
 	}
 });
 
-// Class Methods
-Job.checkBranchInJob = (branch_id, job_code) => {
-	return Job.count({
-		where: {
-			job_code: {
-				[Op.eq]: job_code
-			}
-		},
-		include: {
-			model: Branch,
-			where: {
-				id: {
-					[Op.eq]: branch_id
-				}
-			}
-		}
-	})
-		.then(count => (count == 0 ? false : true))
-		.catch(err => false);
-};
-
 // Associations
 Job.belongsTo(Customer, {
 	foreignKey: "customer_code",

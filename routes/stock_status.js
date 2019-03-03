@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Item = require("../models/Item");
-const Branch = require("../models/Branch");
+const BranchJob = require("../models/junction/BranchJob");
 const Job = require("../models/Job");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -115,7 +115,7 @@ router.put(
 		}
 
 		const { reserve_branch_id, reserve_job_code, serial_no } = req.body;
-		const branchInJob = await Job.checkBranchInJob(reserve_branch_id);
+		const branchInJob = await BranchJob.checkBranchInJob(reserve_branch_id, reserve_job_code);
 		if (!branchInJob) {
 			res.status(400).send([{ msg: "Branch is not associated to the job code." }]);
 			return;
