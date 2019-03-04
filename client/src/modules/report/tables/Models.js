@@ -1,5 +1,4 @@
 import React from "react";
-import history from "@/common/history";
 import Model from "../modals/Model";
 import Modal from "@/common/components/Modal";
 import Axios from "axios";

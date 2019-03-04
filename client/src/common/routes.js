@@ -7,8 +7,6 @@ import Record from "../modules/record";
 import Single from "../modules/single";
 import SearchItem from "../modules/searchitem";
 
-import ServiceReport from "../modules/single/pages/withdrawal/print/ServiceReport";
-
 class AppRouter extends React.Component {
 	render() {
 		return (

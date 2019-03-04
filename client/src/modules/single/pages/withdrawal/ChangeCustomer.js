@@ -14,6 +14,8 @@ import Axios from "axios";
 
 class ChangeCustomer extends React.Component {
 	componentDidMount() {
+		this.props.resetRecordData();
+
 		const { job_code, branch, po } = this.props.data;
 		const { setSelectedCustomer, setSelectedJobCode, setSelectedBranches } = this.props;
 		setSelectedCustomer(branch.customer);
@@ -44,9 +46,6 @@ class ChangeCustomer extends React.Component {
 			.catch(err => console.log(err));
 	}
 
-	componentDidMount() {
-		this.props.resetRecordData();
-	}
 	componentWillUnmount() {
 		this.props.resetRecordData();
 	}
