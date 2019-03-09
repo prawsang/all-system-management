@@ -35,8 +35,8 @@ class BillingModal extends React.Component {
 					<input
 						type="checkbox"
 						className="checkbox"
-						value={billed}
-						onChange={e => this.setState({ billed: e.target.value })}
+						checked={billed}
+						onChange={e => this.setState({ billed: e.target.checked })}
 					/>
 				</div>
 				<div className="buttons">

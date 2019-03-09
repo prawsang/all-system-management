@@ -10,11 +10,20 @@ class EditModal extends React.Component {
 		doNumber: "",
 		remarks: "",
 		installDate: "",
-		returnDate: ""
+		returnDate: "",
+		staffName: ""
 	};
 
 	componentDidMount() {
-		const { date, po_number, do_number, remarks, install_date, return_by } = this.props.data;
+		const {
+			date,
+			po_number,
+			do_number,
+			remarks,
+			install_date,
+			return_by,
+			staff_name
+		} = this.props.data;
 
 		this.setState({
 			date: date ? date : "",
@@ -22,13 +31,14 @@ class EditModal extends React.Component {
 			doNumber: do_number ? do_number : "",
 			remarks: remarks ? remarks : "",
 			installDate: install_date ? install_date : "",
-			returnDate: return_by ? return_by : ""
+			returnDate: return_by ? return_by : "",
+			staffName: staff_name ? staff_name : ""
 		});
 	}
 
 	handleEdit() {
 		const { data } = this.props;
-		const { date, poNumber, doNumber, installDate, returnDate } = this.state;
+		const { date, poNumber, doNumber, installDate, returnDate, staffName } = this.state;
 		Axios.request({
 			method: "PUT",
 			url: `/withdrawal/${data.id}/edit`,
@@ -37,12 +47,12 @@ class EditModal extends React.Component {
 				branch_id: data.branch_id,
 				po_number: poNumber,
 				do_number: doNumber,
-				staff_code: "020", //hard code
 				type: data.type,
 				return_by: returnDate,
 				date,
 				install_date: installDate,
-				has_po: data.has_po
+				has_po: data.has_po,
+				staff_name: staffName
 			}
 		})
 			.then(res => window.location.reload())
@@ -51,7 +61,7 @@ class EditModal extends React.Component {
 
 	render() {
 		const { active, close, data } = this.props;
-		const { date, poNumber, doNumber, installDate, returnDate } = this.state;
+		const { date, poNumber, doNumber, installDate, returnDate, staffName } = this.state;
 		return (
 			<Modal active={active} close={close} title="แก้ไขใบเบิก">
 				<Field editable={false} value={data.id} label="หมายเลขใบเบิก" />
@@ -62,6 +72,13 @@ class EditModal extends React.Component {
 					label="Date"
 					value={date}
 					onChange={e => this.setState({ date: e.target.value })}
+				/>
+				<Field
+					editable={true}
+					type="text"
+					label="ผู้เบิก"
+					value={staffName}
+					onChange={e => this.setState({ staffName: e.target.value })}
 				/>
 				{data.type === "BORROW" && (
 					<Field

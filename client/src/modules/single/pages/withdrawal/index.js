@@ -166,7 +166,11 @@ class Withdrawal extends React.PureComponent {
 										</span>
 									</h5>
 									<div className="has-mb-10">
-										<span>
+										<span
+											className={
+												!data.withdrawal.billed ? "is-bold danger" : ""
+											}
+										>
 											{data.withdrawal.billed
 												? "วางบิลแล้ว"
 												: "ยังไม่ได้วางบิล"}
