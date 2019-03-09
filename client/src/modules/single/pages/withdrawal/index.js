@@ -155,29 +155,37 @@ class Withdrawal extends React.PureComponent {
 									)}
 								</div>
 								<hr />
-								<div>
-									<h5 className="no-mt has-mb-10">
-										การวางบิล
-										<span
-											className="is-clickable accent has-ml-10 is-6"
-											onClick={() => this.setState({ editBilling: true })}
-										>
-											Edit
-										</span>
-									</h5>
-									<div className="has-mb-10">
-										<span
-											className={
-												!data.withdrawal.billed ? "is-bold danger" : ""
-											}
-										>
-											{data.withdrawal.billed
-												? "วางบิลแล้ว"
-												: "ยังไม่ได้วางบิล"}
-										</span>
-									</div>
-								</div>
-								<hr />
+								{data.withdrawal.type === "INSTALLATION" && (
+									<React.Fragment>
+										<div>
+											<h5 className="no-mt has-mb-10">
+												การวางบิล
+												<span
+													className="is-clickable accent has-ml-10 is-6"
+													onClick={() =>
+														this.setState({ editBilling: true })
+													}
+												>
+													Edit
+												</span>
+											</h5>
+											<div className="has-mb-10">
+												<span
+													className={
+														!data.withdrawal.billed
+															? "is-bold danger"
+															: ""
+													}
+												>
+													{data.withdrawal.billed
+														? "วางบิลแล้ว"
+														: "ยังไม่ได้วางบิล"}
+												</span>
+											</div>
+										</div>
+										<hr />
+									</React.Fragment>
+								)}
 								<div>
 									<h5 className="no-mt has-mb-10">
 										Remarks
