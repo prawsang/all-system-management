@@ -30,7 +30,7 @@ router.route("/:id/details").get((req, res) => {
 				model
 			});
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 router.route("/type/:type").get(async (req, res) => {
@@ -78,7 +78,7 @@ router.post("/add", modelValidation, (req, res) => {
 		type
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit Model
@@ -104,7 +104,7 @@ router.put("/:id/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Delete Model
@@ -118,7 +118,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 module.exports = router;

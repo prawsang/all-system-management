@@ -32,7 +32,7 @@ router.get("/:staff_code/details", (req, res) => {
 		}
 	})
 		.then(user => res.send({ user }))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 const userValidation = [
@@ -71,7 +71,7 @@ router.post("/add", userValidation, (req, res) => {
 				.then(rows => res.sendStatus(200))
 				.catch(err => console.log(err.errors));
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit User
@@ -103,9 +103,9 @@ router.put("/:staff_code/edit", (req, res) => {
 				}
 			)
 				.then(rows => res.sendStatus(200))
-				.catch(err => res.status(500).send(err));
+				.catch(err => res.status(500).json({ errors: err }));
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Delete user
@@ -119,7 +119,7 @@ router.delete("/:staff_code", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 module.exports = router;

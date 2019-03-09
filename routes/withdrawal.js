@@ -88,7 +88,7 @@ router.get("/:id/details", (req, res) => {
 				withdrawal
 			})
 		)
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // List of withdrawals of type INSTALLATION without a purchase order
@@ -244,7 +244,7 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		billed: false
 	})
 		.then(row => res.send(row))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit Withdrawal (only if it is pending)
@@ -311,7 +311,7 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit remarks
@@ -332,7 +332,7 @@ router.put("/:id/edit-remarks", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit billing
@@ -353,7 +353,7 @@ router.put("/:id/edit-billing", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Change Status

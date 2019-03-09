@@ -10,7 +10,9 @@ const { check, validationResult } = require("express-validator/check");
 const checkSerial = [
 	check("serial_no")
 		.isArray()
-		.withMessage("Invalid Serial No.")
+		.not()
+		.isEmpty()
+		.withMessage("Invalid or Empty Serial No.")
 ];
 
 // Install

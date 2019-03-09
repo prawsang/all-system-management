@@ -54,7 +54,7 @@ router.get("/:po_number/details", (req, res) => {
 		]
 	})
 		.then(po => res.send({ po }))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // get branches for po
@@ -130,7 +130,7 @@ router.post("/add", poValidation, (req, res) => {
 		job_code
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit PO information (date and job_code cannot be edited)
@@ -156,7 +156,7 @@ router.put("/:po_number/edit", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Remove Branch from PO
@@ -174,7 +174,7 @@ router.delete("/:po_number/remove-branch", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Add Branch to PO (if doesn't exist)
@@ -219,7 +219,7 @@ router.delete("/:po_number", (req, res) => {
 		)
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 module.exports = router;
