@@ -1,18 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { createStore, applyMiddleware, compose } from "redux";
 import * as serviceWorker from "./serviceWorker";
 import AppRouter from "./common/routes";
 import "./common/style/index.scss";
-import rootReducer from "./reducers";
-import thunk from "redux-thunk";
-// import { initAxios } from './common/config/axios';
+import store from "./common/store";
+import initHttp from "./common/http";
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
-
-// initAxios();
+initHttp();
 
 ReactDOM.render(
 	<Provider store={store}>

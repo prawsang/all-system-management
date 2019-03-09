@@ -34,9 +34,7 @@ class NewStoreType extends React.Component {
 			data: {
 				name: storeTypeName
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 	render() {
 		const { storeTypeName } = this.state;

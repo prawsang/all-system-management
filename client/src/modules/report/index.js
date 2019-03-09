@@ -35,6 +35,7 @@ class Report extends React.Component {
 					<Route path="/report/store-types" component={StoreTypesWrapper} />
 					<Route path="/report/models" component={ModelsWrapper} />
 					<Route path="/report/all-withdrawals" component={AllWithdrawalsWrapper} />
+					<Route path="/report/not-billed" component={NoBillingWrapper} />
 				</Switch>
 			</div>
 		);
@@ -119,6 +120,20 @@ const AllWithdrawalsWrapper = () => (
 				data={data}
 				table={data => <WithdrawalsTable data={data} />}
 				title="ใบเบิกทั้งหมด"
+				searchPlaceholder="Search ID"
+			/>
+		)}
+	/>
+);
+
+const NoBillingWrapper = () => (
+	<FetchDataFromServer
+		url="/withdrawal/not-billed"
+		render={data => (
+			<Table
+				data={data}
+				table={data => <WithdrawalsTable data={data} />}
+				title="การติดตั้งที่ยังไม่ได้วางบิล"
 				searchPlaceholder="Search ID"
 			/>
 		)}

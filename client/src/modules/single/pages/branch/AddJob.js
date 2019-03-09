@@ -17,16 +17,14 @@ class EditBranch extends React.Component {
 			data: {
 				job_code: [selectedJobCode]
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 
 	componentDidMount() {
 		const { branch } = this.props;
-		Axios.get(`/customer/${branch.customer_code}/details`)
-			.then(res => res.data.customer.jobs && this.setState({ jobs: res.data.customer.jobs }))
-			.catch(err => console.log(err));
+		Axios.get(`/customer/${branch.customer_code}/details`).then(
+			res => res.data.customer.jobs && this.setState({ jobs: res.data.customer.jobs })
+		);
 	}
 
 	render() {

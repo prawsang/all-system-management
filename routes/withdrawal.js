@@ -88,7 +88,7 @@ router.get("/:id/details", (req, res) => {
 				withdrawal
 			})
 		)
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // List of withdrawals of type INSTALLATION without a purchase order
@@ -119,6 +119,45 @@ router.get("/without-po", async (req, res) => {
 			},
 			type: {
 				[Op.eq]: "INSTALLATION"
+			}
+		},
+		model: Withdrawal
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
+});
+
+// not billed
+router.get("/not-billed", async (req, res) => {
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
+		limit,
+		page,
+		search,
+		search_term,
+		include: [
+			{
+				model: Branch,
+				as: "branch",
+				include: {
+					model: Customer,
+					as: "customer"
+				}
+			},
+			{
+				model: Job,
+				as: "job"
+			}
+		],
+		where: {
+			type: {
+				[Op.eq]: "INSTALLATION"
+			},
+			billed: {
+				[Op.eq]: false
 			}
 		},
 		model: Withdrawal
@@ -205,11 +244,11 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		billed: false
 	})
 		.then(row => res.send(row))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit Withdrawal (only if it is pending)
-router.put("/:id/edit", async (req, res) => {
+router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -238,12 +277,12 @@ router.put("/:id/edit", async (req, res) => {
 		has_po
 	});
 	if (moreValidation.errors.length > 0) {
-		res.status(400).send(errors);
+		res.status(400).json({ errors });
 		return;
 	}
 
 	// Check if Pending
-	const isPending = await validation.checkStatus(id, "PENDING");
+	const isPending = await Withdrawal.checkStatus(id, "PENDING");
 	if (!isPending) {
 		res.status(400).json({ errors: [{ msg: "This withdrawal must be PENDING." }] });
 		return;
@@ -272,7 +311,7 @@ router.put("/:id/edit", async (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit remarks
@@ -293,7 +332,7 @@ router.put("/:id/edit-remarks", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit billing
@@ -314,7 +353,7 @@ router.put("/:id/edit-billing", (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Change Status

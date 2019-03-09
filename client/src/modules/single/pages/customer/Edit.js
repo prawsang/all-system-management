@@ -16,9 +16,7 @@ class EditCustomer extends React.Component {
 			data: {
 				name
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 
 	componentDidMount() {

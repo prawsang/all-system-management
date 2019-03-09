@@ -13,12 +13,10 @@ class Edititem extends React.Component {
 
 	getModelsOfType = type => {
 		if (type !== "") {
-			Axios.get(`/model/type/${type}`)
-				.then(res => {
-					this.setState({ models: res.data.models });
-					console.log(res);
-				})
-				.catch(err => console.log(err));
+			Axios.get(`/model/type/${type}`).then(res => {
+				this.setState({ models: res.data.models });
+				console.log(res);
+			});
 		}
 	};
 
@@ -33,9 +31,7 @@ class Edititem extends React.Component {
 				remarks,
 				stock_location: stockLocation
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 
 	componentDidMount() {

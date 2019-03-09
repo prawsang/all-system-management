@@ -41,7 +41,7 @@ router.post("/add", storeTypeValidation, (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit Store Type
@@ -66,7 +66,7 @@ router.put("/:id/edit", storeTypeValidation, (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Delete store type
@@ -80,7 +80,7 @@ router.delete("/:id", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 module.exports = router;

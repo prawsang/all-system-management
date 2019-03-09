@@ -41,9 +41,7 @@ class ChangeCustomer extends React.Component {
 				install_date: install_date,
 				has_po: has_po
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 
 	componentWillUnmount() {

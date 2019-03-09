@@ -23,7 +23,7 @@ class RemarksModal extends React.Component {
 			}
 		})
 			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+			
 	}
 	render() {
 		const { active, close } = this.props;

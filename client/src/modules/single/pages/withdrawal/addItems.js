@@ -29,7 +29,7 @@ class AddItemsToWithdrawal extends React.Component {
 			}
 		})
 			.then(res => history.push(`/single/withdrawal/${id}`))
-			.catch(err => console.log(err));
+			
 	}
 
 	render() {

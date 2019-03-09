@@ -38,9 +38,7 @@ class NewModel extends React.Component {
 				name: modelName,
 				type
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 	render() {
 		const { modelName, type } = this.state;

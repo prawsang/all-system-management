@@ -61,7 +61,7 @@ router.get("/:id/details", (req, res) => {
 		]
 	})
 		.then(branch => res.send({ branch }))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // List of items in a branch
@@ -214,7 +214,7 @@ router.post("/add", branchValidation, (req, res) => {
 		province
 	})
 		.then(rows => res.send(rows))
-		.catch(err => console.log(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit Branch
@@ -243,7 +243,7 @@ router.put("/:id/edit", branchValidation, (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Remove Job from branch

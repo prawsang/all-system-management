@@ -6,12 +6,14 @@ import Report from "../modules/report";
 import Record from "../modules/record";
 import Single from "../modules/single";
 import SearchItem from "../modules/searchitem";
+import Error from "./components/Error";
 
 class AppRouter extends React.Component {
 	render() {
 		return (
 			<React.Fragment>
 				<Nav />
+				<Error />
 				<div className="container main with-side-bar">
 					<Router history={history}>
 						<Switch>

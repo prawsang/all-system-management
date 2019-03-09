@@ -76,7 +76,7 @@ class Menu extends React.Component {
 							<Link link="/report/branch-no-install">สาขาที่ยังไม่ได้ติดตั้ง</Link>
 							<Link link="/report/broken">ของเสีย</Link>
 							<Link link="/report/borrowed">ของยืม</Link>
-							<Link link="/report/all-po">ยังไม่ได้วางบิล</Link>
+							<Link link="/report/not-billed">การติดตั้งที่ยังไม่ได้วางบิล</Link>
 							<Link link="/report/in-stock">Stock คงเหลือ</Link>
 							<Link link="/report/all-withdrawals">ใบเบิกทั้งหมด</Link>
 						</ul>

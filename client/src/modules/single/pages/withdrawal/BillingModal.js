@@ -21,9 +21,7 @@ class BillingModal extends React.Component {
 			data: {
 				billed
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 	render() {
 		const { active, close } = this.props;
@@ -35,8 +33,8 @@ class BillingModal extends React.Component {
 					<input
 						type="checkbox"
 						className="checkbox"
-						value={billed}
-						onChange={e => this.setState({ billed: e.target.value })}
+						checked={billed}
+						onChange={e => this.setState({ billed: e.target.checked })}
 					/>
 				</div>
 				<div className="buttons">

@@ -14,7 +14,7 @@ const removeItemFromWithdrawal = (serialNo, withdrawalId) => {
 		}
 	})
 		.then(res => window.location.reload())
-		.catch(err => console.log(err));
+		
 };
 
 const ConfirmModal = ({ active, close, onConfirm, currentSerial }) => (

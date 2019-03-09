@@ -39,7 +39,7 @@ router.get("/:customer_code/details", (req, res) => {
 		}
 	})
 		.then(customer => res.send({ customer }))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Get Branches for Customer
@@ -93,7 +93,7 @@ router.post("/add", customerValidation, (req, res) => {
 		name
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit Customer
@@ -118,7 +118,7 @@ router.put("/:customer_code/edit", customerValidation, (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Delete customer

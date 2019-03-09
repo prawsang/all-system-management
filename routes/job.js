@@ -44,7 +44,7 @@ router.get("/:job_code/details", (req, res) => {
 		}
 	})
 		.then(job => res.send({ job }))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Get branches for job
@@ -110,7 +110,7 @@ router.post("/add", jobValidation, (req, res) => {
 		customer_code
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Edit Job
@@ -135,7 +135,7 @@ router.put("/:job_code/edit", jobValidation, (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Remove Branch from job
@@ -157,7 +157,7 @@ router.delete("/:job_code/remove-branch", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Add branch to job if branch doesn't exist for that job

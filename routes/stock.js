@@ -76,7 +76,7 @@ router.get("/:serial_no/details", (req, res) => {
 				item
 			});
 		})
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Get item by status
@@ -252,7 +252,7 @@ router.post("/add", stockValidation, async (req, res) => {
 			}).catch(err => errors.push(err));
 		})
 	);
-	if (errors.length > 0) res.status(500).send(errors);
+	if (errors.length > 0) res.status(500).json({ errors });
 	else res.sendStatus(200);
 });
 
@@ -280,7 +280,7 @@ router.put("/:serial_no/edit", stockValidation, (req, res) => {
 		}
 	)
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // Delete Item from Stock (superadmins only)
@@ -294,7 +294,7 @@ router.delete("/:serial_no", (req, res) => {
 		}
 	})
 		.then(rows => res.sendStatus(200))
-		.catch(err => res.status(500).send(err));
+		.catch(err => res.status(500).json({ errors: err }));
 });
 
 module.exports = router;
