@@ -130,6 +130,45 @@ router.get("/without-po", async (req, res) => {
 	res.send(query);
 });
 
+// not billed
+router.get("/not-billed", async (req, res) => {
+	const { limit, page, search, search_term } = req.query;
+	const query = await tools.countAndQuery({
+		limit,
+		page,
+		search,
+		search_term,
+		include: [
+			{
+				model: Branch,
+				as: "branch",
+				include: {
+					model: Customer,
+					as: "customer"
+				}
+			},
+			{
+				model: Job,
+				as: "job"
+			}
+		],
+		where: {
+			type: {
+				[Op.eq]: "INSTALLATION"
+			},
+			billed: {
+				[Op.eq]: false
+			}
+		},
+		model: Withdrawal
+	});
+	if (query.errors) {
+		res.status(500).send(query.errors);
+		return;
+	}
+	res.send(query);
+});
+
 const checkWithdrawal = [
 	check("branch_id")
 		.not()
