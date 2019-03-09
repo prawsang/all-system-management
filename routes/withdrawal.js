@@ -209,7 +209,7 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 });
 
 // Edit Withdrawal (only if it is pending)
-router.put("/:id/edit", async (req, res) => {
+router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -243,7 +243,7 @@ router.put("/:id/edit", async (req, res) => {
 	}
 
 	// Check if Pending
-	const isPending = await validation.checkStatus(id, "PENDING");
+	const isPending = await Withdrawal.checkStatus(id, "PENDING");
 	if (!isPending) {
 		res.status(400).json({ errors: [{ msg: "This withdrawal must be PENDING." }] });
 		return;
