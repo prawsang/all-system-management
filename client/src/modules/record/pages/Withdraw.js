@@ -22,7 +22,8 @@ class Withdraw extends React.Component {
 		doNumber: "",
 		serialNos: [],
 		serialNo: "",
-		remarks: ""
+		remarks: "",
+		staffName: ""
 	};
 
 	handleAddSerial(e) {
@@ -42,7 +43,8 @@ class Withdraw extends React.Component {
 			poNumber,
 			doNumber,
 			serialNos,
-			remarks
+			remarks,
+			staffName
 		} = this.state;
 		const { selectedBranches, selectedJobCode } = this.props;
 		let id = "";
@@ -58,11 +60,12 @@ class Withdraw extends React.Component {
 					install_date: type === INSTALLATION ? installDate : null,
 					po_number: type === INSTALLATION ? poNumber : null,
 					do_number: type === INSTALLATION ? doNumber : null,
-					staff_code: "020", //hard code
 					job_code: selectedJobCode,
 					branch_id: selectedBranches[0].id,
 					remarks,
-					has_po: type === INSTALLATION
+					has_po: type === INSTALLATION,
+					billed: false,
+					staff_name: staffName
 				}
 			}).then(res => (id = res.data.id));
 		} catch (err) {
@@ -100,7 +103,8 @@ class Withdraw extends React.Component {
 			doNumber,
 			serialNos,
 			serialNo,
-			remarks
+			remarks,
+			staffName
 		} = this.state;
 		const { selectedCustomer, selectedJobCode } = this.props;
 
@@ -130,6 +134,13 @@ class Withdraw extends React.Component {
 							label="Date"
 							value={date}
 							onChange={e => this.setState({ date: e.target.value })}
+						/>
+						<Field
+							type="text"
+							placeholder="Staff Name"
+							label="ผู้เบิก"
+							value={staffName}
+							onChange={e => this.setState({ staffName: e.target.value })}
 						/>
 						{type === BORROW && (
 							<Field

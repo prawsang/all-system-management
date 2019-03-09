@@ -7,7 +7,8 @@ class Edititem extends React.Component {
 		type: "",
 		model: "",
 		models: [],
-		remarks: ""
+		remarks: "",
+		stockLocation: ""
 	};
 
 	getModelsOfType = type => {
@@ -22,14 +23,15 @@ class Edititem extends React.Component {
 	};
 
 	edit() {
-		const { model, remarks } = this.state;
+		const { model, remarks, stockLocation } = this.state;
 		const { item } = this.props;
 		Axios.request({
 			method: "PUT",
 			url: `/stock/${item.serial_no}/edit`,
 			data: {
 				model_id: model,
-				remarks
+				remarks,
+				stock_location: stockLocation
 			}
 		})
 			.then(res => window.location.reload())
@@ -38,12 +40,17 @@ class Edititem extends React.Component {
 
 	componentDidMount() {
 		const { item } = this.props;
-		this.setState({ model: item.model.id, type: item.model.type, remarks: item.remarks });
+		this.setState({
+			model: item.model.id,
+			type: item.model.type,
+			remarks: item.remarks,
+			stockLocation: item.stock_location
+		});
 		this.getModelsOfType(item.model.type);
 	}
 
 	render() {
-		const { type, models, model, remarks } = this.state;
+		const { type, models, model, remarks, stockLocation } = this.state;
 		const { close, active } = this.props;
 
 		return (
@@ -91,6 +98,15 @@ class Edititem extends React.Component {
 								)}
 							</select>
 						</div>
+					</div>
+					<div className="field">
+						<label className="label">Stock Location</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="Stock Location"
+							onChange={e => this.setState({ stockLocation: e.target.value })}
+							value={stockLocation}
+						/>
 					</div>
 					<div className="field">
 						<label className="label">Remarks</label>

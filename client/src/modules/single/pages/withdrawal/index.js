@@ -6,6 +6,8 @@ import Modal from "@/common/components/Modal";
 import EditModal from "./EditModal";
 import RemarksModal from "./RemarksModal";
 import ChangeCustomer from "./ChangeCustomer";
+import BillingModal from "./BillingModal";
+
 import Axios from "axios";
 import { Link } from "react-router-dom";
 import history from "@/common/history";
@@ -19,7 +21,8 @@ class Withdrawal extends React.PureComponent {
 		showCancelConfirm: false,
 		showDeleteConfirm: false,
 		editRemarks: false,
-		changeCustomer: false
+		changeCustomer: false,
+		editBilling: false
 	};
 
 	cancelWithdrawal() {
@@ -58,7 +61,8 @@ class Withdrawal extends React.PureComponent {
 			showCancelConfirm,
 			editRemarks,
 			changeCustomer,
-			showDeleteConfirm
+			showDeleteConfirm,
+			editBilling
 		} = this.state;
 		if (data) {
 			if (!data.withdrawal) return <p>ไม่พบรายการ</p>;
@@ -129,10 +133,7 @@ class Withdrawal extends React.PureComponent {
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">ผู้เบิก:</label>
-										<span>
-											{data.withdrawal.user.name} (
-											{data.withdrawal.user.department})
-										</span>
+										<span>{data.withdrawal.staff_name}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Type:</label>
@@ -152,6 +153,25 @@ class Withdrawal extends React.PureComponent {
 											<span>{formatDate(data.withdrawal.install_date)}</span>
 										</div>
 									)}
+								</div>
+								<hr />
+								<div>
+									<h5 className="no-mt has-mb-10">
+										การวางบิล
+										<span
+											className="is-clickable accent has-ml-10 is-6"
+											onClick={() => this.setState({ editBilling: true })}
+										>
+											Edit
+										</span>
+									</h5>
+									<div className="has-mb-10">
+										<span>
+											{data.withdrawal.billed
+												? "วางบิลแล้ว"
+												: "ยังไม่ได้วางบิล"}
+										</span>
+									</div>
 								</div>
 								<hr />
 								<div>
@@ -280,6 +300,11 @@ class Withdrawal extends React.PureComponent {
 								data={data.withdrawal}
 								active={changeCustomer}
 								close={() => this.setState({ changeCustomer: false })}
+							/>
+							<BillingModal
+								data={data.withdrawal}
+								active={editBilling}
+								close={() => this.setState({ editBilling: false })}
 							/>
 							<CancelConfirm
 								onSubmit={() => this.cancelWithdrawal()}

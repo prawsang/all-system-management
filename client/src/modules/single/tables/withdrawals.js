@@ -10,6 +10,7 @@ const WithdrawalsTable = ({ data }) => (
 				<td>Branch</td>
 				<td>Customer</td>
 				<td>Type</td>
+				<td>ผู้เบิก</td>
 				<td>Date</td>
 				<td>Install Date</td>
 				<td>Return Date</td>
@@ -37,6 +38,7 @@ const WithdrawalsTable = ({ data }) => (
 								{e.branch.customer.name} ({e.branch.customer.customer_code})
 							</td>
 							<td>{e.type}</td>
+							<td className="has-no-line-break">{e.staff_name}</td>
 							<td>{formatDate(e.date)}</td>
 							<td className="has-no-line-break">{formatDate(e.install_date)}</td>
 							<td className="has-no-line-break">{formatDate(e.return_by)}</td>

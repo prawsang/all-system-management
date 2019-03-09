@@ -48,6 +48,10 @@ class Item extends React.Component {
 										<span>{data.item.model.type}</span>
 									</div>
 									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Stock Location:</label>
+										<span>{data.item.stock_location}</span>
+									</div>
+									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">เสีย:</label>
 										<span>
 											{data.item.broken ? (
