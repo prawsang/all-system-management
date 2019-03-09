@@ -44,6 +44,13 @@ const Item = db.define(
 		broken: {
 			type: Sequelize.BOOLEAN,
 			allowNull: false
+		},
+		stock_location: {
+			type: Sequelize.STRING,
+			allowNull: false,
+			validate: {
+				notEmpty: true
+			}
 		}
 	},
 	{

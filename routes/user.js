@@ -5,18 +5,15 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const bcrypt = require("bcrypt");
 const { check, validationResult } = require("express-validator/check");
+const tools = require("../utils/tools");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
-	const query = await tools.query({
+	const query = await tools.countAndQuery({
 		limit,
 		page,
 		search,
 		search_term,
-		include: {
-			model: Model,
-			as: "model"
-		},
 		model: User
 	});
 	if (query.errors) {
@@ -39,14 +36,10 @@ router.get("/:staff_code/details", (req, res) => {
 });
 
 const userValidation = [
-	check("staff_code")
-		.not()
-		.isEmpty()
-		.withMessage("Staff code cannot be empty."),
 	check("department")
 		.not()
 		.isEmpty()
-		.isIn(["ADMIN"])
+		.isIn(["ADMIN", "STOCK", "ACCOUNTANT", "SERVICE", "SYSTEM"])
 		.withMessage("Invalid or empty department"),
 	check("name")
 		.not()
@@ -65,13 +58,12 @@ router.post("/add", userValidation, (req, res) => {
 		return res.status(422).json({ errors: errors.array() });
 	}
 
-	const { name, staff_code, department } = req.body;
+	const { name, department } = req.body;
 	let { password } = req.body;
 	bcrypt
 		.hash(password, 12)
 		.then(hashedPassword => {
 			User.create({
-				staff_code,
 				name,
 				department,
 				password: hashedPassword

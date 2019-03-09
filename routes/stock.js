@@ -224,7 +224,11 @@ const stockValidation = [
 	check("model_id")
 		.not()
 		.isEmpty()
-		.withMessage("Model must be provided.")
+		.withMessage("Model must be provided."),
+	check("stock_location")
+		.not()
+		.isEmpty()
+		.withMessage("Stock location must be provided.")
 ];
 
 // Add items to stock
@@ -233,7 +237,7 @@ router.post("/add", stockValidation, async (req, res) => {
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
 	}
-	const { model_id, remarks, serial_no } = req.body;
+	const { model_id, remarks, serial_no, stock_location } = req.body;
 
 	let errors = [];
 	await Promise.all(
@@ -243,6 +247,7 @@ router.post("/add", stockValidation, async (req, res) => {
 				model_id,
 				remarks,
 				status: "IN_STOCK",
+				stock_location,
 				broken: false
 			}).catch(err => errors.push(err));
 		})
@@ -259,11 +264,12 @@ router.put("/:serial_no/edit", stockValidation, (req, res) => {
 	}
 
 	const { serial_no } = req.params;
-	const { model_id, remarks } = req.body;
+	const { model_id, remarks, stock_location } = req.body;
 	Item.update(
 		{
 			model_id,
-			remarks
+			remarks,
+			stock_location
 		},
 		{
 			where: {

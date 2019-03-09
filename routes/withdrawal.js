@@ -66,11 +66,6 @@ router.get("/:id/details", (req, res) => {
 					model: Model,
 					as: "model"
 				}
-			},
-			{
-				model: User,
-				as: "user",
-				attributes: { exclude: ["password"] }
 			}
 		]
 	})
@@ -129,10 +124,10 @@ const checkWithdrawal = [
 	check("type")
 		.isIn(["INSTALLATION", "BORROW", "TRANSFER"])
 		.withMessage("Invalid or empty type."),
-	check("staff_code")
+	check("staff_name")
 		.not()
 		.isEmpty()
-		.withMessage("Staff must be provided."),
+		.withMessage("Staff name must be provided."),
 	check("date")
 		.not()
 		.isEmpty()
@@ -156,7 +151,7 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		branch_id,
 		po_number,
 		do_number,
-		staff_code,
+		staff_name,
 		type,
 		return_by,
 		install_date,
@@ -185,14 +180,15 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		branch_id,
 		po_number: has_po ? po_number : null,
 		do_number,
-		staff_code,
+		staff_name,
 		type,
 		return_by: type === "BORROW" ? return_by : null,
 		install_date: type === "INSTALLATION" ? install_date : null,
 		status: "PENDING",
 		remarks,
 		date,
-		has_po
+		has_po,
+		billed: false
 	})
 		.then(row => res.send(row))
 		.catch(err => res.status(500).send(err));
@@ -211,7 +207,7 @@ router.put("/:id/edit", async (req, res) => {
 		branch_id,
 		po_number,
 		do_number,
-		staff_code,
+		staff_name,
 		type,
 		return_by,
 		date,
@@ -247,7 +243,7 @@ router.put("/:id/edit", async (req, res) => {
 			branch_id,
 			po_number: has_po ? po_number : null,
 			do_number,
-			staff_code,
+			staff_name,
 			type,
 			return_by: type === "BORROW" ? return_by : null,
 			install_date: type === "INSTALLATION" ? install_date : null,
@@ -273,6 +269,27 @@ router.put("/:id/edit-remarks", (req, res) => {
 	Withdrawal.update(
 		{
 			remarks
+		},
+		{
+			where: {
+				id: {
+					[Op.eq]: id
+				}
+			}
+		}
+	)
+		.then(rows => res.sendStatus(200))
+		.catch(err => res.status(500).send(err));
+});
+
+// Edit billing
+router.put("/:id/edit-billing", (req, res) => {
+	const { id } = req.params;
+	const { billed } = req.body;
+
+	Withdrawal.update(
+		{
+			billed
 		},
 		{
 			where: {

@@ -2,13 +2,10 @@ const Sequelize = require("sequelize");
 const db = require("../config/database");
 
 const User = db.define("users", {
-	staff_code: {
-		type: Sequelize.STRING,
+	id: {
+		type: Sequelize.INTEGER,
 		primaryKey: true,
-		validate: {
-			notEmpty: true,
-			notContains: "/"
-		}
+		autoIncrement: true,
 	},
 	name: {
 		type: Sequelize.STRING,
@@ -26,11 +23,11 @@ const User = db.define("users", {
 	},
 	department: {
 		type: Sequelize.ENUM,
-		values: ["ADMIN"],
-		allowNull: true,
+		values: ["ADMIN", "STOCK", "ACCOUNTANT", "SERVICE", "SYSTEM"],
+		allowNull: false,
 		validate: {
 			notEmpty: true,
-			isIn: [["ADMIN"]]
+			isIn: [["ADMIN", "STOCK", "ACCOUNTANT", "SERVICE", "SYSTEM"]]
 		}
 	}
 });

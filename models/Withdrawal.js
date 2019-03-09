@@ -30,9 +30,8 @@ const Withdrawal = db.define("withdrawals", {
 	do_number: {
 		type: Sequelize.STRING
 	},
-	staff_code: {
+	staff_name: {
 		type: Sequelize.STRING,
-		allowNull: false,
 		validate: {
 			notEmpty: true
 		}
@@ -72,6 +71,10 @@ const Withdrawal = db.define("withdrawals", {
 		type: Sequelize.DATE
 	},
 	has_po: {
+		type: Sequelize.BOOLEAN,
+		allowNull: false
+	},
+	billed: {
 		type: Sequelize.BOOLEAN,
 		allowNull: false
 	}
@@ -170,10 +173,6 @@ Withdrawal.changeStatus = (id, status) => {
 Withdrawal.belongsTo(PO, {
 	foreignKey: "po_number",
 	as: "po"
-});
-Withdrawal.belongsTo(User, {
-	foreignKey: "staff_code",
-	as: "user"
 });
 Withdrawal.belongsTo(Job, {
 	foreignKey: "job_code",
