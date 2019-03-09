@@ -1,6 +1,4 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import CustomerSearch from "../components/search/CustomerSearch";
 import JobSelect from "../components/JobSelect";
 import BranchSearch from "../components/search/BranchSearch";
@@ -20,19 +18,9 @@ class Withdraw extends React.Component {
 		installDate: "",
 		poNumber: "",
 		doNumber: "",
-		serialNos: [],
-		serialNo: "",
 		remarks: "",
 		staffName: ""
 	};
-
-	handleAddSerial(e) {
-		e.preventDefault();
-		this.setState({
-			serialNos: [...this.state.serialNos, this.state.serialNo],
-			serialNo: ""
-		});
-	}
 
 	async handleSubmit() {
 		const {
@@ -42,41 +30,27 @@ class Withdraw extends React.Component {
 			installDate,
 			poNumber,
 			doNumber,
-			serialNos,
 			remarks,
 			staffName
 		} = this.state;
 		const { selectedBranches, selectedJobCode } = this.props;
-		let id = "";
-
-		try {
-			await Axios.request({
-				method: "POST",
-				url: "/withdrawal/add",
-				data: {
-					type,
-					date,
-					return_by: type === BORROW ? returnDate : null,
-					install_date: type === INSTALLATION ? installDate : null,
-					po_number: type === INSTALLATION ? poNumber : null,
-					do_number: type === INSTALLATION ? doNumber : null,
-					job_code: selectedJobCode,
-					branch_id: selectedBranches[0].id,
-					remarks,
-					has_po: type === INSTALLATION,
-					billed: false,
-					staff_name: staffName
-				}
-			}).then(res => (id = res.data.id));
-		} catch (err) {
-			return;
-		}
 
 		await Axios.request({
-			method: "PUT",
-			url: `/withdrawal/${id}/add-items`,
+			method: "POST",
+			url: "/withdrawal/add",
 			data: {
-				serial_no: serialNos
+				type,
+				date,
+				return_by: type === BORROW ? returnDate : null,
+				install_date: type === INSTALLATION ? installDate : null,
+				po_number: type === INSTALLATION ? poNumber : null,
+				do_number: type === INSTALLATION ? doNumber : null,
+				job_code: selectedJobCode,
+				branch_id: selectedBranches[0].id,
+				remarks,
+				has_po: type === INSTALLATION,
+				billed: false,
+				staff_name: staffName
 			}
 		});
 	}
@@ -96,8 +70,6 @@ class Withdraw extends React.Component {
 			installDate,
 			poNumber,
 			doNumber,
-			serialNos,
-			serialNo,
 			remarks,
 			staffName
 		} = this.state;
@@ -190,54 +162,8 @@ class Withdraw extends React.Component {
 								className="input textarea is-fullwidth"
 							/>
 						</div>
-						<hr />
-						<label className="label" style={{ display: "block" }}>
-							Serial No.
-						</label>
-						<form onSubmit={e => this.handleAddSerial(e)}>
-							<div className="field is-flex">
-								<input
-									value={serialNo}
-									onChange={e => this.setState({ serialNo: e.target.value })}
-									className="input is-fullwidth"
-									placeholder="Serial No."
-								/>
-								<button className="button has-ml-05" type="submit">
-									Add
-								</button>
-							</div>
-						</form>
-						<div style={{ margin: "2em 0" }}>
-							<small className="label" style={{ display: "block" }}>
-								Scanned Serial No.
-							</small>
-							{serialNos.length > 0 ? (
-								serialNos.map((e, i) => (
-									<div key={i + e} className="has-mb-05">
-										{i + 1}) <span className="is-bold">{e}</span>
-										<button
-											className="is-danger has-ml-10 button"
-											style={{ padding: "5px 10px" }}
-											onClick={() =>
-												this.setState({
-													serialNos: serialNos
-														.slice(0, i)
-														.concat(
-															serialNos.slice(i + 1, serialNos.length)
-														)
-												})
-											}
-										>
-											<FontAwesomeIcon icon={faTrash} />
-										</button>
-									</div>
-								))
-							) : (
-								<p className="is-gray-3 has-mt-10">ยังไม่ได้ Scan</p>
-							)}
-						</div>
 						<button className="button has-mt-10" onClick={() => this.handleSubmit()}>
-							ยืนยันการเบิกสินค้า
+							เปิดใบเบิกสินค้า
 						</button>
 					</div>
 				</div>
