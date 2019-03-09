@@ -13,6 +13,7 @@ import InStock from "./tables/InStock";
 import CustomersTable from "./tables/Customers";
 import ModelsTable from "./tables/Models";
 import StoreTypesTable from "./tables/StoreTypes";
+import WithdrawalsTable from "@/modules/single/tables/withdrawals";
 
 import NewCustomer from "./modals/NewCustomer";
 import StoreType from "./modals/StoreType";
@@ -33,6 +34,7 @@ class Report extends React.Component {
 					<Route path="/report/customers" component={CustomersTableWrapper} />
 					<Route path="/report/store-types" component={StoreTypesWrapper} />
 					<Route path="/report/models" component={ModelsWrapper} />
+					<Route path="/report/all-withdrawals" component={AllWithdrawalsWrapper} />
 				</Switch>
 			</div>
 		);
@@ -43,7 +45,12 @@ const AllPOWrapper = () => (
 	<FetchDataFromServer
 		url="/po/get-all"
 		render={data => (
-			<Table data={data} table={data => <AllPO data={data} />} title="PO ทั้งหมด" />
+			<Table
+				data={data}
+				table={data => <AllPO data={data} />}
+				title="PO ทั้งหมด"
+				searchPlaceholder="Search PO Number"
+			/>
 		)}
 	/>
 );
@@ -56,6 +63,7 @@ const InstallWoPOWrapper = () => (
 				data={data}
 				table={data => <InstallWoPO data={data} />}
 				title="การติดตั้งที่ยังไม่ได้รับ PO"
+				searchPlaceholder="Search ID"
 			/>
 		)}
 	/>
@@ -69,6 +77,7 @@ const BranchNoInstallWrapper = () => (
 				data={data}
 				table={data => <BranchNoInstall data={data} />}
 				title="สาขาที่ยังไม่ได้ติดตั้ง"
+				searchPlaceholder="Search Branch Name"
 			/>
 		)}
 	/>
@@ -78,7 +87,12 @@ const BrokenWrapper = () => (
 	<FetchDataFromServer
 		url="/stock/broken"
 		render={data => (
-			<Table data={data} table={data => <Broken data={data} />} title="ของเสีย" />
+			<Table
+				data={data}
+				table={data => <Broken data={data} />}
+				title="ของเสีย"
+				searchPlaceholder="Search Serial No."
+			/>
 		)}
 	/>
 );
@@ -87,7 +101,26 @@ const BorrowedWrapper = () => (
 	<FetchDataFromServer
 		url="/stock/status/borrowed"
 		render={data => (
-			<Table data={data} table={data => <Borrowed data={data} />} title="ของยืม" />
+			<Table
+				data={data}
+				table={data => <Borrowed data={data} />}
+				title="ของยืม"
+				searchPlaceholder="Search Serial No."
+			/>
+		)}
+	/>
+);
+
+const AllWithdrawalsWrapper = () => (
+	<FetchDataFromServer
+		url="/withdrawal/get-all"
+		render={data => (
+			<Table
+				data={data}
+				table={data => <WithdrawalsTable data={data} />}
+				title="ใบเบิกทั้งหมด"
+				searchPlaceholder="Search ID"
+			/>
 		)}
 	/>
 );

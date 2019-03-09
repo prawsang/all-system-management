@@ -10,7 +10,7 @@ class Table extends React.Component {
 		this.props.setLimit(limit);
 	}
 	render() {
-		const { data, title, table } = this.props;
+		const { data, title, table, searchPlaceholder } = this.props;
 		return (
 			<React.Fragment>
 				<h3>{title}</h3>
@@ -18,7 +18,7 @@ class Table extends React.Component {
 					<div className="panel-content">
 						<div className="is-flex is-jc-space-between is-wrap">
 							<div className="col-6 has-mb-05">
-								<SearchBar />
+								<SearchBar placeholder={searchPlaceholder} />
 							</div>
 							<div className="col-6 is-flex is-ai-center is-jc-flex-end">
 								<div className="select no-mb">

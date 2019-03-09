@@ -25,6 +25,20 @@ router.get("/get-all", async (req, res) => {
 		page,
 		search,
 		search_term,
+		include: [
+			{
+				model: Branch,
+				as: "branch",
+				include: {
+					model: Customer,
+					as: "customer"
+				}
+			},
+			{
+				model: Job,
+				as: "job"
+			}
+		],
 		model: Withdrawal
 	});
 	if (query.errors) {

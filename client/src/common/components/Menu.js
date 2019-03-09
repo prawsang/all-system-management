@@ -78,6 +78,7 @@ class Menu extends React.Component {
 							<Link link="/report/borrowed">ของยืม</Link>
 							<Link link="/report/all-po">ยังไม่ได้วางบิล</Link>
 							<Link link="/report/in-stock">Stock คงเหลือ</Link>
+							<Link link="/report/all-withdrawals">ใบเบิกทั้งหมด</Link>
 						</ul>
 					</li>
 					<SideBarLink link="/record/edit-items">

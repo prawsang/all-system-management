@@ -9,7 +9,9 @@ class FetchDataFromServer extends React.Component {
 	componentDidMount() {
 		const { url, currentPage, currentLimit, disabled, params } = this.props;
 		if (!disabled) {
-			Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}&${params}`).then(res => {
+			Axios.get(
+				`${url}?page=${currentPage}&limit=${currentLimit}${params ? "&" + params : ""}`
+			).then(res => {
 				this.setState({ data: res.data });
 				console.log(res);
 			});
