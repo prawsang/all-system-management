@@ -337,8 +337,10 @@ router.post("/:id/add-po", (req, res) => {
 		return;
 	}
 	BranchPO.findOrCreate({
-		branch_id: id,
-		po_number
+		where: {
+			branch_id: id,
+			po_number
+		}
 	})
 		.then(r => res.sendStatus(200))
 		.catch(err =>

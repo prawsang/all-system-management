@@ -186,8 +186,10 @@ router.post("/:po_number/add-branches", async (req, res) => {
 	await Promise.all(
 		branch_id.map(async id => {
 			BranchPO.findOrCreate({
-				branch_id: id,
-				po_number
+				where: {
+					branch_id: id,
+					po_number
+				}
 			}).catch(err => errors.push({ msg: `This branch (${no}) cannot be added to the PO.` }));
 		})
 	);
