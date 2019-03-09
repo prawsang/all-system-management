@@ -40,7 +40,6 @@ class AddPO extends React.Component {
 						branch_id: branchIds
 					}
 				}).then(r => {
-					console.log(r);
 					history.push(`/single/po/${poNumber}`);
 				});
 			} else {

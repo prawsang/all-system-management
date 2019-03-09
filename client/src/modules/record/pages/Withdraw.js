@@ -69,21 +69,16 @@ class Withdraw extends React.Component {
 				}
 			}).then(res => (id = res.data.id));
 		} catch (err) {
-			console.log(err);
 			return;
 		}
 
-		try {
-			await Axios.request({
-				method: "PUT",
-				url: `/withdrawal/${id}/add-items`,
-				data: {
-					serial_no: serialNos
-				}
-			});
-		} catch (err) {
-			console.log(err);
-		}
+		await Axios.request({
+			method: "PUT",
+			url: `/withdrawal/${id}/add-items`,
+			data: {
+				serial_no: serialNos
+			}
+		});
 	}
 
 	componentDidMount() {

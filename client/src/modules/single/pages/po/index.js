@@ -29,7 +29,7 @@ class PO extends React.PureComponent {
 				installed,
 				job_code: data.po.job_code
 			}
-		}).then(res => console.log(res));
+		});
 		window.location.reload();
 	}
 

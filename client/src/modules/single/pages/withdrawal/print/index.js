@@ -13,9 +13,7 @@ class Print extends React.Component {
 			data: {
 				status: "PRINTED"
 			}
-		})
-			.then(res => console.log(res))
-			
+		});
 	}
 	render() {
 		return (

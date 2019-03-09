@@ -19,7 +19,7 @@ class AddBranchModal extends React.Component {
 				data: {
 					branch_id: branchIds
 				}
-			}).then(r => console.log(r));
+			});
 		}
 		window.location.reload();
 	}

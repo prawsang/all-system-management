@@ -69,7 +69,7 @@ router.post("/add", userValidation, (req, res) => {
 				password: hashedPassword
 			})
 				.then(rows => res.sendStatus(200))
-				.catch(err => console.log(err.errors));
+				.catch(err => res.status(500).json({ errors: err }));
 		})
 		.catch(err => res.status(500).json({ errors: err }));
 });

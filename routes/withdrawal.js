@@ -451,7 +451,6 @@ router.put("/:id/add-items", async (req, res) => {
 		return;
 	}
 	errors = r.errors;
-	console.log(r.updatedSerials);
 
 	await Promise.all(
 		r.updatedSerials.map(async no => {
