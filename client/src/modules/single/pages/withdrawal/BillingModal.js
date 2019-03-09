@@ -21,9 +21,7 @@ class BillingModal extends React.Component {
 			data: {
 				billed
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 	render() {
 		const { active, close } = this.props;

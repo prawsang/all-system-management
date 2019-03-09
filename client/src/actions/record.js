@@ -22,7 +22,6 @@ export const setSelectedCustomer = customer => async dispatch => {
 				});
 			})
 			.catch(err => {
-				console.log(err);
 				dispatch({
 					payload: {
 						jobs: []

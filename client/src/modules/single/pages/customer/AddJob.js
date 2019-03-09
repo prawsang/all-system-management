@@ -19,9 +19,7 @@ class AddJob extends React.Component {
 				job_code: jobCode,
 				name
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 
 	render() {

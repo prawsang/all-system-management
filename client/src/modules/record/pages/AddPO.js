@@ -29,28 +29,24 @@ class AddPO extends React.Component {
 				installed,
 				job_code: selectedJobCode
 			}
-		})
-			.then(async res => {
-				let branchIds = [];
-				if (selectedBranches.length > 0) {
-					selectedBranches.map(e => branchIds.push(e.id));
-					await Axios.request({
-						method: "POST",
-						url: `/po/${poNumber}/add-branches`,
-						data: {
-							branch_id: branchIds
-						}
-					})
-						.then(r => {
-							console.log(r);
-							history.push(`/single/po/${poNumber}`);
-						})
-						.catch(err => console.log(err, "branches"));
-				} else {
+		}).then(async res => {
+			let branchIds = [];
+			if (selectedBranches.length > 0) {
+				selectedBranches.map(e => branchIds.push(e.id));
+				await Axios.request({
+					method: "POST",
+					url: `/po/${poNumber}/add-branches`,
+					data: {
+						branch_id: branchIds
+					}
+				}).then(r => {
+					console.log(r);
 					history.push(`/single/po/${poNumber}`);
-				}
-			})
-			.catch(err => console.log(err, "add"));
+				});
+			} else {
+				history.push(`/single/po/${poNumber}`);
+			}
+		});
 	}
 	componentDidMount() {
 		this.props.resetRecordData();

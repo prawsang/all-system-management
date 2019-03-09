@@ -15,12 +15,10 @@ class AddItems extends React.Component {
 
 	getModelsOfType = type => {
 		if (type !== "") {
-			Axios.get(`/model/type/${type}`)
-				.then(res => {
-					this.setState({ models: res.data.models });
-					console.log(res);
-				})
-				.catch(err => console.log(err));
+			Axios.get(`/model/type/${type}`).then(res => {
+				this.setState({ models: res.data.models });
+				console.log(res);
+			});
 		}
 	};
 
@@ -42,12 +40,7 @@ class AddItems extends React.Component {
 				serial_no: serialNos,
 				remarks
 			}
-		})
-			.then(res => this.resetPage())
-			.catch(err => {
-				console.log(err);
-				this.resetPage();
-			});
+		}).then(res => this.resetPage());
 	}
 
 	resetPage() {

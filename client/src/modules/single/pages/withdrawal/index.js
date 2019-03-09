@@ -35,7 +35,7 @@ class Withdrawal extends React.PureComponent {
 			}
 		})
 			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+			
 	}
 
 	deleteWithdrawal() {
@@ -45,7 +45,7 @@ class Withdrawal extends React.PureComponent {
 			url: `/withdrawal/${data.withdrawal.id}`
 		})
 			.then(res => history.push("/"))
-			.catch(err => console.log(err));
+			
 	}
 
 	handlePrint() {

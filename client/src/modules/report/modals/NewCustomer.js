@@ -16,9 +16,7 @@ class NewCustomer extends React.Component {
 				customer_code: customerCode,
 				name: customerName
 			}
-		})
-			.then(res => history.push(`/single/customer/${customerCode}`))
-			.catch(err => console.log(err));
+		}).then(res => history.push(`/single/customer/${customerCode}`));
 	}
 	render() {
 		const { customerCode, customerName } = this.state;

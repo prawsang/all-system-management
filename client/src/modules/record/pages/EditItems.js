@@ -36,13 +36,10 @@ class EditItems extends React.Component {
 				method: "PUT",
 				url: "/stock/broken",
 				data: {
-					serial_no: serialNos
+					serial_no: serialNos,
+					broken: true
 				}
-			})
-				.then(res => this.resetPage())
-				.catch(err => {
-					console.log(err);
-				});
+			}).then(res => this.resetPage());
 		} else if (action === RETURN) {
 			Axios.request({
 				method: "PUT",
@@ -50,11 +47,7 @@ class EditItems extends React.Component {
 				data: {
 					serial_no: serialNos
 				}
-			})
-				.then(res => this.resetPage())
-				.catch(err => {
-					console.log(err);
-				});
+			}).then(res => this.resetPage());
 		} else if (action === RESERVE) {
 			Axios.request({
 				method: "PUT",
@@ -68,11 +61,7 @@ class EditItems extends React.Component {
 							: null
 						: null
 				}
-			})
-				.then(res => this.resetPage())
-				.catch(err => {
-					console.log(err);
-				});
+			}).then(res => this.resetPage());
 		}
 	}
 

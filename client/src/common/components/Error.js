@@ -4,7 +4,6 @@ import { setError } from "@/actions/error";
 import { connect } from "react-redux";
 
 const Error = ({ error, setError }) => {
-	console.log(error);
 	if (error !== null) {
 		return (
 			<Modal

@@ -20,9 +20,7 @@ class EditJob extends React.Component {
 			data: {
 				branch_id: branchIds
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 
 	componentDidMount() {

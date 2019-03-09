@@ -7,6 +7,7 @@ export default () => {
 	Axios.defaults.headers.post["Content-Type"] = "application/json";
 	Axios.interceptors.response.use(null, function(err) {
 		store.dispatch(setError(err.response));
+		console.log(err.response);
 		return Promise.reject(err);
 	});
 };

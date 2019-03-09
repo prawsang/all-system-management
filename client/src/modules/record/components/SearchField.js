@@ -12,12 +12,10 @@ class SearchField extends React.Component {
 		if (searchTerm.length < 3) {
 			this.setState({ data: null });
 		} else {
-			Axios.get(`${searchUrl}?search=${searchName}&search_term=${searchTerm}`)
-				.then(res => {
-					this.setState({ data: res.data });
-					console.log(res);
-				})
-				.catch(err => console.log(err));
+			Axios.get(`${searchUrl}?search=${searchName}&search_term=${searchTerm}`).then(res => {
+				this.setState({ data: res.data });
+				console.log(res);
+			});
 		}
 	}
 	handleKeyPress(e) {

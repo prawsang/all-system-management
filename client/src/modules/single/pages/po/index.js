@@ -29,9 +29,7 @@ class PO extends React.PureComponent {
 				installed,
 				job_code: data.po.job_code
 			}
-		})
-			.then(res => console.log(res))
-			.catch(err => console.log(err));
+		}).then(res => console.log(res));
 		window.location.reload();
 	}
 

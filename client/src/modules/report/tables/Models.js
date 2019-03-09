@@ -14,9 +14,7 @@ class ModelsTable extends React.Component {
 		Axios.request({
 			method: "DELETE",
 			url: `/model/${selected.id}`
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 	render() {
 		const { data } = this.props;

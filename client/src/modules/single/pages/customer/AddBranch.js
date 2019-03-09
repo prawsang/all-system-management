@@ -12,9 +12,7 @@ class AddBranch extends React.Component {
 		storeTypes: []
 	};
 	componentDidMount() {
-		Axios.get("/store-type/get-all")
-			.then(res => this.setState({ storeTypes: res.data.types }))
-			.catch(err => console.log(err));
+		Axios.get("/store-type/get-all").then(res => this.setState({ storeTypes: res.data.types }));
 	}
 
 	addBranch() {
@@ -31,9 +29,7 @@ class AddBranch extends React.Component {
 				province,
 				store_type_id: storeTypeId
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 
 	render() {

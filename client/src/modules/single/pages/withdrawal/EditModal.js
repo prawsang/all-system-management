@@ -56,7 +56,7 @@ class EditModal extends React.Component {
 			}
 		})
 			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+			
 	}
 
 	render() {

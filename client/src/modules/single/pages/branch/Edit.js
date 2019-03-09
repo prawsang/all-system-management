@@ -26,16 +26,12 @@ class EditBranch extends React.Component {
 				store_type_id: storeTypeId,
 				customer_code: branch.customer_code
 			}
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 
 	componentDidMount() {
 		const { branch } = this.props;
-		Axios.get("/store-type/get-all")
-			.then(res => this.setState({ storeTypes: res.data.types }))
-			.catch(err => console.log(err));
+		Axios.get("/store-type/get-all").then(res => this.setState({ storeTypes: res.data.types }));
 		this.setState({
 			name: branch.name,
 			branchCode: branch.branch_code,

@@ -14,9 +14,7 @@ class StoreTypesTable extends React.Component {
 		Axios.request({
 			method: "DELETE",
 			url: `/store-type/${selected.id}`
-		})
-			.then(res => window.location.reload())
-			.catch(err => console.log(err));
+		}).then(res => window.location.reload());
 	}
 	render() {
 		const { data } = this.props;
