@@ -192,7 +192,7 @@ router.post("/:po_number/add-branches", async (req, res) => {
 		})
 	);
 	if (errors.length > 0) {
-		res.status(400).send(errors);
+		res.status(400).json({ errors });
 		return;
 	}
 	res.sendStatus(200);

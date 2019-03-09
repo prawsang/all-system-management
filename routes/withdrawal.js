@@ -277,7 +277,7 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 		has_po
 	});
 	if (moreValidation.errors.length > 0) {
-		res.status(400).send(errors);
+		res.status(400).json({ errors });
 		return;
 	}
 

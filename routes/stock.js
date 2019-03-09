@@ -252,7 +252,7 @@ router.post("/add", stockValidation, async (req, res) => {
 			}).catch(err => errors.push(err));
 		})
 	);
-	if (errors.length > 0) res.status(500).send(errors);
+	if (errors.length > 0) res.status(500).json({ errors });
 	else res.sendStatus(200);
 });
 

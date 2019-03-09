@@ -60,7 +60,6 @@ installItems = async (serial_no, branch_id, job_code) => {
 			}
 		})
 	);
-	console.log(updatedSerials);
 	return {
 		updatedSerials,
 		errors
@@ -131,7 +130,7 @@ router.put(
 			}
 		});
 		const { errors } = r;
-		if (errors.length > 0) res.status(400).send(errors);
+		if (errors.length > 0) res.status(400).json({ errors });
 		else res.sendStatus(200);
 	}
 );
@@ -162,7 +161,7 @@ router.put("/return", checkSerial, async (req, res) => {
 	const { serial_no } = req.body;
 	const r = await returnItems(serial_no);
 	if (r.errors) {
-		res.status(400).send(r.errors);
+		res.status(400).json({ errors: r.errors });
 	} else {
 		res.sendStatus(200);
 	}
@@ -200,7 +199,7 @@ router.put(
 				).catch(err => errors.push(err.errors));
 			})
 		);
-		if (errors.length > 0) res.status(400).send(errors);
+		if (errors.length > 0) res.status(400).json({ errors });
 		else res.sendStatus(200);
 	}
 );
