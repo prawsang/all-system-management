@@ -7,10 +7,20 @@ class FetchDataFromServer extends React.Component {
 		data: null
 	};
 	componentDidMount() {
-		const { url, currentPage, currentLimit, disabled, params } = this.props;
+		const {
+			url,
+			currentPage,
+			currentLimit,
+			disabled,
+			params,
+			searchTerm,
+			searchCol
+		} = this.props;
 		if (!disabled) {
 			Axios.get(
-				`${url}?page=${currentPage}&limit=${currentLimit}${params ? "&" + params : ""}`
+				`${url}?page=${currentPage}&limit=${currentLimit}${
+					searchTerm ? "&search_term=" + searchTerm : ""
+				}${searchCol ? "&search=" + searchCol : ""}${params ? "&" + params : ""}`
 			).then(res => {
 				this.setState({ data: res.data });
 				console.log(res);
@@ -19,28 +29,46 @@ class FetchDataFromServer extends React.Component {
 	}
 	componentDidUpdate(prevProps, prevState) {
 		if (this.props !== prevProps) {
-			const { url, currentPage, currentLimit, disabled, params } = this.props;
+			const {
+				url,
+				currentPage,
+				currentLimit,
+				disabled,
+				params,
+				searchTerm,
+				searchCol
+			} = this.props;
 			const {
 				url: prevUrl,
 				currentPage: prevCurrentPage,
 				currentLimit: prevCurrentLimit,
 				disabled: prevDisabled,
-				params: prevParams
+				params: prevParams,
+				searchTerm: prevSearchTerm
 			} = prevProps;
 			if (
 				url !== prevUrl ||
 				currentPage !== prevCurrentPage ||
 				currentLimit !== prevCurrentLimit ||
 				disabled !== prevDisabled ||
-				params !== prevParams
+				params !== prevParams ||
+				searchTerm !== prevSearchTerm
 			) {
 				if (!disabled) {
-					Axios.get(`${url}?page=${currentPage}&limit=${currentLimit}&${params}`).then(
-						res => {
-							this.setState({ data: res.data });
-							console.log(res);
-						}
-					);
+					console.log(`${url}
+			?page=${currentPage}
+			&limit=${currentLimit}
+			${searchTerm ? "&search_term=" + searchTerm : ""}
+			${searchCol ? "&search=" + searchCol : ""}
+			${params ? "&" + params : ""}`);
+					Axios.get(
+						`${url}?page=${currentPage}&limit=${currentLimit}${
+							searchTerm ? "&search_term=" + searchTerm : ""
+						}${searchCol ? "&search=" + searchCol : ""}${params ? "&" + params : ""}`
+					).then(res => {
+						this.setState({ data: res.data });
+						console.log(res);
+					});
 				}
 			}
 		}
@@ -54,7 +82,9 @@ class FetchDataFromServer extends React.Component {
 
 const mapStateToProps = state => ({
 	currentPage: state.report.currentPage,
-	currentLimit: state.report.currentLimit
+	currentLimit: state.report.currentLimit,
+	searchTerm: state.report.searchTerm,
+	searchCol: state.report.searchCol
 });
 
 export default connect(

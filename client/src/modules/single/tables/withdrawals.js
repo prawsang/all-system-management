@@ -7,6 +7,8 @@ const WithdrawalsTable = ({ data }) => (
 		<thead>
 			<tr>
 				<td>Withdrawal ID</td>
+				<td>PO Number</td>
+				<td>DO Number</td>
 				<td>Branch</td>
 				<td>Customer</td>
 				<td>Type</td>
@@ -23,13 +25,15 @@ const WithdrawalsTable = ({ data }) => (
 					data.withdrawals.map((e, i) => (
 						<tr
 							className="is-hoverable is-clickable"
-							key={i + e.id}
+							key={`${i} ${e.id}`}
 							onClick={event => {
 								history.push(`/single/withdrawal/${e.id}`);
 								event.stopPropagation();
 							}}
 						>
 							<td className="has-no-line-break">{e.id}</td>
+							<td>{e.has_po ? (e.po_number ? e.po_number : "-") : "N/A"}</td>
+							<td>{e.do_number ? e.do_number : "-"}</td>
 							<td className="has-no-line-break">
 								{e.branch.name}{" "}
 								{e.branch.branch_code && `(${e.branch.branch_code})`}

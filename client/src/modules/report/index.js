@@ -50,7 +50,28 @@ const AllPOWrapper = () => (
 				data={data}
 				table={data => <AllPO data={data} />}
 				title="PO ทั้งหมด"
-				searchPlaceholder="Search PO Number"
+				columns={[
+					{
+						col: "po_number",
+						name: "PO Number"
+					},
+					{
+						col: "customer_name",
+						name: "Customer Name"
+					},
+					{
+						col: "customer_code",
+						name: "Customer Code"
+					},
+					{
+						col: "job_name",
+						name: "Job Name"
+					},
+					{
+						col: "job_code",
+						name: "Job Code"
+					}
+				]}
 			/>
 		)}
 	/>
@@ -64,7 +85,32 @@ const InstallWoPOWrapper = () => (
 				data={data}
 				table={data => <InstallWoPO data={data} />}
 				title="การติดตั้งที่ยังไม่ได้รับ PO"
-				searchPlaceholder="Search ID"
+				columns={[
+					{
+						col: "id",
+						name: "Withdrawal ID"
+					},
+					{
+						col: "do_number",
+						name: "DO Number"
+					},
+					{
+						col: "customer_name",
+						name: "Customer Name"
+					},
+					{
+						col: "customer_code",
+						name: "Customer Code"
+					},
+					{
+						col: "branch_name",
+						name: "Branch Name"
+					},
+					{
+						col: "branch_code",
+						name: "Branch Code"
+					}
+				]}
 			/>
 		)}
 	/>
@@ -120,7 +166,40 @@ const AllWithdrawalsWrapper = () => (
 				data={data}
 				table={data => <WithdrawalsTable data={data} />}
 				title="ใบเบิกทั้งหมด"
-				searchPlaceholder="Search ID"
+				columns={[
+					{
+						col: "id",
+						name: "Withdrawal ID"
+					},
+					{
+						col: "do_number",
+						name: "DO Number"
+					},
+					{
+						col: "po_number",
+						name: "PO Number"
+					},
+					{
+						col: "customer_name",
+						name: "Customer Name"
+					},
+					{
+						col: "customer_code",
+						name: "Customer Code"
+					},
+					{
+						col: "branch_name",
+						name: "Branch Name"
+					},
+					{
+						col: "branch_code",
+						name: "Branch Code"
+					},
+					{
+						col: "type",
+						name: "Type"
+					}
+				]}
 			/>
 		)}
 	/>

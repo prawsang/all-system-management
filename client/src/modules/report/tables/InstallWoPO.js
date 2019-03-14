@@ -7,9 +7,8 @@ const InstallWoPO = ({ data }) => (
 			<tr>
 				<td>Withdrawal ID</td>
 				<td>DO Number</td>
-				<td>Customer Name</td>
-				<td>Job Name</td>
-				<td>Branch Name</td>
+				<td>Customer</td>
+				<td>Branch</td>
 				<td>Installation Date</td>
 			</tr>
 		</thead>
@@ -27,9 +26,13 @@ const InstallWoPO = ({ data }) => (
 						>
 							<td>{e.id}</td>
 							<td>{e.do_number}</td>
-							<td>{e.branch.customer.name} ({e.branch.customer.customer_code})</td>
-							<td>{e.job.name} ({e.job.job_code})</td>
-							<td>{e.branch.name} {e.branch.branch_code && `(${e.branch.branch_code})`}</td>
+							<td>
+								{e.branch.customer.name} ({e.branch.customer.customer_code})
+							</td>
+							<td>
+								{e.branch.name}{" "}
+								{e.branch.branch_code && `(${e.branch.branch_code})`}
+							</td>
 							<td>{e.date}</td>
 						</tr>
 					)))}

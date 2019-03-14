@@ -1,6 +1,8 @@
 // Report
 export const SET_PAGE = "SET_PAGE";
 export const SET_LIMIT = "SET_LIMIT";
+export const SET_SEARCH_TERM = "SET_SEARCH_TERM";
+export const SET_SEARCH_COL = "SET_SEARCH_COL";
 
 // Record
 export const SET_SELECTED_CUSTOMER = "SET_SELECTED_CUSTOMER";
