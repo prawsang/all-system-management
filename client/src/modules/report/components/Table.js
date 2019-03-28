@@ -1,21 +1,14 @@
 import React from "react";
 import SearchBar from "@/common/components/SearchBar";
 import Pagination from "@/common/components/Pagination";
-import { setPage, setLimit, setSearchCol } from "@/actions/report";
+import { setPage, setLimit } from "@/actions/report";
 import { connect } from "react-redux";
+import SearchSelect from "../../../common/components/SearchSelect";
 
 class Table extends React.Component {
 	handleLimitChange(limit) {
 		this.props.setPage(1);
 		this.props.setLimit(limit);
-	}
-	handleSearchColumnChange(colName) {
-		this.props.setSearchCol(colName);
-	}
-	componentDidMount() {
-		if (this.props.columns) {
-			this.props.setSearchCol(this.props.columns[0].col);
-		}
 	}
 	render() {
 		const { data, title, table, columns } = this.props;
@@ -27,21 +20,7 @@ class Table extends React.Component {
 						<div className="is-flex is-jc-space-between is-wrap">
 							<div className="col-6 has-mb-05 is-flex is-ai-center">
 								<SearchBar />
-								{columns && (
-									<div className="select has-ml-10">
-										<select
-											onChange={e =>
-												this.handleSearchColumnChange(e.target.value)
-											}
-										>
-											{columns.map((e, i) => (
-												<option value={e.col} key={i + e.col}>
-													{e.name}
-												</option>
-											))}
-										</select>
-									</div>
-								)}
+								{columns && <SearchSelect columns={columns} />}
 							</div>
 							<div className="col-6 is-flex is-ai-center is-jc-flex-end">
 								<div className="select no-mb">
@@ -68,8 +47,7 @@ class Table extends React.Component {
 
 const mapDispatchToProps = {
 	setPage,
-	setLimit,
-	setSearchCol
+	setLimit
 };
 
 export default connect(

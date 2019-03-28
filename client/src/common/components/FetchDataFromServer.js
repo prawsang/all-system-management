@@ -55,12 +55,6 @@ class FetchDataFromServer extends React.Component {
 				searchTerm !== prevSearchTerm
 			) {
 				if (!disabled) {
-					console.log(`${url}
-			?page=${currentPage}
-			&limit=${currentLimit}
-			${searchTerm ? "&search_term=" + searchTerm : ""}
-			${searchCol ? "&search=" + searchCol : ""}
-			${params ? "&" + params : ""}`);
 					Axios.get(
 						`${url}?page=${currentPage}&limit=${currentLimit}${
 							searchTerm ? "&search_term=" + searchTerm : ""
