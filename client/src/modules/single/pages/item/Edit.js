@@ -8,7 +8,9 @@ class Edititem extends React.Component {
 		model: "",
 		models: [],
 		remarks: "",
-		stockLocation: ""
+		stockLocation: "",
+		poNumber: "",
+		prNumber: ""
 	};
 
 	getModelsOfType = type => {
@@ -21,7 +23,7 @@ class Edititem extends React.Component {
 	};
 
 	edit() {
-		const { model, remarks, stockLocation } = this.state;
+		const { model, remarks, stockLocation, poNumber, prNumber } = this.state;
 		const { item } = this.props;
 		Axios.request({
 			method: "PUT",
@@ -29,7 +31,9 @@ class Edititem extends React.Component {
 			data: {
 				model_id: model,
 				remarks,
-				stock_location: stockLocation
+				stock_location: stockLocation,
+				po_number: poNumber,
+				prNumber: prNumber
 			}
 		}).then(res => window.location.reload());
 	}
@@ -40,13 +44,15 @@ class Edititem extends React.Component {
 			model: item.model.id,
 			type: item.model.type,
 			remarks: item.remarks,
-			stockLocation: item.stock_location
+			stockLocation: item.stock_location,
+			poNumber: item.po_number,
+			prNumber: item.pr_number
 		});
 		this.getModelsOfType(item.model.type);
 	}
 
 	render() {
-		const { type, models, model, remarks, stockLocation } = this.state;
+		const { type, models, model, remarks, stockLocation, poNumber, prNumber } = this.state;
 		const { close, active } = this.props;
 
 		return (
@@ -102,6 +108,24 @@ class Edititem extends React.Component {
 							placeholder="Stock Location"
 							onChange={e => this.setState({ stockLocation: e.target.value })}
 							value={stockLocation}
+						/>
+					</div>
+					<div className="field">
+						<label className="label">PO Number:</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="PO Number"
+							value={poNumber}
+							onChange={e => this.setState({ poNumber: e.target.value })}
+						/>
+					</div>
+					<div className="field">
+						<label className="label">PR Number:</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="PR Number"
+							value={prNumber}
+							onChange={e => this.setState({ prNumber: e.target.value })}
 						/>
 					</div>
 					<div className="field">
