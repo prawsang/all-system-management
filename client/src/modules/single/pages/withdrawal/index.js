@@ -218,14 +218,18 @@ class Withdrawal extends React.PureComponent {
 									<CustomerData data={data.withdrawal.branch.customer} />
 								</div>
 								<div style={{ marginBottom: "2em" }}>
-									{data.po && <small>ข้อมูล Job มาจาก PO</small>}
-									<JobData
-										data={
-											data.withdrawal.po
-												? data.withdrawal.po.job
-												: data.withdrawal.job
-										}
-									/>
+									{data.po ? (
+										data.po.job_code === data.job_code ? (
+											<JobData data={data.job_code} />
+										) : (
+											<p className="is-bold accent">
+												Job Code ใน PO ไม่ตรงกับ Job Code ในใบเบิก
+												กรุณาแก้ไข
+											</p>
+										)
+									) : (
+										<JobData data={data.job_code} />
+									)}
 								</div>
 								<div style={{ marginBottom: "2em" }}>
 									<BranchData data={data.withdrawal.branch} />

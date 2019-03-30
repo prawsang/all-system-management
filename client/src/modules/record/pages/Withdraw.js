@@ -48,7 +48,6 @@ class Withdraw extends React.Component {
 				job_code: selectedJobCode,
 				branch_id: selectedBranches[0].id,
 				remarks,
-				has_po: type === INSTALLATION,
 				billed: false,
 				staff_name: staffName
 			}
