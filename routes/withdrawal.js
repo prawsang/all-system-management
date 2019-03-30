@@ -184,7 +184,11 @@ const checkWithdrawal = [
 	check("date")
 		.not()
 		.isEmpty()
-		.withMessage("WIthdrawal date must be provided.")
+		.withMessage("Withdrawal date must be provided."),
+	check("job_code")
+		.not()
+		.isEmpty()
+		.withMessage("Job code must be provided.")
 ];
 const checkSerial = [
 	check("serial_no")
@@ -209,17 +213,14 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		return_by,
 		install_date,
 		date,
-		remarks,
-		has_po
+		remarks
 	} = req.body;
 	const moreValidation = Withdrawal.validate({
-		job_code,
-		po_number,
 		do_number,
 		type,
 		return_by,
 		install_date,
-		has_po
+		po_number
 	});
 	if (moreValidation.errors.length > 0) {
 		res.status(400).send(moreValidation.errors);
@@ -229,9 +230,9 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 	// po_number and job_code cannot coexist
 	// If po_number is specified, job_code will be null
 	Withdrawal.create({
-		job_code: po_number ? null : job_code,
+		job_code,
 		branch_id,
-		po_number: has_po ? po_number : null,
+		po_number: type === "INSTALLATION" ? po_number : null,
 		do_number,
 		staff_name,
 		type,
@@ -240,7 +241,6 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		status: "PENDING",
 		remarks,
 		date,
-		has_po,
 		billed: false
 	})
 		.then(row => res.send(row))
@@ -264,17 +264,14 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 		type,
 		return_by,
 		date,
-		install_date,
-		has_po
+		install_date
 	} = req.body;
 	const moreValidation = Withdrawal.validate({
-		job_code,
 		po_number,
 		do_number,
 		type,
 		return_by,
-		install_date,
-		has_po
+		install_date
 	});
 	if (moreValidation.errors.length > 0) {
 		res.status(400).json({ errors });
@@ -292,9 +289,9 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 	// If po_number is specified, job_code will be null
 	Withdrawal.update(
 		{
-			job_code: po_number ? null : job_code,
+			job_code,
 			branch_id,
-			po_number: has_po ? po_number : null,
+			po_number: type === "INSTALLATION" ? po_number : null,
 			do_number,
 			staff_name,
 			type,
