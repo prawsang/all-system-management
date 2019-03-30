@@ -1,12 +1,10 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const PO = require("./PurchaseOrder");
-const User = require("./User");
 const Job = require("./Job");
 const Branch = require("./Branch");
 const Item = require("./Item");
 const Op = Sequelize.Op;
-const returnItems = require("../routes/stock_status").returnItems;
 
 const Withdrawal = db.define("withdrawals", {
 	id: {
@@ -82,7 +80,7 @@ const Withdrawal = db.define("withdrawals", {
 
 // Class Methods
 Withdrawal.validate = data => {
-	const { type, return_by, install_date, do_number, has_po } = data;
+	const { type, return_by, install_date, do_number } = data;
 	let errors = [];
 	if (type == "BORROW" && (!return_by || return_by == "")) {
 		errors.push({ msg: "Return date is required for borrowing." });

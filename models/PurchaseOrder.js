@@ -56,6 +56,17 @@ PurchaseOrder.checkBranchInPo = (branch_id, po_number) => {
 		.then(count => (count == 0 ? false : true))
 		.catch(err => false);
 };
+PurchaseOrder.checkJob = (job_code, po_number) => {
+	return PurchaseOrder.findOne({
+		where: {
+			po_number: {
+				[Op.eq]: po_number
+			}
+		}
+	})
+		.then(r => (r.job_code == job_code ? true : false))
+		.catch(err => false);
+};
 
 // Associations
 PurchaseOrder.belongsTo(Job, {

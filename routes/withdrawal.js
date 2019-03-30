@@ -5,7 +5,6 @@ const Model = require("../models/Model");
 const Branch = require("../models/Branch");
 const Job = require("../models/Job");
 const Customer = require("../models/Customer");
-const User = require("../models/User");
 const Withdrawal = require("../models/Withdrawal");
 const ItemWithdrawal = require("../models/junction/ItemWithdrawal");
 const PurchaseOrder = require("../models/PurchaseOrder");
@@ -206,16 +205,16 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 	const {
 		job_code,
 		branch_id,
-		po_number,
 		do_number,
 		staff_name,
 		type,
 		return_by,
 		install_date,
 		date,
-		remarks
+		remarks,
+		po_number
 	} = req.body;
-	const moreValidation = Withdrawal.validate({
+	const moreValidation = await Withdrawal.validate({
 		do_number,
 		type,
 		return_by,
@@ -224,6 +223,17 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 	});
 	if (moreValidation.errors.length > 0) {
 		res.status(400).send(moreValidation.errors);
+		return;
+	}
+	const checkJobCode = await PurchaseOrder.checkJob(job_code, po_number);
+	if (!checkJobCode) {
+		res.status(400).json({
+			errors: [
+				{
+					msg: "The provided PO is for a different job."
+				}
+			]
+		});
 		return;
 	}
 
@@ -244,7 +254,10 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		billed: false
 	})
 		.then(row => res.send(row))
-		.catch(err => res.status(500).json({ errors: err }));
+		.catch(err => {
+			res.status(500).json({ errors: err });
+			console.log(err);
+		});
 });
 
 // Edit Withdrawal (only if it is pending)
@@ -266,7 +279,7 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 		date,
 		install_date
 	} = req.body;
-	const moreValidation = Withdrawal.validate({
+	const moreValidation = await Withdrawal.validate({
 		po_number,
 		do_number,
 		type,
@@ -275,6 +288,17 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 	});
 	if (moreValidation.errors.length > 0) {
 		res.status(400).json({ errors });
+		return;
+	}
+	const checkJobCode = await PurchaseOrder.checkJob(job_code, po_number);
+	if (!checkJobCode) {
+		res.status(400).json({
+			errors: [
+				{
+					msg: "The provided PO is for a different job."
+				}
+			]
+		});
 		return;
 	}
 
