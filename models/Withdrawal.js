@@ -22,7 +22,11 @@ const Withdrawal = db.define("withdrawals", {
 		}
 	},
 	job_code: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		allowNull: false,
+		validate: {
+			notEmpty: true
+		}
 	},
 	po_number: {
 		type: Sequelize.STRING
@@ -70,10 +74,6 @@ const Withdrawal = db.define("withdrawals", {
 	return_by: {
 		type: Sequelize.DATE
 	},
-	has_po: {
-		type: Sequelize.BOOLEAN,
-		allowNull: false
-	},
 	billed: {
 		type: Sequelize.BOOLEAN,
 		allowNull: false
@@ -82,7 +82,7 @@ const Withdrawal = db.define("withdrawals", {
 
 // Class Methods
 Withdrawal.validate = data => {
-	const { type, return_by, install_date, po_number, do_number, job_code, has_po } = data;
+	const { type, return_by, install_date, do_number, has_po } = data;
 	let errors = [];
 	if (type == "BORROW" && (!return_by || return_by == "")) {
 		errors.push({ msg: "Return date is required for borrowing." });
@@ -90,19 +90,11 @@ Withdrawal.validate = data => {
 	if (type == "INSTALLATION" && (!install_date || install_date == "")) {
 		errors.push({ msg: "Installation date is required for installation." });
 	}
-	if (type == "INSTALLATION" && !has_po) {
-		errors.push({ msg: "Installation must have PO." });
-	}
-	if (type !== "INSTALLATION" && has_po) {
+	if (type !== "INSTALLATION" && (po_number && po_number !== "")) {
 		errors.push({ msg: "Withdrawals of types other than installation cannot have PO." });
 	}
 	if (type !== "INSTALLATION" && (do_number && do_number !== "")) {
 		errors.push({ msg: "Withdrawals of types other than installation cannot have DO." });
-	}
-	if (job_code && job_code !== "" && (po_number && po_number !== "")) {
-		errors.push({ msg: "Specify either job code or PO number, but not both." });
-	} else if ((!job_code || job_code === "") && (!po_number || po_number === "")) {
-		errors.push({ msg: "Either job code or PO number must be provided." });
 	}
 	return { errors };
 };

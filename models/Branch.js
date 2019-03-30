@@ -36,6 +36,12 @@ const Branch = db.define("branches", {
 		validate: {
 			notEmpty: true
 		}
+	},
+	gl_branch: {
+		type: Sequelize.STRING
+	},
+	short_code: {
+		type: Sequelize.STRING
 	}
 });
 
