@@ -14,27 +14,34 @@ export const setItems = data => {
 		monitors: [],
 		keyboards: [],
 		cashDrawers: [],
-		printers: []
+		printers: [],
+		maxCount: 0
 	};
 	data.forEach(e => {
 		switch (e.model.type) {
 			case "POS":
-				items.pos.push(e);
+				items.pos.push(e.serial_no);
+				if (items.pos.length > items.maxCount) items.maxCount = items.pos.length;
 				break;
 			case "SCANNER":
-				items.scanners.push(e);
+				items.scanners.push(e.serial_no);
+				if (items.scanners.length > items.maxCount) items.maxCount = items.pos.length;
 				break;
 			case "MONITOR":
-				items.monitors.push(e);
+				items.monitors.push(e.serial_no);
+				if (items.monitors.length > items.maxCount) items.maxCount = items.pos.length;
 				break;
 			case "KEYBOARD":
-				items.keyboards.push(e);
+				items.keyboards.push(e.serial_no);
+				if (items.keyboards.length > items.maxCount) items.maxCount = items.pos.length;
 				break;
 			case "CASH_DRAWER":
-				items.cashDrawers.push(e);
+				items.cashDrawers.push(e.serial_no);
+				if (items.cashDrawers.length > items.maxCount) items.maxCount = items.pos.length;
 				break;
 			case "PRINTER":
-				items.printers.push(e);
+				items.printers.push(e.serial_no);
+				if (items.printers.length > items.maxCount) items.maxCount = items.pos.length;
 				break;
 			default:
 				break;

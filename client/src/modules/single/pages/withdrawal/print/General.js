@@ -41,23 +41,25 @@ const General = ({ currentWithdrawal, match }) => {
 				<table className="is-fullwidth has-mb-10">
 					<tbody>
 						<tr>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>ผู้เบิก: </b>
-								{currentWithdrawal.user.name}
+								{currentWithdrawal.staff_name}
 							</td>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>แผนก: </b>
-								{currentWithdrawal.user.department}
 							</td>
 						</tr>
 						<tr>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>Customer Name: </b>
-								{currentWithdrawal.branch.customer.name}
+								{currentWithdrawal.branch.customer.name} (
+								{currentWithdrawal.branch.customer_code})
 							</td>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>Branch Name: </b>
-								{currentWithdrawal.branch.name}
+								{currentWithdrawal.branch.name}{" "}
+								{currentWithdrawal.branch.branch_code &&
+									`(${currentWithdrawal.branch.branch_code})`}
 							</td>
 						</tr>
 					</tbody>

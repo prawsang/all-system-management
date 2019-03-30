@@ -43,11 +43,11 @@ const DO = ({ currentWithdrawal, match }) => {
 							</td>
 						</tr>
 						<tr>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>Branch Name: </b>
 								{currentWithdrawal.branch.name}
 							</td>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>Branch Code: </b>
 								{currentWithdrawal.branch.branch_code}
 							</td>

@@ -51,6 +51,12 @@
 			border: 2px solid black !important;
 			padding: 10px;
 		}
+		tr.serial {
+			td {
+				padding: 8px;
+				word-break: break-word;
+			}
+		}
 	}
 }
 .print-preview {

@@ -26,7 +26,6 @@ class ChangeCustomer extends React.Component {
 	handleEdit() {
 		const { data, selectedJobCode, selectedBranches } = this.props;
 		const {
-			job_code,
 			po_number,
 			do_number,
 			type,
