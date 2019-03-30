@@ -9,6 +9,8 @@ class AddItems extends React.Component {
 		model: "",
 		models: [],
 		remarks: "",
+		poNumber: "",
+		prNumber: "",
 		serialNos: [],
 		serialNo: ""
 	};
@@ -31,14 +33,16 @@ class AddItems extends React.Component {
 	}
 
 	handleSubmit() {
-		const { model, remarks, serialNos } = this.state;
+		const { model, remarks, serialNos, poNumber, prNumber } = this.state;
 		Axios.request({
 			method: "POST",
 			url: "/stock/add",
 			data: {
 				model_id: model,
 				serial_no: serialNos,
-				remarks
+				remarks,
+				po_number: poNumber,
+				pr_number: prNumber
 			}
 		}).then(res => this.resetPage());
 	}
@@ -49,13 +53,24 @@ class AddItems extends React.Component {
 			model: "",
 			models: [],
 			remarks: "",
+			poNumber: "",
+			prNumber: "",
 			serialNos: [],
 			serialNo: ""
 		});
 	}
 
 	render() {
-		const { type, models, model, remarks, serialNos, serialNo } = this.state;
+		const {
+			type,
+			models,
+			model,
+			remarks,
+			poNumber,
+			prNumber,
+			serialNos,
+			serialNo
+		} = this.state;
 
 		return (
 			<div className="content">
@@ -104,6 +119,24 @@ class AddItems extends React.Component {
 									)}
 								</select>
 							</div>
+						</div>
+						<div className="field">
+							<label className="label">PO Number:</label>
+							<input
+								className="input is-fullwidth"
+								placeholder="PO Number"
+								value={poNumber}
+								onChange={e => this.setState({ poNumber: e.target.value })}
+							/>
+						</div>
+						<div className="field">
+							<label className="label">PR Number:</label>
+							<input
+								className="input is-fullwidth"
+								placeholder="PR Number"
+								value={prNumber}
+								onChange={e => this.setState({ prNumber: e.target.value })}
+							/>
 						</div>
 						<div className="field">
 							<label className="label">Remarks:</label>
