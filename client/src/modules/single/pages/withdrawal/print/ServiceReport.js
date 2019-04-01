@@ -1,8 +1,6 @@
 import React from "react";
 import Header from "./Header";
 import Items from "./Items";
-import { connect } from "react-redux";
-import history from "@/common/history";
 
 const ServiceReportPage = ({ currentWithdrawal, start, end, items, pageNumber }) => {
 	return (
@@ -65,40 +63,4 @@ const ServiceReportPage = ({ currentWithdrawal, start, end, items, pageNumber })
 	);
 };
 
-const ServiceReport = ({ currentWithdrawal, items, match }) => {
-	if (!currentWithdrawal || currentWithdrawal.type !== "INSTALLATION") {
-		history.push(`/single/withdrawal/${match.params.id}`);
-		return <p />;
-	}
-	let pages = [];
-	let m = items.maxCount;
-	let e = 0;
-	let p = 1;
-
-	while (m >= 0) {
-		pages.push(
-			<ServiceReportPage
-				currentWithdrawal={currentWithdrawal}
-				start={e}
-				end={e + 10}
-				items={items}
-				key={p}
-				pageNumber={p}
-			/>
-		);
-		m = m - 10;
-		e = e + 10;
-		p = p + 1;
-	}
-	return pages;
-};
-
-const mapStateToProps = state => ({
-	currentWithdrawal: state.withdrawal.currentWithdrawal,
-	items: state.withdrawal.items
-});
-
-export default connect(
-	mapStateToProps,
-	null
-)(ServiceReport);
+export default ServiceReportPage;

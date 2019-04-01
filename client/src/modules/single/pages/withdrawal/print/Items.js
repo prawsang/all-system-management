@@ -1,5 +1,4 @@
 import React from "react";
-import { connect } from "react-redux";
 
 const Items = ({ items, start, end }) => (
 	<table className="is-fullwidth has-mb-10">
