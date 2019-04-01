@@ -33,9 +33,7 @@ class Withdrawal extends React.PureComponent {
 			data: {
 				status: "CANCELLED"
 			}
-		})
-			.then(res => window.location.reload())
-			
+		}).then(res => window.location.reload());
 	}
 
 	deleteWithdrawal() {
@@ -43,9 +41,7 @@ class Withdrawal extends React.PureComponent {
 		Axios.request({
 			method: "DELETE",
 			url: `/withdrawal/${data.withdrawal.id}`
-		})
-			.then(res => history.push("/"))
-			
+		}).then(res => history.push("/"));
 	}
 
 	handlePrint() {
@@ -110,6 +106,10 @@ class Withdrawal extends React.PureComponent {
 										</span>
 									</h5>
 									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Type:</label>
+										<span>{data.withdrawal.type}</span>
+									</div>
+									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Status:</label>
 										<span>{data.withdrawal.status}</span>
 									</div>
@@ -120,24 +120,26 @@ class Withdrawal extends React.PureComponent {
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">PO:</label>
 										<span>
-											{data.withdrawal.has_po
+											{data.withdrawal.type === "INSTALLATION"
 												? data.withdrawal.po_number
 													? data.withdrawal.po_number
 													: "ยังไม่ได้รับ PO"
-												: "ไม่มี PO"}
+												: "N/A"}
 										</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">DO Number:</label>
-										<span>{data.withdrawal.do_number}</span>
+										<span>
+											{data.withdrawal.type === "INSTALLATION"
+												? data.withdrawal.do_number
+													? data.withdrawal.do_number
+													: "-"
+												: "N/A"}
+										</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">ผู้เบิก:</label>
 										<span>{data.withdrawal.staff_name}</span>
-									</div>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Type:</label>
-										<span>{data.withdrawal.type}</span>
 									</div>
 									{data.withdrawal.type === "BORROW" && (
 										<div className="has-mb-10">
@@ -216,14 +218,18 @@ class Withdrawal extends React.PureComponent {
 									<CustomerData data={data.withdrawal.branch.customer} />
 								</div>
 								<div style={{ marginBottom: "2em" }}>
-									{data.po && <small>ข้อมูล Job มาจาก PO</small>}
-									<JobData
-										data={
-											data.withdrawal.po
-												? data.withdrawal.po.job
-												: data.withdrawal.job
-										}
-									/>
+									{data.po ? (
+										data.po.job_code === data.job_code ? (
+											<JobData data={data.job_code} />
+										) : (
+											<p className="is-bold accent">
+												Job Code ใน PO ไม่ตรงกับ Job Code ในใบเบิก
+												กรุณาแก้ไข
+											</p>
+										)
+									) : (
+										<JobData data={data.job_code} />
+									)}
 								</div>
 								<div style={{ marginBottom: "2em" }}>
 									<BranchData data={data.withdrawal.branch} />

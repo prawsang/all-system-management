@@ -51,6 +51,16 @@ const Item = db.define(
 			validate: {
 				notEmpty: true
 			}
+		},
+		po_number: {
+			type: Sequelize.STRING,
+			allowNull: false,
+			validate: {
+				notEmpty: true
+			}
+		},
+		pr_number: {
+			type: Sequelize.STRING
 		}
 	},
 	{

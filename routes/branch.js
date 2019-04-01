@@ -203,7 +203,8 @@ router.post("/add", branchValidation, (req, res) => {
 		store_type_id,
 		address,
 		province,
-		job_code
+		gl_branch,
+		short_code
 	} = req.body;
 	Branch.create({
 		branch_code,
@@ -211,7 +212,9 @@ router.post("/add", branchValidation, (req, res) => {
 		name,
 		store_type_id,
 		address,
-		province
+		province,
+		gl_branch,
+		short_code
 	})
 		.then(rows => res.send(rows))
 		.catch(err => res.status(500).json({ errors: err }));
@@ -225,14 +228,16 @@ router.put("/:id/edit", branchValidation, (req, res) => {
 	}
 
 	const { id } = req.params;
-	const { branch_code, name, store_type_id, address, province } = req.body;
+	const { branch_code, name, store_type_id, address, province, gl_branch, short_code } = req.body;
 	Branch.update(
 		{
 			branch_code,
 			name,
 			store_type_id,
 			address,
-			province
+			province,
+			gl_branch,
+			short_code
 		},
 		{
 			where: {
@@ -397,7 +402,7 @@ router.delete("/:id", (req, res) => {
 		.catch(err =>
 			res
 				.status(500)
-				.json({ errors: [{ msg: "This branch cannot be deleted", errors: err }] })
+				.json({ errors: [{ msg: "This branch cannot be deleted.", errors: err }] })
 		);
 });
 

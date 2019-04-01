@@ -1,9 +1,10 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
-import ServiceReport from "./ServiceReport";
-import DO from "./DO";
-import General from "./General";
+import ServiceReportPage from "./ServiceReport";
+import DOPage from "./DO";
+import GeneralPage from "./General";
 import Axios from "axios";
+import Pages from "./Pages";
 
 class Print extends React.Component {
 	setPrinted() {
@@ -42,5 +43,55 @@ class Print extends React.Component {
 		);
 	}
 }
+
+const ServiceReport = ({ match }) => (
+	<Pages
+		id={match.params.id}
+		render={data => (
+			<ServiceReportPage
+				currentWithdrawal={data.currentWithdrawal}
+				start={data.start}
+				end={data.end}
+				items={data.items}
+				key={data.key}
+				pageNumber={data.pageNumber}
+				type="SR"
+			/>
+		)}
+	/>
+);
+
+const DO = ({ match }) => (
+	<Pages
+		id={match.params.id}
+		render={data => (
+			<DOPage
+				currentWithdrawal={data.currentWithdrawal}
+				start={data.start}
+				end={data.end}
+				items={data.items}
+				key={data.key}
+				pageNumber={data.pageNumber}
+				type="DO"
+			/>
+		)}
+	/>
+);
+
+const General = ({ match }) => (
+	<Pages
+		id={match.params.id}
+		render={data => (
+			<GeneralPage
+				currentWithdrawal={data.currentWithdrawal}
+				start={data.start}
+				end={data.end}
+				items={data.items}
+				key={data.key}
+				pageNumber={data.pageNumber}
+			/>
+		)}
+	/>
+);
 
 export default Print;

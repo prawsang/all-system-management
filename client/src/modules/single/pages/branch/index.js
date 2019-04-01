@@ -60,6 +60,14 @@ class Branch extends React.Component {
 										<label className="is-bold has-mr-05">Store Type:</label>
 										<span>{data.branch.store_type.name}</span>
 									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Gl Branch:</label>
+										<span>{data.branch.gl_branch}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Short Code:</label>
+										<span>{data.branch.short_code}</span>
+									</div>
 								</div>
 								<hr />
 								<CustomerData data={data.branch.customer} />

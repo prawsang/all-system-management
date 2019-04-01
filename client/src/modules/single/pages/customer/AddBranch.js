@@ -9,14 +9,24 @@ class AddBranch extends React.Component {
 		address: "",
 		province: "",
 		storeTypeId: 0,
-		storeTypes: []
+		storeTypes: [],
+		glBranch: "",
+		shortCode: ""
 	};
 	componentDidMount() {
 		Axios.get("/store-type/get-all").then(res => this.setState({ storeTypes: res.data.types }));
 	}
 
 	addBranch() {
-		const { branchCode, name, address, province, storeTypeId } = this.state;
+		const {
+			branchCode,
+			name,
+			address,
+			province,
+			storeTypeId,
+			glBranch,
+			shortCode
+		} = this.state;
 		const { customer } = this.props;
 		Axios.request({
 			method: "POST",
@@ -27,13 +37,24 @@ class AddBranch extends React.Component {
 				name,
 				address,
 				province,
-				store_type_id: storeTypeId
+				store_type_id: storeTypeId,
+				gl_branch: glBranch,
+				short_code: shortCode
 			}
 		}).then(res => window.location.reload());
 	}
 
 	render() {
-		const { branchCode, name, address, province, storeTypeId, storeTypes } = this.state;
+		const {
+			branchCode,
+			name,
+			address,
+			province,
+			storeTypeId,
+			storeTypes,
+			glBranch,
+			shortCode
+		} = this.state;
 		const { close, active, customer } = this.props;
 
 		return (
@@ -93,6 +114,24 @@ class AddBranch extends React.Component {
 								))}
 							</select>
 						</div>
+					</div>
+					<div className="field">
+						<label className="label">GL Branch</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="GL Branch"
+							onChange={e => this.setState({ glBranch: e.target.value })}
+							value={glBranch}
+						/>
+					</div>
+					<div className="field">
+						<label className="label">Short Code</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="Short Code"
+							onChange={e => this.setState({ shortCode: e.target.value })}
+							value={shortCode}
+						/>
 					</div>
 					<div className="buttons">
 						<button className="button" onClick={() => this.addBranch()}>

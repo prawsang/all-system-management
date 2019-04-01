@@ -52,6 +52,14 @@ class Item extends React.Component {
 										<span>{data.item.stock_location}</span>
 									</div>
 									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">PO Number:</label>
+										<span>{data.item.po_number}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">PR Number:</label>
+										<span>{data.item.pr_number}</span>
+									</div>
+									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">เสีย:</label>
 										<span>
 											{data.item.broken ? (

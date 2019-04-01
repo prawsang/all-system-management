@@ -2,17 +2,13 @@ import React from "react";
 import Header from "./Header";
 import Items from "./Items";
 import { connect } from "react-redux";
-import history from "@/common/history";
 import { formatDate } from "@/common/date";
 
-const General = ({ currentWithdrawal, match }) => {
-	if (!currentWithdrawal) {
-		history.push(`/single/withdrawal/${match.params.id}`);
-		return <p />;
-	}
+const GeneralPage = ({ currentWithdrawal, start, end, items, pageNumber }) => {
 	return (
 		<div className="print-preview">
 			<div className="print-preview-page">
+				<p style={{ float: "right" }}>หน้า {pageNumber}</p>
 				<Header />
 				<div className="block header is-fullwidth is-ta-center has-mb-10">
 					<h3>ใบเบิกสินค้า</h3>
@@ -41,28 +37,30 @@ const General = ({ currentWithdrawal, match }) => {
 				<table className="is-fullwidth has-mb-10">
 					<tbody>
 						<tr>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>ผู้เบิก: </b>
-								{currentWithdrawal.user.name}
+								{currentWithdrawal.staff_name}
 							</td>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>แผนก: </b>
-								{currentWithdrawal.user.department}
 							</td>
 						</tr>
 						<tr>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>Customer Name: </b>
-								{currentWithdrawal.branch.customer.name}
+								{currentWithdrawal.branch.customer.name} (
+								{currentWithdrawal.branch.customer_code})
 							</td>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>Branch Name: </b>
-								{currentWithdrawal.branch.name}
+								{currentWithdrawal.branch.name}{" "}
+								{currentWithdrawal.branch.branch_code &&
+									`(${currentWithdrawal.branch.branch_code})`}
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<Items />
+				<Items start={start} end={end} items={items} />
 				<div className="block has-mb-10">
 					<b>Remarks: </b>
 					{currentWithdrawal.remarks}
@@ -104,4 +102,4 @@ const mapStateToProps = state => ({
 export default connect(
 	mapStateToProps,
 	null
-)(General);
+)(GeneralPage);
