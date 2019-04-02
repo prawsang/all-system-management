@@ -1,8 +1,8 @@
 const express = require("express");
-const exphbs = require("express-handlebars");
 const bodyParser = require("body-parser");
-const path = require("path");
 const db = require("./config/database");
+
+require("./config/passport");
 
 // Test DB
 db.authenticate()
@@ -16,7 +16,7 @@ app.get("/", (req, res) => res.sendStatus(200));
 
 // Body parser
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 app.use("/api", require("./routes"));
 

@@ -1,13 +1,14 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
+const bcrypt = require("bcrypt");
 
 const User = db.define("users", {
 	id: {
 		type: Sequelize.INTEGER,
 		primaryKey: true,
-		autoIncrement: true,
+		autoIncrement: true
 	},
-	name: {
+	username: {
 		type: Sequelize.STRING,
 		allowNull: false,
 		validate: {
@@ -31,6 +32,12 @@ const User = db.define("users", {
 		}
 	}
 });
+
+User.prototype.validatePassword = function() {
+	bcrypt.hash(password, 12).then(hashedPassword => {
+		return hashedPassword === this.password;
+	});
+};
 
 // Do not query password
 User.prototype.toJSON = function() {

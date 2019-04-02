@@ -22,12 +22,12 @@ router.get("/get-all", async (req, res) => {
 	}
 	res.send(query);
 });
-router.get("/:staff_code/details", (req, res) => {
-	const { staff_code } = req.params;
+router.get("/:id/details", (req, res) => {
+	const { id } = req.params;
 	User.findOne({
 		where: {
-			staff_code: {
-				[Op.eq]: staff_code
+			id: {
+				[Op.eq]: id
 			}
 		}
 	})
@@ -41,7 +41,7 @@ const userValidation = [
 		.isEmpty()
 		.isIn(["ADMIN", "STOCK", "ACCOUNTANT", "SERVICE", "SYSTEM"])
 		.withMessage("Invalid or empty department"),
-	check("name")
+	check("username")
 		.not()
 		.isEmpty()
 		.withMessage("Name cannot be empty."),
@@ -58,13 +58,13 @@ router.post("/add", userValidation, (req, res) => {
 		return res.status(422).json({ errors: errors.array() });
 	}
 
-	const { name, department } = req.body;
+	const { username, department } = req.body;
 	let { password } = req.body;
 	bcrypt
 		.hash(password, 12)
 		.then(hashedPassword => {
 			User.create({
-				name,
+				username,
 				department,
 				password: hashedPassword
 			})
@@ -75,14 +75,14 @@ router.post("/add", userValidation, (req, res) => {
 });
 
 // Edit User
-router.put("/:staff_code/edit", (req, res) => {
+router.put("/:id/edit", (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).json({ errors: errors.array() });
 	}
 
-	const { staff_code } = req.params;
-	const { name, department } = req.body;
+	const { id } = req.params;
+	const { username, department } = req.body;
 	let { password } = req.body;
 
 	bcrypt
@@ -90,14 +90,14 @@ router.put("/:staff_code/edit", (req, res) => {
 		.then(hashedPassword => {
 			User.update(
 				{
-					name,
+					username,
 					department,
 					password: hashedPassword
 				},
 				{
 					where: {
-						staff_code: {
-							[Op.eq]: staff_code
+						id: {
+							[Op.eq]: id
 						}
 					}
 				}
@@ -109,12 +109,12 @@ router.put("/:staff_code/edit", (req, res) => {
 });
 
 // Delete user
-router.delete("/:staff_code", (req, res) => {
-	const { staff_code } = req.params;
+router.delete("/:id", (req, res) => {
+	const { id } = req.params;
 	User.destroy({
 		where: {
-			staff_code: {
-				[Op.eq]: staff_code
+			id: {
+				[Op.eq]: id
 			}
 		}
 	})
