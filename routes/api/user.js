@@ -37,7 +37,7 @@ router.post("/login", auth.optional, (req, res, next) => {
 	})(req, res, next);
 });
 
-router.get("/get-all", async (req, res) => {
+router.get("/get-all", auth.required, async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
 	const query = await tools.countAndQuery({
 		limit,
@@ -67,8 +67,6 @@ router.get("/:id/details", (req, res) => {
 
 const userValidation = [
 	check("department")
-		.not()
-		.isEmpty()
 		.isIn(["ADMIN", "STOCK", "ACCOUNTANT", "SERVICE", "SYSTEM"])
 		.withMessage("Invalid or empty department"),
 	check("username")
@@ -82,7 +80,7 @@ const userValidation = [
 ];
 
 // Add New User
-router.post("/add", userValidation, (req, res) => {
+router.post("/add", auth.required, userValidation, (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).json({ errors: errors.array() });

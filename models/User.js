@@ -49,7 +49,7 @@ User.prototype.generateJWT = function() {
 	return jwt.sign(
 		{
 			username: this.username,
-			id: this._id,
+			_id: this.id,
 			exp: parseInt(expirationDate.getTime() / 1000, 10)
 		},
 		"secret"
@@ -58,7 +58,7 @@ User.prototype.generateJWT = function() {
 
 User.prototype.toAuthJSON = function() {
 	return {
-		_id: this._id,
+		_id: this.id,
 		username: this.username,
 		token: this.generateJWT()
 	};
