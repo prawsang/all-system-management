@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
-const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 const User = db.define("users", {
 	id: {
@@ -33,10 +34,34 @@ const User = db.define("users", {
 	}
 });
 
-User.prototype.validatePassword = function() {
-	bcrypt.hash(password, 12).then(hashedPassword => {
-		return hashedPassword === this.password;
-	});
+User.prototype.validatePassword = function(password) {
+	const hash = crypto
+		.createHmac("sha256", "0FA125A668")
+		.update(password)
+		.digest("hex");
+	return this.password === hash;
+};
+User.prototype.generateJWT = function() {
+	const today = new Date();
+	const expirationDate = new Date(today);
+	expirationDate.setDate(today.getDate() + 60);
+
+	return jwt.sign(
+		{
+			username: this.username,
+			id: this._id,
+			exp: parseInt(expirationDate.getTime() / 1000, 10)
+		},
+		"secret"
+	);
+};
+
+User.prototype.toAuthJSON = function() {
+	return {
+		_id: this._id,
+		username: this.username,
+		token: this.generateJWT()
+	};
 };
 
 // Do not query password

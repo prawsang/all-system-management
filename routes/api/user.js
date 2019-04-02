@@ -3,9 +3,39 @@ const router = express.Router();
 const User = require("../../models/User");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const bcrypt = require("bcrypt");
 const { check, validationResult } = require("express-validator/check");
 const tools = require("../../utils/tools");
+const auth = require("../auth");
+const passport = require("passport");
+const crypto = require("crypto");
+
+router.post("/login", auth.optional, (req, res, next) => {
+	const { username, password } = req.body;
+	if (!username || !password) {
+		res.status(422).json({
+			errors: [
+				{
+					msg: "Both username and password are required."
+				}
+			]
+		});
+		return;
+	}
+	return passport.authenticate("local", { session: false }, (err, passportUser, info) => {
+		if (err) {
+			return next(err);
+		}
+
+		if (passportUser) {
+			const user = passportUser;
+			user.token = passportUser.generateJWT();
+
+			return res.json({ user: user.toAuthJSON() });
+		}
+
+		return res.status(400).send(info);
+	})(req, res, next);
+});
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
@@ -58,19 +88,18 @@ router.post("/add", userValidation, (req, res) => {
 		return res.status(422).json({ errors: errors.array() });
 	}
 
-	const { username, department } = req.body;
-	let { password } = req.body;
-	bcrypt
-		.hash(password, 12)
-		.then(hashedPassword => {
-			User.create({
-				username,
-				department,
-				password: hashedPassword
-			})
-				.then(rows => res.sendStatus(200))
-				.catch(err => res.status(500).json({ errors: err }));
-		})
+	const { username, password, department } = req.body;
+
+	const hash = crypto
+		.createHmac("sha256", "0FA125A668")
+		.update(password)
+		.digest("hex");
+	User.create({
+		username,
+		department,
+		password: hash
+	})
+		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).json({ errors: err }));
 });
 
@@ -82,29 +111,28 @@ router.put("/:id/edit", (req, res) => {
 	}
 
 	const { id } = req.params;
-	const { username, department } = req.body;
-	let { password } = req.body;
+	const { username, password, department } = req.body;
 
-	bcrypt
-		.hash(password, 12)
-		.then(hashedPassword => {
-			User.update(
-				{
-					username,
-					department,
-					password: hashedPassword
-				},
-				{
-					where: {
-						id: {
-							[Op.eq]: id
-						}
-					}
+	const hash = crypto
+		.createHmac("sha256", "0FA125A668")
+		.update(password)
+		.digest("hex");
+
+	User.update(
+		{
+			username,
+			department,
+			password: hash
+		},
+		{
+			where: {
+				id: {
+					[Op.eq]: id
 				}
-			)
-				.then(rows => res.sendStatus(200))
-				.catch(err => res.status(500).json({ errors: err }));
-		})
+			}
+		}
+	)
+		.then(rows => res.sendStatus(200))
 		.catch(err => res.status(500).json({ errors: err }));
 });
 

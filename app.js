@@ -2,8 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const db = require("./config/database");
 
-require("./config/passport");
-
 // Test DB
 db.authenticate()
 	.then(() => console.log("Database connected..."))
@@ -19,6 +17,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/api", require("./routes"));
+require("./config/passport");
+require("./models/User");
 
 const PORT = process.env.PORT || 5000;
 
