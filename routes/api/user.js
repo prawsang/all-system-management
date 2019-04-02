@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
+const User = require("../../models/User");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const bcrypt = require("bcrypt");
 const { check, validationResult } = require("express-validator/check");
-const tools = require("../utils/tools");
+const tools = require("../../utils/tools");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search, search_term } = req.query;

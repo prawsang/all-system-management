@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const Job = require("../models/Job");
-const Customer = require("../models/Customer");
-const Branch = require("../models/Branch");
-const StoreType = require("../models/StoreType");
-const tools = require("../utils/tools");
+const Job = require("../../models/Job");
+const Customer = require("../../models/Customer");
+const Branch = require("../../models/Branch");
+const StoreType = require("../../models/StoreType");
+const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
 
 router.get("/get-all", async (req, res) => {

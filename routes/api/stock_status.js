@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const Item = require("../models/Item");
-const BranchJob = require("../models/junction/BranchJob");
-const Job = require("../models/Job");
+const Item = require("../../models/Item");
+const BranchJob = require("../../models/junction/BranchJob");
+const Job = require("../../models/Job");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");

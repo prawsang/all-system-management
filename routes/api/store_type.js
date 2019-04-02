@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const StoreType = require("../models/StoreType");
+const StoreType = require("../../models/StoreType");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");
-const tools = require("../utils/tools");
+const tools = require("../../utils/tools");
 
 router.route("/get-all").get(async (req, res) => {
 	const { limit, page, search, search_term } = req.query;
