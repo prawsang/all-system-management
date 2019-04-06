@@ -1,10 +1,19 @@
 import React from "react";
+import { logIn } from "@/actions/auth";
+import { connect } from "react-redux";
+import history from "@/common/history";
 
 class Login extends React.Component {
 	state = {
 		username: "",
 		password: ""
 	};
+
+	handleSubmit(e) {
+		e.preventDefault();
+		const { username, password } = this.state;
+		this.props.logIn({ username, password }, history);
+	}
 
 	render() {
 		const { username, password } = this.state;
@@ -16,7 +25,7 @@ class Login extends React.Component {
 				<div className="panel" style={{ width: "100%", maxWidth: 400, margin: 15 }}>
 					<div className="panel-content content">
 						<h4 className="has-mb-10">Login</h4>
-						<form>
+						<form onSubmit={e => this.handleSubmit(e)}>
 							<div className="field">
 								<label className="label">Username</label>
 								<input
@@ -46,4 +55,7 @@ class Login extends React.Component {
 	}
 }
 
-export default Login;
+export default connect(
+	null,
+	{ logIn }
+)(Login);

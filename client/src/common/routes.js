@@ -1,15 +1,23 @@
 import React from "react";
-import { Router, Switch, Route } from "react-router-dom";
+import { Router, Switch } from "react-router-dom";
 import history from "./history";
-import Nav from "./components/Nav";
 import Report from "../modules/report";
 import Record from "../modules/record";
 import Single from "../modules/single";
 import SearchItem from "../modules/searchitem";
-import Error from "./components/Error";
 import Login from "../modules/login";
+import { setAuth } from "../actions/auth";
+import { connect } from "react-redux";
+import PublicRoute from "./components/PublicRoute";
+import PrivateRoute from "./components/PrivateRoute";
 
 class AppRouter extends React.Component {
+	componentDidMount() {
+		const token = localStorage.getItem("token");
+		if (token) {
+			this.props.setAuth(true);
+		}
+	}
 	render() {
 		return (
 			<React.Fragment>
@@ -27,41 +35,13 @@ class AppRouter extends React.Component {
 		);
 	}
 }
-export default AppRouter;
-
-const PublicRoute = props => {
-	let { isAuthenticated, path, component: Component, ...rest } = props;
-	return (
-		<Route
-			{...rest}
-			path={path}
-			component={props => (
-				<React.Fragment>
-					<Component {...props} />
-					<Error />
-				</React.Fragment>
-			)}
-		/>
-	);
-};
-
-const PrivateRoute = props => {
-	let { isAuthenticated, component: Component, ...rest } = props;
-	return (
-		<Route
-			{...rest}
-			component={props => (
-				<React.Fragment>
-					<Nav />
-					<Error />
-					<div className="container main with-side-bar">
-						<Component {...props} />
-					</div>
-				</React.Fragment>
-			)}
-		/>
-	);
-};
+const mapStateToProps = state => ({
+	isAuth: state.auth.isAuth
+});
+export default connect(
+	mapStateToProps,
+	{ setAuth }
+)(AppRouter);
 
 const Home = () => (
 	<div className="content">

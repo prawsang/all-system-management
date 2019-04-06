@@ -2,6 +2,9 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown, faAngleUp, faUser, faBars } from "@fortawesome/free-solid-svg-icons";
 import Menu from "./Menu";
+import { logOut } from "@/actions/auth";
+import { connect } from "react-redux";
+import history from "@/common/history";
 
 class Nav extends React.Component {
 	state = {
@@ -36,7 +39,12 @@ class Nav extends React.Component {
 									"is-hidden"}`}
 							>
 								{/* <span className="list-item is-clickable">ข้อมูลผู้ใช้</span> */}
-								<span className="list-item is-clickable">Log out</span>
+								<span
+									className="list-item is-clickable"
+									onClick={() => this.props.logOut(history)}
+								>
+									Log out
+								</span>
 							</div>
 						</div>
 					</div>
@@ -47,4 +55,7 @@ class Nav extends React.Component {
 	}
 }
 
-export default Nav;
+export default connect(
+	null,
+	{ logOut }
+)(Nav);
