@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const PurchaseOrder = require("../../models/PurchaseOrder");
+const Job = require("../../models/Job");
+const Customer = require("../../models/Customer");
 const BranchPO = require("../../models/junction/BranchPO");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -57,26 +59,20 @@ router.get("/get-all", async (req, res) => {
 
 router.get("/:po_number/details", (req, res) => {
 	const { po_number } = req.params;
-	db.query(
-		`
-	SELECT
-		${poFragment},
-		${jobFragment},
-		${customerFragment}
-	FROM
-		"purchase_orders"
-		LEFT OUTER JOIN "jobs" ON "purchase_orders"."job_code" = "jobs"."job_code" 
-		LEFT OUTER JOIN "customers" ON "jobs"."customer_code" = "customers"."customer_code"
-	WHERE "po_number" = :po_number
-	`,
-		{
-			replacements: {
-				po_number
-			},
-			type: db.QueryTypes.SELECT
-		}
-	)
-		.then(r => res.json(r[0]))
+	PurchaseOrder.findOne({
+		where: { po_number: { [Op.eq]: po_number } },
+		include: [
+			{
+				model: Job,
+				as: "job",
+				include: {
+					model: Customer,
+					as: "customer"
+				}
+			}
+		]
+	})
+		.then(po => res.send({ po }))
 		.catch(err => res.status(500).json({ errors: err }));
 });
 
