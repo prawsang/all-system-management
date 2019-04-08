@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const Branch = require("../../models/Branch");
-const Job = require("../../models/Job");
-const Customer = require("../../models/Customer");
-const StoreType = require("../../models/StoreType");
 const PurchaseOrder = require("../../models/PurchaseOrder");
 const BranchPO = require("../../models/junction/BranchPO");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../../config/database");
-const tools = require("../../utils/tools");
 const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
-const { poFragment, jobFragment, customerFragment } = require("../../utils/fragments");
+const {
+	poFragment,
+	jobFragment,
+	customerFragment,
+	branchFragment,
+	storeTypeFragment
+} = require("../../utils/fragments");
 
 router.get("/get-all", async (req, res) => {
 	let { limit, page, search_col, search_term, installed, from, to } = req.query;
@@ -38,8 +39,8 @@ router.get("/get-all", async (req, res) => {
 		search_term,
 		cols: `${poFragment},${jobFragment},${customerFragment}`,
 		tables: `"purchase_orders"
-		LEFT OUTER JOIN "jobs" AS "job" ON "purchase_orders"."job_code" = "job"."job_code" 
-		LEFT OUTER JOIN "customers" AS "customer" ON "job"."customer_code" = "customer"."customer_code"`,
+		LEFT OUTER JOIN "jobs" ON "purchase_orders"."job_code" = "jobs"."job_code" 
+		LEFT OUTER JOIN "customers" ON "jobs"."customer_code" = "customers"."customer_code"`,
 		availableCols: ["po_number", "customer_name", "customer_code", "job_name", "job_code"],
 		where: filters,
 		replacements: {
@@ -56,56 +57,62 @@ router.get("/get-all", async (req, res) => {
 
 router.get("/:po_number/details", (req, res) => {
 	const { po_number } = req.params;
-	PurchaseOrder.findOne({
-		where: { po_number: { [Op.eq]: po_number } },
-		include: [
-			{
-				model: Job,
-				as: "job",
-				include: {
-					model: Customer,
-					as: "customer"
-				}
-			}
-		]
-	})
-		.then(po => res.send({ po }))
+	db.query(
+		`
+	SELECT
+		${poFragment},
+		${jobFragment},
+		${customerFragment}
+	FROM
+		"purchase_orders"
+		LEFT OUTER JOIN "jobs" ON "purchase_orders"."job_code" = "jobs"."job_code" 
+		LEFT OUTER JOIN "customers" ON "jobs"."customer_code" = "customers"."customer_code"
+	WHERE "po_number" = :po_number
+	`,
+		{
+			replacements: {
+				po_number
+			},
+			type: db.QueryTypes.SELECT
+		}
+	)
+		.then(r => res.json(r[0]))
 		.catch(err => res.status(500).json({ errors: err }));
 });
 
 // get branches for po
 router.get("/:po_number/branches", async (req, res) => {
 	const { po_number } = req.params;
+	let { limit, page, search_col, search_term } = req.query;
 
-	let { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		include: [
-			{
-				model: Branch,
-				as: "branch",
-				include: {
-					model: StoreType,
-					as: "store_type"
-				}
-			}
+		cols: `${branchFragment},${storeTypeFragment}`,
+		tables: `"branches"
+		LEFT OUTER JOIN "branch_po" ON "branches"."id" = "branch_po"."branch_id" 
+		LEFT OUTER JOIN "purchase_orders" ON "purchase_orders"."po_number" = "branch_po"."po_number"
+		LEFT OUTER JOIN "store_types" ON "store_types"."id" = "branches"."store_type_id"`,
+		availableCols: [
+			"branch_code",
+			"branch_name",
+			"province",
+			"store_type_name",
+			"gl_branch",
+			"short_code"
 		],
-		where: {
-			po_number: {
-				[Op.eq]: po_number
-			}
-		},
-		search_junction: 0,
-		model: BranchPO
+		where: `"branch_po"."po_number" = :po_number`,
+		replacements: {
+			po_number
+		}
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 const poValidation = [
