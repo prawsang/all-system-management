@@ -16,25 +16,40 @@ const db = require("../../config/database");
 const Op = Sequelize.Op;
 const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
+const { query } = require("../../utils/query");
+const {
+	branchFragment,
+	storeTypeFragment,
+	jobFragment,
+	customerFragment,
+	itemFragment,
+	modelFragment
+} = require("../../utils/fragments");
 
 router.get("/get-all", async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
-		include: {
-			model: StoreType,
-			as: "store_type"
-		},
-		search,
+		search_col,
 		search_term,
-		model: Branch
+		cols: `${branchFragment},${storeTypeFragment}`,
+		tables: `"branches" 
+		LEFT OUTER JOIN "store_types" ON "branches"."store_type_id" = "store_types"."id"`,
+		availableCols: [
+			"branch_code",
+			"branch_name",
+			"province",
+			"store_type_name",
+			"gl_branch",
+			"short_code"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 router.get("/:id/details", (req, res) => {
@@ -67,79 +82,75 @@ router.get("/:id/details", (req, res) => {
 // List of items in a branch
 router.get("/:id/items/", async (req, res) => {
 	const { id } = req.params;
-	const { limit, page, search, search_term } = req.query;
-
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term, broken } = req.query;
+	const q = await query({
 		limit,
 		page,
-		include: [
-			{
-				model: Withdrawal,
-				where: {
-					branch_id: {
-						[Op.eq]: id
-					}
-				},
-				as: "withdrawal"
-			},
-			{
-				model: Item,
-				as: "item",
-				include: {
-					model: Model,
-					as: "model"
-				},
-				where: {
-					status: {
-						[Op.not]: "IN_STOCK",
-						[Op.not]: "RESERVED"
-					}
-				}
-			}
-		],
-		search,
+		search_col,
 		search_term,
-		search_junction: 1,
-		model: ItemWithdrawal
+		cols: `${itemFragment}, ${modelFragment}`,
+		tables: `"item_withdrawal"
+			LEFT OUTER JOIN "stock" ON "stock"."serial_no" = "item_withdrawal"."serial_no"
+			LEFT OUTER JOIN "withdrawals" ON "withdrawals"."id" = "item_withdrawal"."withdrawal_id"
+			LEFT OUTER JOIN "branches" ON "branches"."id" = "withdrawals"."branch_id"
+			LEFT OUTER JOIN "models" ON "stock"."model_id" = "models"."id"
+		`,
+		where: `
+			NOT "stock"."status" = 'IN_STOCK' 
+			AND NOT "stock"."status" = 'RESERVED'
+			AND "branches"."id" = :id
+			${broken ? (broken === "true" ? `AND "stock"."broken"` : `AND NOT "stock"."broken"`) : ""}`,
+		replacements: {
+			id
+		}
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+		console.log(q.errors);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 // List of branches with po but po has installed = false
 router.get("/no-install", async (req, res) => {
-	let { limit, page, search, search_term } = req.query;
+	let { limit, page, search_col, search_term } = req.query;
 
-	const query = await tools.countAndQuery({
+	const q = await query({
 		limit,
 		page,
-		include: [
-			{
-				model: PurchaseOrder,
-				as: "purchase_orders",
-				where: {
-					installed: {
-						[Op.eq]: false
-					}
-				}
-			},
-			{
-				model: Customer,
-				as: "customer"
-			}
-		],
-		search,
+		search_col,
 		search_term,
-		model: Branch
+		cols: `
+			${branchFragment},
+			${storeTypeFragment},
+			${customerFragment},
+			array_agg("purchase_orders"."po_number") AS "po_numbers"`,
+		tables: `"branches"
+		LEFT OUTER JOIN "branch_po" ON "branch_po"."branch_id" = "branches"."id"
+		LEFT OUTER JOIN "purchase_orders" on "purchase_orders"."po_number" = "branch_po"."po_number"
+		LEFT OUTER JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
+		LEFT OUTER JOIN "store_types" ON "branches"."store_type_id" = "store_types"."id"
+		WHERE NOT "purchase_orders"."installed"
+		GROUP BY "branches"."id","store_types"."id","customers"."customer_code"
+		`,
+		availableCols: [
+			"branch_code",
+			"branch_name",
+			"province",
+			"store_type_name",
+			"gl_branch",
+			"short_code",
+			"customer_name",
+			"customer_code"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+		console.log(q.errors);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 // List of po_number of a branch

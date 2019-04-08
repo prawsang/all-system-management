@@ -19,6 +19,8 @@ const getFromAlias = col => {
 			return `"branch"."id"`;
 		case "po_date":
 			return `"purchase_orders"."date"`;
+		case "store_type_name":
+			return `"store_type"."name"`;
 		default:
 			return `"col"`;
 	}
