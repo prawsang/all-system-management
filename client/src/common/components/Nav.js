@@ -9,11 +9,19 @@ import history from "@/common/history";
 class Nav extends React.Component {
 	state = {
 		showUserMenu: false,
-		showSidebar: false
+		showSidebar: false,
+		currentUser: null
 	};
+	componentDidMount() {
+		this.setState({
+			currentUser: {
+				username: localStorage.getItem("username"),
+				id: localStorage.getItem("userId")
+			}
+		});
+	}
 	render() {
-		const { showUserMenu, showSidebar } = this.state;
-		const { user } = this.props;
+		const { showUserMenu, showSidebar, currentUser } = this.state;
 		return (
 			<React.Fragment>
 				<nav>
@@ -29,7 +37,7 @@ class Nav extends React.Component {
 						<div className="nav-item is-clickable">
 							<p onClick={() => this.setState({ showUserMenu: !showUserMenu })}>
 								<FontAwesomeIcon className="icon has-mr-05" icon={faUser} />
-								{user ? user.username : ""}
+								{currentUser ? currentUser.username : ""}
 								<FontAwesomeIcon
 									className="icon has-ml-05"
 									icon={showUserMenu ? faAngleUp : faAngleDown}

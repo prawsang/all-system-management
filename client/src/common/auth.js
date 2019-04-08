@@ -10,10 +10,12 @@ export const removeAuthToken = () => {
 	localStorage.removeItem("token");
 };
 
-export const setCurrentUser = username => {
+export const setCurrentUser = (id, username) => {
 	localStorage.setItem("username", username);
+	localStorage.setItem("userId", id);
 };
 
 export const removeCurrentUser = () => {
 	localStorage.removeItem("username");
+	localStorage.removeItem("userId");
 };

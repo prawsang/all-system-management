@@ -8,8 +8,8 @@ export const logIn = (credentials, history) => async dispatch => {
 			data: { user }
 		} = await Axios.post("/user/login", credentials);
 		setAuthToken(user.token);
-		setCurrentUser(user.username);
-		dispatch(setAuth(user));
+		setCurrentUser(user.id, user.username);
+		dispatch(setAuth(true));
 		history.push("/");
 	} catch (error) {
 		dispatch(setAuth(null));
