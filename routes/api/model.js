@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Model = require("../models/Model");
+const Model = require("../../models/Model");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const tools = require("../utils/tools");
+const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {

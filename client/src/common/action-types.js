@@ -19,3 +19,6 @@ export const SET_ITEMS = "SET_ITEMS";
 
 // Error
 export const SET_ERROR = "SET_ERROR";
+
+// Auth
+export const SET_AUTH = "SET_AUTH";
