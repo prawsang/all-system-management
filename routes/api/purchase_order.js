@@ -10,32 +10,48 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../../config/database");
 const tools = require("../../utils/tools");
+const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
+const { poFragment, jobFragment, customerFragment } = require("../../utils/fragments");
 
 router.get("/get-all", async (req, res) => {
-	let { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	let { limit, page, search_col, search_term, installed, from, to } = req.query;
+
+	let filters = null;
+	if (installed || (from && to)) {
+		const installedFilter = installed
+			? installed === "true"
+				? `"installed"`
+				: `NOT "installed"`
+			: null;
+		const dateFilter =
+			from && to
+				? `"purchase_orders"."date" >= :from AND "purchase_orders"."date" <= :to`
+				: null;
+		filters = [installedFilter, dateFilter].filter(e => e).join(" AND ");
+	}
+
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		include: [
-			{
-				model: Job,
-				as: "job",
-				include: {
-					model: Customer,
-					as: "customer"
-				}
-			}
-		],
-		model: PurchaseOrder
+		cols: `${poFragment},${jobFragment},${customerFragment}`,
+		tables: `"purchase_orders"
+		LEFT OUTER JOIN "jobs" AS "job" ON "purchase_orders"."job_code" = "job"."job_code" 
+		LEFT OUTER JOIN "customers" AS "customer" ON "job"."customer_code" = "customer"."customer_code"`,
+		availableCols: ["po_number", "customer_name", "customer_code", "job_name", "job_code"],
+		where: filters,
+		replacements: {
+			from: from ? from : "",
+			to: to ? to : ""
+		}
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 router.get("/:po_number/details", (req, res) => {
