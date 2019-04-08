@@ -13,6 +13,7 @@ class Nav extends React.Component {
 	};
 	render() {
 		const { showUserMenu, showSidebar } = this.state;
+		const { user } = this.props;
 		return (
 			<React.Fragment>
 				<nav>
@@ -28,7 +29,7 @@ class Nav extends React.Component {
 						<div className="nav-item is-clickable">
 							<p onClick={() => this.setState({ showUserMenu: !showUserMenu })}>
 								<FontAwesomeIcon className="icon has-mr-05" icon={faUser} />
-								Prawsang
+								{user ? user.username : ""}
 								<FontAwesomeIcon
 									className="icon has-ml-05"
 									icon={showUserMenu ? faAngleUp : faAngleDown}
@@ -55,7 +56,11 @@ class Nav extends React.Component {
 	}
 }
 
+const mapStateToProps = state => ({
+	user: state.auth.user
+});
+
 export default connect(
-	null,
+	mapStateToProps,
 	{ logOut }
 )(Nav);

@@ -1,32 +1,43 @@
 import { SET_AUTH } from "../common/action-types";
-import { setAuthToken, removeAuthToken } from "../common/auth";
+import { setAuthToken, removeAuthToken, setCurrentUser, removeCurrentUser } from "../common/auth";
 import Axios from "axios";
 
 export const logIn = (credentials, history) => async dispatch => {
 	try {
 		const {
-			data: {
-				user: { token }
-			}
+			data: { user }
 		} = await Axios.post("/user/login", credentials);
-		setAuthToken(token);
-		dispatch(setAuth(true));
+		setAuthToken(user.token);
+		setCurrentUser(user.username);
+		dispatch(setAuth(user));
 		history.push("/");
 	} catch (error) {
-		console.log(error);
-		dispatch(setAuth(false));
+		dispatch(setAuth(null));
 	}
 };
 
 export const logOut = history => dispatch => {
-	dispatch(setAuth(false));
+	dispatch(setAuth(null));
 	removeAuthToken();
+	removeCurrentUser();
 	history.push("/login");
 };
 
-export const setAuth = bool => {
+export const setAuth = user => {
+	if (user) {
+		return {
+			type: SET_AUTH,
+			payload: {
+				isAuth: true,
+				user
+			}
+		};
+	}
 	return {
 		type: SET_AUTH,
-		payload: bool
+		payload: {
+			isAuth: false,
+			user: null
+		}
 	};
 };
