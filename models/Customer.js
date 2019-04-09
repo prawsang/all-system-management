@@ -19,4 +19,7 @@ const Customer = db.define("customers", {
 	}
 });
 
+Customer.getColumns = `"customers"."customer_code",
+	"customers"."name" AS "customer_name"`;
+
 module.exports = Customer;

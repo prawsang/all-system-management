@@ -33,6 +33,11 @@ const User = db.define("users", {
 		}
 	}
 });
+User.getColumns = `
+	"users"."id",
+	"users"."username",
+	"users"."department"
+`;
 
 User.prototype.validatePassword = function(password) {
 	const hash = crypto

@@ -17,14 +17,6 @@ const Op = Sequelize.Op;
 const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
 const { query } = require("../../utils/query");
-const {
-	branchFragment,
-	storeTypeFragment,
-	jobFragment,
-	customerFragment,
-	itemFragment,
-	modelFragment
-} = require("../../utils/fragments");
 
 router.get("/get-all", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;
@@ -33,9 +25,9 @@ router.get("/get-all", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${branchFragment},${storeTypeFragment}`,
+		cols: `${Branch.getColumns},${StoreType.getColumns}`,
 		tables: `"branches" 
-		LEFT OUTER JOIN "store_types" ON "branches"."store_type_id" = "store_types"."id"`,
+		JOIN "store_types" ON "branches"."store_type_id" = "store_types"."id"`,
 		availableCols: [
 			"branch_code",
 			"branch_name",
@@ -88,12 +80,12 @@ router.get("/:id/items/", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${itemFragment}, ${modelFragment}`,
+		cols: `${Item.getColumns}, ${Model.getColumns}`,
 		tables: `"item_withdrawal"
-			LEFT OUTER JOIN "stock" ON "stock"."serial_no" = "item_withdrawal"."serial_no"
-			LEFT OUTER JOIN "withdrawals" ON "withdrawals"."id" = "item_withdrawal"."withdrawal_id"
-			LEFT OUTER JOIN "branches" ON "branches"."id" = "withdrawals"."branch_id"
-			LEFT OUTER JOIN "models" ON "stock"."model_id" = "models"."id"
+			JOIN "stock" ON "stock"."serial_no" = "item_withdrawal"."serial_no"
+			JOIN "withdrawals" ON "withdrawals"."id" = "item_withdrawal"."withdrawal_id"
+			JOIN "branches" ON "branches"."id" = "withdrawals"."branch_id"
+			JOIN "models" ON "stock"."model_id" = "models"."id"
 		`,
 		where: `
 			NOT "stock"."status" = 'IN_STOCK' 
@@ -122,15 +114,15 @@ router.get("/no-install", async (req, res) => {
 		search_col,
 		search_term,
 		cols: `
-			${branchFragment},
-			${storeTypeFragment},
-			${customerFragment},
+			${Branch.getColumns},
+			${StoreType.getColumns},
+			${Customer.getColumns},
 			array_agg("purchase_orders"."po_number") AS "po_numbers"`,
 		tables: `"branches"
-		LEFT OUTER JOIN "branch_po" ON "branch_po"."branch_id" = "branches"."id"
-		LEFT OUTER JOIN "purchase_orders" on "purchase_orders"."po_number" = "branch_po"."po_number"
-		LEFT OUTER JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
-		LEFT OUTER JOIN "store_types" ON "branches"."store_type_id" = "store_types"."id"
+		JOIN "branch_po" ON "branch_po"."branch_id" = "branches"."id"
+		JOIN "purchase_orders" on "purchase_orders"."po_number" = "branch_po"."po_number"
+		JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
+		JOIN "store_types" ON "branches"."store_type_id" = "store_types"."id"
 		WHERE NOT "purchase_orders"."installed"
 		GROUP BY "branches"."id","store_types"."id","customers"."customer_code"
 		`,

@@ -67,6 +67,16 @@ const Item = db.define(
 		freezeTableName: "stock"
 	}
 );
+Item.getColumns = `"stock"."serial_no",
+    "stock"."model_id",
+    "stock"."remarks",
+    "stock"."reserve_job_code",
+    "stock"."reserve_branch_id",
+    "stock"."status",
+    "stock"."broken",
+    "stock"."stock_location",
+    "stock"."po_number",
+    "stock"."pr_number"`;
 
 // Class Methods
 Item.changeStatus = async params => {

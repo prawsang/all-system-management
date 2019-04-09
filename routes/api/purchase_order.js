@@ -9,13 +9,6 @@ const Op = Sequelize.Op;
 const db = require("../../config/database");
 const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
-const {
-	poFragment,
-	jobFragment,
-	customerFragment,
-	branchFragment,
-	storeTypeFragment
-} = require("../../utils/fragments");
 
 router.get("/get-all", async (req, res) => {
 	let { limit, page, search_col, search_term, installed, from, to } = req.query;
@@ -39,7 +32,7 @@ router.get("/get-all", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${poFragment},${jobFragment},${customerFragment}`,
+		cols: `${PurchaseOrder.getColumns},${Job.getColumns},${Customer.getColumns}`,
 		tables: `"purchase_orders"
 		LEFT OUTER JOIN "jobs" ON "purchase_orders"."job_code" = "jobs"."job_code" 
 		LEFT OUTER JOIN "customers" ON "jobs"."customer_code" = "customers"."customer_code"`,
@@ -86,7 +79,7 @@ router.get("/:po_number/branches", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${branchFragment},${storeTypeFragment}`,
+		cols: `${Branch.getColumns},${StoreType.getColumns}`,
 		tables: `"branches"
 		LEFT OUTER JOIN "branch_po" ON "branches"."id" = "branch_po"."branch_id" 
 		LEFT OUTER JOIN "purchase_orders" ON "purchase_orders"."po_number" = "branch_po"."po_number"

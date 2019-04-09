@@ -77,6 +77,19 @@ const Withdrawal = db.define("withdrawals", {
 		allowNull: false
 	}
 });
+Withdrawal.getColumns = `"withdrawals"."id" AS "withdrawal_id",
+    "withdrawals"."branch_id",
+    "withdrawals"."job_code",
+    "withdrawals"."po_number",
+    "withdrawals"."do_number",
+    "withdrawals"."staff_name",
+    "withdrawals"."type" AS "withdrawal_type",
+    "withdrawals"."date" AS "withdrawal_date",
+    "withdrawals"."install_date",
+    "withdrawals"."return_by",
+    "withdrawals"."status",
+    "withdrawals"."remarks",
+    "withdrawals"."billed"`;
 
 // Class Methods
 Withdrawal.validate = data => {
