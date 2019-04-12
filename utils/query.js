@@ -22,7 +22,7 @@ const getFromAlias = col => {
 		case "store_type_name":
 			return `"store_type"."name"`;
 		default:
-			return `"col"`;
+			return `"${col}"`;
 	}
 };
 
