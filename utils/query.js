@@ -12,11 +12,11 @@ const getFromAlias = col => {
 		case "customer_name":
 			return `"customer"."name"`;
 		case "job_name":
-			return `"job"."name"`;
-		case "withdrawal_id":
-			return `"withdrawal"."id"`;
+			return `"jobs"."name"`;
 		case "branch_id":
 			return `"branch"."id"`;
+		case "branch_name":
+			return `"branch"."name"`;
 		case "po_date":
 			return `"purchase_orders"."date"`;
 		case "store_type_name":
@@ -27,6 +27,8 @@ const getFromAlias = col => {
 			return `"models"."name"`;
 		case "model_type":
 			return `"models"."type"`;
+		case "withdrawal_id":
+			return `"withdrawal"."id"`;
 		case "withdrawal_type":
 			return `"withdrawals"."type"`;
 		case "withdrawal_date":
