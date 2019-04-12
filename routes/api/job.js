@@ -9,26 +9,7 @@ const StoreType = require("../../models/StoreType");
 const BranchJob = require("../../models/junction/BranchJob");
 const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
-
-router.get("/get-all", async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
-		limit,
-		page,
-		search,
-		search_term,
-		include: {
-			model: Customer,
-			as: "customer"
-		},
-		model: Job
-	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
-	}
-	res.send(query);
-});
+const { query } = require("../../utils/query");
 
 router.get("/:job_code/details", (req, res) => {
 	const { job_code } = req.params;
@@ -50,35 +31,35 @@ router.get("/:job_code/details", (req, res) => {
 // Get branches for job
 router.get("/:job_code/branches", async (req, res) => {
 	const { job_code } = req.params;
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		where: {
-			job_code: {
-				[Op.eq]: job_code
-			}
+		cols: `${Branch.getColumns}`,
+		tables: `"branch_job"
+		JOIN "branches" ON "branches"."id" = "branch_job"."branch_id"
+		`,
+		where: `"branch_job"."job_code" = :job_code`,
+		replacements: {
+			job_code
 		},
-		include: [
-			{
-				model: Branch,
-				as: "branch",
-				include: {
-					model: StoreType,
-					as: "store_type"
-				}
-			}
-		],
-		search_junction: 0,
-		model: BranchJob
+		availableCols: [
+			"branch_code",
+			"branch_name",
+			"province",
+			"store_type_name",
+			"gl_branch",
+			"short_code"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+		console.log(q.errors);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 const jobValidation = [

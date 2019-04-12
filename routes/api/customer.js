@@ -6,24 +6,25 @@ const Job = require("../../models/Job");
 const Customer = require("../../models/Customer");
 const Branch = require("../../models/Branch");
 const StoreType = require("../../models/StoreType");
-const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
+const { query } = require("../../utils/query");
 
 router.get("/get-all", async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
 		search_term,
-		search,
-		model: Customer
+		search_col,
+		cols: Customer.getColumns,
+		tables: "customers",
+		availableCols: ["customer_code", "customer_name"]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 router.get("/:customer_code/details", (req, res) => {
 	const { customer_code } = req.params;
@@ -45,29 +46,34 @@ router.get("/:customer_code/details", (req, res) => {
 // Get Branches for Customer
 router.get("/:customer_code/branches", async (req, res) => {
 	const { customer_code } = req.params;
-	const { limit, page, search, search_term } = req.query;
-
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
-		where: {
-			customer_code: {
-				[Op.eq]: customer_code
-			}
-		},
-		include: {
-			model: StoreType,
-			as: "store_type"
-		},
-		search,
+		search_col,
 		search_term,
-		model: Branch
+		cols: `${Branch.getColumns}, ${StoreType.getColumns}`,
+		tables: `"branches"
+		JOIN "store_types" ON "store_types"."id" = "branches"."store_type_id"
+		`,
+		where: `"branches"."customer_code" = :customer_code`,
+		replacements: {
+			customer_code
+		},
+		availableCols: [
+			"branch_code",
+			"branch_name",
+			"province",
+			"store_type_name",
+			"gl_branch",
+			"short_code"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 const customerValidation = [
