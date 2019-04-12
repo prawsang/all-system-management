@@ -4,22 +4,25 @@ const Model = require("../../models/Model");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const tools = require("../../utils/tools");
+const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {
-	let { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		model: Model
+		cols: Model.getColumns,
+		tables: `"models"`,
+		availableCols: ["model_id", "model_name"]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 router.route("/:id/details").get((req, res) => {
@@ -34,25 +37,26 @@ router.route("/:id/details").get((req, res) => {
 });
 
 router.route("/type/:type").get(async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
+	const { limit, page, search_col, search_term } = req.query;
 	const { type } = req.params;
-	const query = await tools.countAndQuery({
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		where: {
-			type: {
-				[Op.eq]: type
-			}
+		cols: Model.getColumns,
+		tables: `"models"`,
+		where: `"models"."type" = :type`,
+		replacements: {
+			type: type.toUpperCase()
 		},
-		model: Model
+		availableCols: ["model_id", "model_name"]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 const modelValidation = [

@@ -56,7 +56,6 @@ router.get("/:job_code/branches", async (req, res) => {
 	});
 	if (q.errors) {
 		res.status(500).json(q);
-		console.log(q.errors);
 	} else {
 		res.json(q);
 	}
