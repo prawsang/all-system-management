@@ -11,27 +11,51 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
+const { query } = require("../../utils/query");
 
 router.use("/", require("./stock_status").router);
 
 router.route("/get-all").get(async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term, broken, status } = req.query;
+
+	let filters = null;
+	if (broken || status) {
+		let brokenFilter = broken
+			? broken === "true"
+				? `"stock"."broken"`
+				: `NOT "stock"."broken"`
+			: null;
+		let statusFilter = status ? `"stock"."status" = :status` : null;
+		filters = [brokenFilter, statusFilter].filter(e => e).join(" AND ");
+	}
+
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		include: {
-			model: Model,
-			as: "model"
+		cols: `${Item.getColumns}, ${Model.getColumns}`,
+		tables: `"stock"
+		JOIN "models" ON "stock"."model_id" = "models"."id"
+		`,
+		where: filters,
+		replacements: {
+			status: status ? status.toUpperCase() : null
 		},
-		model: Item
+		availableCols: [
+			"serial_no",
+			"model_id",
+			"status",
+			"stock_location",
+			"po_number",
+			"pr_number"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 router.get("/:serial_no/details", (req, res) => {
@@ -79,145 +103,155 @@ router.get("/:serial_no/details", (req, res) => {
 		.catch(err => res.status(500).json({ errors: err }));
 });
 
-// Get item by status
-router.get("/status/:status", async (req, res) => {
-	const { status } = req.params;
-	const { limit, page, search, search_term, type } = req.query;
+// Get borrowed items
+router.get("/borrowed", async (req, res) => {
+	const { limit, page, search_col, search_term, return_by_to, return_by_from } = req.query;
 
-	// Show return_by if borrowed
-	const borrowInclude = {
-		model: Withdrawal,
-		as: "withdrawals",
-		include: [
-			{
-				model: Job,
-				as: "job"
-			},
-			{
-				model: Branch,
-				as: "branch",
-				include: {
-					model: Customer,
-					as: "customer"
-				}
-			}
-		],
-		where: {
-			type: {
-				[Op.eq]: "BORROW"
-			}
-		}
-	};
+	let filters = null;
+	if ((return_by_to || return_by_from) && status.toUpperCase() == "BORROWED") {
+		filters = `"withdrawals"."return_by" >= :return_by_from AND "withdrawals"."return_by" <= :return_by_to`;
+	} else if (return_by_to) {
+		// for overdue items
+		filters = `"withdrawals"."return_by" <= :return_by_to`;
+	}
 
-	const include = {
-		model: Model,
-		as: "model",
-		where: type
-			? {
-					type: {
-						[Op.eq]: type
-					}
-			  }
-			: null
-	};
-
-	const query = await tools.countAndQuery({
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		where: {
-			status: {
-				[Op.eq]: status.toUpperCase()
-			}
+		cols: `${Model.getColumns}, ${Item.getColumns}, "withdrawals"."return_by"`,
+		tables: `"stock"
+		JOIN "models" ON "models"."id" = "stock"."model_id"
+		LEFT OUTER JOIN "item_withdrawal" ON "item_withdrawal"."serial_no" = "stock"."serial_no"
+		LEFT OUTER JOIN "withdrawals" ON "withdrawals"."id" = "item_withdrawal"."withdrawal_id"
+		`,
+		where: `"stock"."status" = 'BORROWED' ${filters ? `AND ${filters}` : ""}`,
+		replacements: {
+			return_by_from,
+			return_by_to
 		},
-		include: status === "borrowed" ? [borrowInclude, include] : [include],
-		model: Item
+		availableCols: [
+			"serial_no",
+			"model_id",
+			"status",
+			"stock_location",
+			"po_number",
+			"pr_number"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+		console.log(q.errors);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
-router.get("/broken", async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+// Get reserved items
+router.get("/reserved", async (req, res) => {
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		where: {
-			broken: {
-				[Op.eq]: true
-			}
-		},
-		include: {
-			model: Model,
-			as: "model"
-		},
-		model: Item
+		cols: `${Branch.getColumns}, ${Customer.getColumns}, ${Model.getColumns}, ${
+			Job.getColumns
+		}, ${Item.getColumns}`,
+		tables: `"stock"
+		LEFT OUTER JOIN "branches" ON "stock"."reserve_branch_id" = "branches"."id"
+		LEFT OUTER JOIN "jobs" ON "stock"."reserve_job_code" = "jobs"."job_code"
+		LEFT OUTER JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
+		JOIN "models" ON "models"."id" = "stock"."model_id"
+		`,
+		where: `"stock"."status" = "RESERVED"`,
+		availableCols: [
+			"serial_no",
+			"model_id",
+			"status",
+			"stock_location",
+			"po_number",
+			"pr_number",
+			"branch_id",
+			"branch_name",
+			"job_code",
+			"job_name",
+			"customer_code",
+			"customer_name"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 // Get all items reserved by branch
 router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 	const { branch_id } = req.params;
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		where: {
-			reserve_branch_id: {
-				[Op.eq]: branch_id
-			}
+		cols: `${Item.getColumns}, ${Model.getColumns}`,
+		tables: `"stock"
+		JOIN "models" ON "stock"."model_id" = "models"."id"
+		`,
+		where: `"stock"."reserved_branch_id" = :branch_id`,
+		replacements: {
+			branch_id
 		},
-		include: {
-			model: Model,
-			as: "model"
-		},
-		model: Item
+		availableCols: [
+			"serial_no",
+			"model_id",
+			"status",
+			"stock_location",
+			"po_number",
+			"pr_number"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
-// Get all items reserved by job (customer)
+// Get all items reserved by job
 router.get("/reserve-job-code/:job_code", async (req, res) => {
 	const { job_code } = req.params;
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		where: {
-			reserve_job_code: {
-				[Op.eq]: job_code
-			}
+		cols: `${Item.getColumns}, ${Model.getColumns}`,
+		tables: `"stock"
+		JOIN "models" ON "stock"."model_id" = "models"."id"
+		`,
+		where: `"stock"."reserved_job_code" = :job_code`,
+		replacements: {
+			job_code
 		},
-		include: {
-			model: Model,
-			as: "model"
-		},
-		model: Item
+		availableCols: [
+			"serial_no",
+			"model_id",
+			"status",
+			"stock_location",
+			"po_number",
+			"pr_number"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 const stockValidation = [
