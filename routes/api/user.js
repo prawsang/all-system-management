@@ -4,10 +4,10 @@ const User = require("../../models/User");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const { check, validationResult } = require("express-validator/check");
-const tools = require("../../utils/tools");
 const auth = require("../auth");
 const passport = require("passport");
 const crypto = require("crypto");
+const { query } = require("../../utils/query");
 
 router.post("/login", auth.optional, (req, res, next) => {
 	const { username, password } = req.body;
@@ -38,21 +38,23 @@ router.post("/login", auth.optional, (req, res, next) => {
 });
 
 router.get("/get-all", auth.required, async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const { limit, page, search_col, search_term } = req.query;
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		model: User
+		cols: User.getColumns,
+		tables: `"users"`,
+		availableCols: ["username", "department"]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
-router.get("/:id/details", (req, res) => {
+router.get("/:id/details", auth.required, (req, res) => {
 	const { id } = req.params;
 	User.findOne({
 		where: {
@@ -102,7 +104,7 @@ router.post("/add", auth.required, userValidation, (req, res) => {
 });
 
 // Edit User
-router.put("/:id/edit", (req, res) => {
+router.put("/:id/edit", auth.required, (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(422).json({ errors: errors.array() });
@@ -135,7 +137,7 @@ router.put("/:id/edit", (req, res) => {
 });
 
 // Delete user
-router.delete("/:id", (req, res) => {
+router.delete("/:id", auth.required, (req, res) => {
 	const { id } = req.params;
 	User.destroy({
 		where: {
