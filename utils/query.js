@@ -21,6 +21,16 @@ const getFromAlias = col => {
 			return `"purchase_orders"."date"`;
 		case "store_type_name":
 			return `"store_type"."name"`;
+		case "model_id":
+			return `"models"."id"`;
+		case "model_name":
+			return `"models"."name"`;
+		case "model_type":
+			return `"models"."type"`;
+		case "withdrawal_type":
+			return `"withdrawals"."type"`;
+		case "withdrawal_date":
+			return `"withdrawals"."date"`;
 		default:
 			return `"${col}"`;
 	}
@@ -28,8 +38,11 @@ const getFromAlias = col => {
 
 module.exports = {
 	query: async function(data) {
-		const { limit, page, search_term, cols, tables, availableCols, where, replacements } = data;
-		let { search_col } = data;
+		const { limit, page, cols, tables, availableCols, where, replacements } = data;
+		let { search_col, search_term } = data;
+		if (search_term) {
+			search_term = search_term.toLowerCase();
+		}
 
 		if (search_col && !checkColName(search_col, availableCols)) {
 			return {
@@ -46,7 +59,8 @@ module.exports = {
 
 		let whereString = "";
 		if (where || (search_col && search_term)) {
-			const search = search_col && search_term ? `${search_col} LIKE :search_term` : null;
+			const search =
+				search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(:search_term)` : null;
 			whereString = `WHERE ${[where, search].filter(e => e).join(" AND ")}`;
 		}
 
