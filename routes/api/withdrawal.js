@@ -11,40 +11,78 @@ const PurchaseOrder = require("../../models/PurchaseOrder");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const db = require("../../config/database");
-const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
-
+const { query } = require("../../utils/query");
 const stockStatus = require("./stock_status");
 const { installItems, transferItems, borrowItems, returnItems } = stockStatus;
 
 router.get("/get-all", async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const {
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		include: [
-			{
-				model: Branch,
-				as: "branch",
-				include: {
-					model: Customer,
-					as: "customer"
-				}
-			},
-			{
-				model: Job,
-				as: "job"
-			}
-		],
-		model: Withdrawal
+		from,
+		to,
+		install_from,
+		install_to,
+		return_from,
+		return_to,
+		billed,
+		id
+	} = req.query;
+
+	const q = await query({
+		limit,
+		page,
+		search_col,
+		search_term,
+		cols: `${Withdrawal.getColumns}, ${Branch.getColumns}, ${Customer.getColumns}, ${
+			Job.getColumns
+		}`,
+		tables: `"withdrawals"
+		JOIN "branches" ON "withdrawals"."branch_id" = "branches"."id"
+		JOIN "jobs" ON "withdrawals"."job_code" = "jobs"."job_code"
+		JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
+		`,
+		where: Withdrawal.filter({
+			from,
+			to,
+			install_from,
+			install_to,
+			return_from,
+			return_to,
+			billed,
+			id
+		}),
+		replacements: {
+			from,
+			to,
+			return_from,
+			return_to,
+			install_from,
+			install_to,
+			id
+		},
+		availableCols: [
+			"job_code",
+			"job_name",
+			"customer_code",
+			"customer_name",
+			"branch_code",
+			"branch_name",
+			"po_number",
+			"do_number",
+			"staff_name",
+			"withdrawal_type",
+			"withdrawal_status"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 router.get("/:id/details", (req, res) => {
@@ -92,80 +130,68 @@ router.get("/:id/details", (req, res) => {
 
 // List of withdrawals of type INSTALLATION without a purchase order
 router.get("/without-po", async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const {
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		include: [
-			{
-				model: Job,
-				as: "job"
-			},
-			{
-				model: Branch,
-				as: "branch",
-				include: {
-					model: Customer,
-					as: "customer"
-				}
-			}
-		],
-		where: {
-			po_number: {
-				[Op.eq]: null
-			},
-			type: {
-				[Op.eq]: "INSTALLATION"
-			}
-		},
-		model: Withdrawal
-	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
-	}
-	res.send(query);
-});
+		from,
+		to,
+		install_from,
+		install_to,
+		billed,
+		id
+	} = req.query;
 
-// not billed
-router.get("/not-billed", async (req, res) => {
-	const { limit, page, search, search_term } = req.query;
-	const query = await tools.countAndQuery({
+	const filters = Withdrawal.filter({
+		from,
+		to,
+		install_from,
+		install_to,
+		billed,
+		id
+	});
+
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		include: [
-			{
-				model: Branch,
-				as: "branch",
-				include: {
-					model: Customer,
-					as: "customer"
-				}
-			},
-			{
-				model: Job,
-				as: "job"
-			}
-		],
-		where: {
-			type: {
-				[Op.eq]: "INSTALLATION"
-			},
-			billed: {
-				[Op.eq]: false
-			}
+		cols: `${Withdrawal.getColumns}, ${Branch.getColumns}, ${Customer.getColumns}, ${
+			Job.getColumns
+		}`,
+		tables: `"withdrawals"
+		JOIN "branches" ON "withdrawals"."branch_id" = "branches"."id"
+		JOIN "jobs" ON "withdrawals"."job_code" = "jobs"."job_code"
+		JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
+		`,
+		where: `${
+			filters ? `${filters} AND` : ""
+		} "withdrawals"."type" = 'INSTALLATION' AND "withdrawals"."po_number" IS NULL`,
+		replacements: {
+			from,
+			to,
+			install_from,
+			install_to,
+			id
 		},
-		model: Withdrawal
+		availableCols: [
+			"job_code",
+			"job_name",
+			"customer_code",
+			"customer_name",
+			"branch_code",
+			"branch_name",
+			"do_number",
+			"staff_name",
+			"withdrawal_status"
+		]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 const checkWithdrawal = [

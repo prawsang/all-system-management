@@ -105,14 +105,14 @@ router.get("/:serial_no/details", (req, res) => {
 
 // Get borrowed items
 router.get("/borrowed", async (req, res) => {
-	const { limit, page, search_col, search_term, return_by_to, return_by_from } = req.query;
+	const { limit, page, search_col, search_term, return_to, return_from } = req.query;
 
 	let filters = null;
-	if ((return_by_to || return_by_from) && status.toUpperCase() == "BORROWED") {
-		filters = `"withdrawals"."return_by" >= :return_by_from AND "withdrawals"."return_by" <= :return_by_to`;
-	} else if (return_by_to) {
+	if ((return_to || return_from) && status.toUpperCase() == "BORROWED") {
+		filters = `"withdrawals"."return_by" >= :return_from AND "withdrawals"."return_by" <= :return_to`;
+	} else if (return_to) {
 		// for overdue items
-		filters = `"withdrawals"."return_by" <= :return_by_to`;
+		filters = `"withdrawals"."return_by" <= :return_to`;
 	}
 
 	const q = await query({
@@ -128,8 +128,8 @@ router.get("/borrowed", async (req, res) => {
 		`,
 		where: `"stock"."status" = 'BORROWED' ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
-			return_by_from,
-			return_by_to
+			return_from,
+			return_to
 		},
 		availableCols: [
 			"serial_no",

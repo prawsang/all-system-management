@@ -172,6 +172,36 @@ Withdrawal.changeStatus = (id, status) => {
 		.catch(err => ({ errors: [err] }));
 };
 
+Withdrawal.filter = data => {
+	const { from, to, install_from, install_to, return_from, return_to, billed, id } = data;
+
+	let dateFilter = null;
+	let returnDateFilter = null;
+	let installDateFilter = null;
+	let billedFilter = null;
+	let searchById = null;
+
+	if (from && to) {
+		dateFilter = `"withdrawals"."date" >= :from AND "withdrawals"."date" <= :to`;
+	}
+	if (install_from && install_to) {
+		installDateFilter = `"withdrawals"."install_date" >= :install_from AND "withdrawals"."install_date" <= :install_to`;
+	}
+	if (return_from && return_to) {
+		returnDateFilter = `"withdrawals"."return_by" >= :return_from AND "withdrawals"."return_by" <= :return_to`;
+	}
+	if (billed) {
+		billedFilter = billed == "true" ? `"withdrawals"."billed"` : `NOT "withdrawals"."billed"`;
+	}
+	if (id) {
+		searchById = `"withdrawals"."id" = :id`;
+	}
+
+	return [dateFilter, returnDateFilter, installDateFilter, billedFilter, searchById]
+		.filter(e => e)
+		.join(" AND ");
+};
+
 // Associations
 Withdrawal.belongsTo(PO, {
 	foreignKey: "po_number",

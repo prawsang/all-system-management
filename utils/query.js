@@ -33,6 +33,8 @@ const getFromAlias = col => {
 			return `"withdrawals"."type"`;
 		case "withdrawal_date":
 			return `"withdrawals"."date"`;
+		case "withdrawal_status":
+			return `"withdrawals"."status"`;
 		case "store_type_name":
 			return `"store_types"."name"`;
 		default:
