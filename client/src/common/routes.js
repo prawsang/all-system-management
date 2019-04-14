@@ -12,12 +12,6 @@ import PublicRoute from "./components/PublicRoute";
 import PrivateRoute from "./components/PrivateRoute";
 
 class AppRouter extends React.Component {
-	componentDidMount() {
-		const token = localStorage.getItem("token");
-		if (token) {
-			this.props.setAuth(true);
-		}
-	}
 	render() {
 		return (
 			<React.Fragment>

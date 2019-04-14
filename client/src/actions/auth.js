@@ -28,16 +28,14 @@ export const setAuth = user => {
 		return {
 			type: SET_AUTH,
 			payload: {
-				isAuth: true,
-				user
+				isAuth: true
 			}
 		};
 	}
 	return {
 		type: SET_AUTH,
 		payload: {
-			isAuth: false,
-			user: null
+			isAuth: false
 		}
 	};
 };
