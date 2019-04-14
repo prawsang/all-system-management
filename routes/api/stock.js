@@ -141,14 +141,7 @@ router.get("/borrowed", async (req, res) => {
 			return_to,
 			type
 		},
-		availableCols: [
-			"serial_no",
-			"model_id",
-			"status",
-			"stock_location",
-			"po_number",
-			"pr_number"
-		]
+		availableCols: ["serial_no", "model_name", "stock_location", "po_number", "pr_number"]
 	});
 	if (q.errors) {
 		res.status(500).json(q);
