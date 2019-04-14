@@ -1,5 +1,6 @@
 import React from "react";
 import history from "@/common/history";
+import moment from "moment";
 
 const Borrowed = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
@@ -8,10 +9,8 @@ const Borrowed = ({ data }) => (
 				<td>Serial No.</td>
 				<td>Model Name</td>
 				<td>Type</td>
-				<td>Branch</td>
-				<td>Job</td>
-				<td>Customer</td>
 				<td>Return By</td>
+				<td>Overdue</td>
 			</tr>
 		</thead>
 		<tbody className="is-hoverable">
@@ -27,16 +26,14 @@ const Borrowed = ({ data }) => (
 								<td>{e.serial_no}</td>
 								<td>{e.model_name}</td>
 								<td>{e.model_type}</td>
-								<td>
-									{e.branch_name} {e.branch_code && `(${e.branch_code})`}
-								</td>
-								<td>
-									{e.job_name} ({e.job_code})
-								</td>
-								<td>
-									{e.customer_name} ({e.customer_code})
-								</td>
 								<td>{e.return_by}</td>
+								<td>
+									{moment(e.return_by).isBefore() ? (
+										<span className="is-bold danger">Overdue</span>
+									) : (
+										<span>No</span>
+									)}
+								</td>
 							</tr>
 						);
 					}))}
