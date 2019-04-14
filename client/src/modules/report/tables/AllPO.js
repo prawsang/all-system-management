@@ -14,8 +14,8 @@ const AllPO = ({ data }) => (
 		</thead>
 		<tbody className="is-hoverable">
 			{data &&
-				(data.po.length > 0 &&
-					data.po.map((e, i) => (
+				(data.rows.length > 0 &&
+					data.rows.map((e, i) => (
 						<tr
 							className="is-hoverable is-clickable"
 							key={i + e.po_number}
@@ -26,13 +26,13 @@ const AllPO = ({ data }) => (
 						>
 							<td>{e.po_number}</td>
 							<td>
-								{e.job.customer.name} ({e.job.customer_code})
+								{e.customer_name} ({e.customer_code})
 							</td>
 							<td>
-								{e.job.name} ({e.job.job_code})
+								{e.job_name} ({e.job_code})
 							</td>
 							<td>{e.description}</td>
-							<td>{e.date}</td>
+							<td>{e.po_date}</td>
 						</tr>
 					)))}
 		</tbody>

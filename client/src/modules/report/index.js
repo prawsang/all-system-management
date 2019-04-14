@@ -132,7 +132,8 @@ const BranchNoInstallWrapper = () => (
 
 const BrokenWrapper = () => (
 	<FetchDataFromServer
-		url="/stock/broken"
+		url="/stock/get-all"
+		params="broken=true"
 		render={data => (
 			<Table
 				data={data}
@@ -146,7 +147,7 @@ const BrokenWrapper = () => (
 
 const BorrowedWrapper = () => (
 	<FetchDataFromServer
-		url="/stock/status/borrowed"
+		url="/stock/borrowed"
 		render={data => (
 			<Table
 				data={data}
@@ -207,7 +208,8 @@ const AllWithdrawalsWrapper = () => (
 
 const NoBillingWrapper = () => (
 	<FetchDataFromServer
-		url="/withdrawal/not-billed"
+		url="/withdrawal/get-all"
+		params="billed=false"
 		render={data => (
 			<Table
 				data={data}
@@ -269,8 +271,8 @@ class InStockWrapper extends React.Component {
 		const { type } = this.state;
 		return (
 			<FetchDataFromServer
-				url="/stock/status/in_stock"
-				params={type === "ALL" ? "" : `type=${type}`}
+				url="/stock/get-all"
+				params={`${type === "ALL" ? "" : `type=${type}`}&status=in_stock`}
 				render={data => (
 					<div>
 						<div

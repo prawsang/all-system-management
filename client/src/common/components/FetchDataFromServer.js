@@ -20,7 +20,7 @@ class FetchDataFromServer extends React.Component {
 			Axios.get(
 				`${url}?page=${currentPage}&limit=${currentLimit}${
 					searchTerm ? "&search_term=" + searchTerm : ""
-				}${searchCol ? "&search=" + searchCol : ""}${params ? "&" + params : ""}`
+				}${searchCol ? "&search_col=" + searchCol : ""}${params ? "&" + params : ""}`
 			).then(res => {
 				this.setState({ data: res.data });
 				console.log(res);
@@ -58,7 +58,9 @@ class FetchDataFromServer extends React.Component {
 					Axios.get(
 						`${url}?page=${currentPage}&limit=${currentLimit}${
 							searchTerm ? "&search_term=" + searchTerm : ""
-						}${searchCol ? "&search=" + searchCol : ""}${params ? "&" + params : ""}`
+						}${searchCol ? "&search_col=" + searchCol : ""}${
+							params ? "&" + params : ""
+						}`
 					).then(res => {
 						this.setState({ data: res.data });
 						console.log(res);

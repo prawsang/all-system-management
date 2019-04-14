@@ -32,11 +32,11 @@ class ModelsTable extends React.Component {
 					</thead>
 					<tbody>
 						{data &&
-							(data.models.length > 0 &&
-								data.models.map((e, i) => (
-									<tr key={i + e.id} className="is-short">
-										<td className="has-no-line-break">{e.name}</td>
-										<td className="is-fullwidth">{e.type}</td>
+							(data.rows.length > 0 &&
+								data.rows.map((e, i) => (
+									<tr key={i + e.model_name} className="is-short">
+										<td className="has-no-line-break">{e.model_name}</td>
+										<td className="is-fullwidth">{e.model_type}</td>
 										<td className="no-pr">
 											<button
 												className="button"

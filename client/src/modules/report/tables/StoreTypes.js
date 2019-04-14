@@ -34,8 +34,10 @@ class StoreTypesTable extends React.Component {
 						{data &&
 							(data.types.length > 0 &&
 								data.types.map((e, i) => (
-									<tr key={i + e.id} className="is-short">
-										<td className="is-fullwidth has-no-line-break">{e.name}</td>
+									<tr key={i + e.store_type_name} className="is-short">
+										<td className="is-fullwidth has-no-line-break">
+											{e.store_type_name}
+										</td>
 										<td className="no-pr">
 											<button
 												className="button"

@@ -14,26 +14,25 @@ const InstallWoPO = ({ data }) => (
 		</thead>
 		<tbody className="is-hoverable">
 			{data &&
-				(data.withdrawals.length > 0 &&
-					data.withdrawals.map((e, i) => (
+				(data.rows.length > 0 &&
+					data.rows.map((e, i) => (
 						<tr
 							className="is-hoverable is-clickable"
-							key={i + e.id}
+							key={i + e.withdrawal_id}
 							onClick={event => {
-								history.push(`/single/withdrawal/${e.id}`);
+								history.push(`/single/withdrawal/${e.withdrawal_id}`);
 								event.stopPropagation();
 							}}
 						>
-							<td>{e.id}</td>
+							<td>{e.withdrawal_id}</td>
 							<td>{e.do_number}</td>
 							<td>
-								{e.branch.customer.name} ({e.branch.customer.customer_code})
+								{e.customer_name} ({e.customer_code})
 							</td>
 							<td>
-								{e.branch.name}{" "}
-								{e.branch.branch_code && `(${e.branch.branch_code})`}
+								{e.branch_name} {e.branch_code && `(${e.branch_code})`}
 							</td>
-							<td>{e.date}</td>
+							<td>{e.install_date}</td>
 						</tr>
 					)))}
 		</tbody>

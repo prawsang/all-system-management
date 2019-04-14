@@ -16,31 +16,27 @@ const Borrowed = ({ data }) => (
 		</thead>
 		<tbody className="is-hoverable">
 			{data &&
-				(data.items.length > 0 &&
-					data.items.map((e, i) => {
-						const { serial_no, model, withdrawals } = e;
-						const { branch, job, return_by } = withdrawals[0];
+				(data.rows.length > 0 &&
+					data.rows.map((e, i) => {
 						return (
 							<tr
 								className="is-hoverable is-clickable"
 								key={i + e.serial_no}
-								onClick={() => 
-									history.push(`/single/item/${e.serial_no}`)
-								}
+								onClick={() => history.push(`/single/item/${e.serial_no}`)}
 							>
-								<td>{serial_no}</td>
-								<td>{model.name}</td>
-								<td>{model.type}</td>
+								<td>{e.serial_no}</td>
+								<td>{e.model_name}</td>
+								<td>{e.model_type}</td>
 								<td>
-									{branch.name} {branch.branch_code && `(${branch.branch_code})`}
+									{e.branch_name} {e.branch_code && `(${e.branch_code})`}
 								</td>
 								<td>
-									{job.name} ({job.job_code})
+									{e.job_name} ({e.job_code})
 								</td>
 								<td>
-									{branch.customer.name} ({branch.customer.customer_code})
+									{e.customer_name} ({e.customer_code})
 								</td>
-								<td>{return_by}</td>
+								<td>{e.return_by}</td>
 							</tr>
 						);
 					}))}
