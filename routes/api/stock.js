@@ -101,7 +101,7 @@ router.get("/:serial_no/details", (req, res) => {
 
 // Get borrowed items
 router.get("/borrowed", async (req, res) => {
-	const { limit, page, search_col, search_term, return_to, return_from } = req.query;
+	const { limit, page, search_col, search_term, return_to, return_from, type } = req.query;
 
 	const typeFilter = Item.filter({ type });
 
@@ -118,18 +118,28 @@ router.get("/borrowed", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${Model.getColumns}, ${Item.getColumns}, "withdrawals"."return_by"`,
+		cols: `${Model.getColumns}, 
+			${Item.getColumns},
+			"tm"."return_by"`,
 		tables: `"stock"
 		JOIN "models" ON "models"."id" = "stock"."model_id"
-		LEFT OUTER JOIN "item_withdrawal" ON "item_withdrawal"."serial_no" = "stock"."serial_no"
-		LEFT OUTER JOIN "withdrawals" ON "withdrawals"."id" = "item_withdrawal"."withdrawal_id"
+		JOIN "item_withdrawal" ON "item_withdrawal"."serial_no" = "stock"."serial_no"
+		JOIN "withdrawals" ON "item_withdrawal"."withdrawal_id" = "withdrawals"."id"
+		JOIN (
+			SELECT "serial_no", max(withdrawals.return_by) AS "return_by"
+			FROM "withdrawals"
+			JOIN "item_withdrawal" ON "item_withdrawal"."withdrawal_id" = "withdrawals"."id"
+			GROUP BY "serial_no"
+		) "tm" ON "withdrawals"."return_by" = "tm"."return_by" AND "stock"."serial_no" = "tm"."serial_no"
 		`,
-		where: `"stock"."status" = 'BORROWED' ${filters ? `AND ${filters}` : ""} ${
-			typeFilter ? `AND ${typeFilter}` : ""
-		}`,
+		where: `"stock"."status" = 'BORROWED' 
+			AND "withdrawals"."type" = 'BORROW' 
+			${filters ? `AND ${filters}` : ""} 
+			${typeFilter ? `AND ${typeFilter}` : ""}`,
 		replacements: {
 			return_from,
-			return_to
+			return_to,
+			type
 		},
 		availableCols: [
 			"serial_no",
@@ -150,7 +160,7 @@ router.get("/borrowed", async (req, res) => {
 
 // Get reserved items
 router.get("/reserved", async (req, res) => {
-	const { limit, page, search_col, search_term } = req.query;
+	const { limit, page, search_col, search_term, type } = req.query;
 
 	const typeFilter = Item.filter({ type });
 
@@ -168,7 +178,10 @@ router.get("/reserved", async (req, res) => {
 		LEFT OUTER JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
 		JOIN "models" ON "models"."id" = "stock"."model_id"
 		`,
-		where: `"stock"."status" = "RESERVED" ${typeFilter ? `AND ${typeFilter}` : ""}`,
+		where: `"stock"."status" = 'RESERVED' ${typeFilter ? `AND ${typeFilter}` : ""}`,
+		replacements: {
+			type
+		},
 		availableCols: [
 			"serial_no",
 			"model_id",
@@ -212,7 +225,9 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 		`,
 		where: `"stock"."reserved_branch_id" = :branch_id ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
-			branch_id
+			branch_id,
+			broken,
+			type
 		},
 		availableCols: [
 			"serial_no",
@@ -251,7 +266,9 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 		`,
 		where: `"stock"."reserved_job_code" = :job_code ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
-			job_code
+			job_code,
+			broken,
+			type
 		},
 		availableCols: [
 			"serial_no",
