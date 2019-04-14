@@ -16,18 +16,13 @@ const { query } = require("../../utils/query");
 router.use("/", require("./stock_status").router);
 
 router.route("/get-all").get(async (req, res) => {
-	const { limit, page, search_col, search_term, broken, status } = req.query;
+	const { limit, page, search_col, search_term, broken, status, type } = req.query;
 
-	let filters = null;
-	if (broken || status) {
-		let brokenFilter = broken
-			? broken === "true"
-				? `"stock"."broken"`
-				: `NOT "stock"."broken"`
-			: null;
-		let statusFilter = status ? `"stock"."status" = :status` : null;
-		filters = [brokenFilter, statusFilter].filter(e => e).join(" AND ");
-	}
+	const filters = Item.filter({
+		broken,
+		status,
+		type
+	});
 
 	const q = await query({
 		limit,
@@ -40,7 +35,8 @@ router.route("/get-all").get(async (req, res) => {
 		`,
 		where: filters,
 		replacements: {
-			status: status ? status.toUpperCase() : null
+			status: status ? status.toUpperCase() : null,
+			type
 		},
 		availableCols: [
 			"serial_no",
@@ -107,6 +103,8 @@ router.get("/:serial_no/details", (req, res) => {
 router.get("/borrowed", async (req, res) => {
 	const { limit, page, search_col, search_term, return_to, return_from } = req.query;
 
+	const typeFilter = Item.filter({ type });
+
 	let filters = null;
 	if ((return_to || return_from) && status.toUpperCase() == "BORROWED") {
 		filters = `"withdrawals"."return_by" >= :return_from AND "withdrawals"."return_by" <= :return_to`;
@@ -126,7 +124,9 @@ router.get("/borrowed", async (req, res) => {
 		LEFT OUTER JOIN "item_withdrawal" ON "item_withdrawal"."serial_no" = "stock"."serial_no"
 		LEFT OUTER JOIN "withdrawals" ON "withdrawals"."id" = "item_withdrawal"."withdrawal_id"
 		`,
-		where: `"stock"."status" = 'BORROWED' ${filters ? `AND ${filters}` : ""}`,
+		where: `"stock"."status" = 'BORROWED' ${filters ? `AND ${filters}` : ""} ${
+			typeFilter ? `AND ${typeFilter}` : ""
+		}`,
 		replacements: {
 			return_from,
 			return_to
@@ -151,6 +151,9 @@ router.get("/borrowed", async (req, res) => {
 // Get reserved items
 router.get("/reserved", async (req, res) => {
 	const { limit, page, search_col, search_term } = req.query;
+
+	const typeFilter = Item.filter({ type });
+
 	const q = await query({
 		limit,
 		page,
@@ -165,7 +168,7 @@ router.get("/reserved", async (req, res) => {
 		LEFT OUTER JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
 		JOIN "models" ON "models"."id" = "stock"."model_id"
 		`,
-		where: `"stock"."status" = "RESERVED"`,
+		where: `"stock"."status" = "RESERVED" ${typeFilter ? `AND ${typeFilter}` : ""}`,
 		availableCols: [
 			"serial_no",
 			"model_id",
@@ -192,6 +195,12 @@ router.get("/reserved", async (req, res) => {
 router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 	const { branch_id } = req.params;
 	const { limit, page, search_col, search_term } = req.query;
+
+	const filters = Item.filter({
+		broken,
+		type
+	});
+
 	const q = await query({
 		limit,
 		page,
@@ -201,7 +210,7 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 		tables: `"stock"
 		JOIN "models" ON "stock"."model_id" = "models"."id"
 		`,
-		where: `"stock"."reserved_branch_id" = :branch_id`,
+		where: `"stock"."reserved_branch_id" = :branch_id ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
 			branch_id
 		},
@@ -225,6 +234,12 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 router.get("/reserve-job-code/:job_code", async (req, res) => {
 	const { job_code } = req.params;
 	const { limit, page, search_col, search_term } = req.query;
+
+	const filters = Item.filter({
+		broken,
+		type
+	});
+
 	const q = await query({
 		limit,
 		page,
@@ -234,7 +249,7 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 		tables: `"stock"
 		JOIN "models" ON "stock"."model_id" = "models"."id"
 		`,
-		where: `"stock"."reserved_job_code" = :job_code`,
+		where: `"stock"."reserved_job_code" = :job_code ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
 			job_code
 		},

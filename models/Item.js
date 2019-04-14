@@ -76,7 +76,7 @@ Item.getColumns = `"stock"."serial_no",
     "stock"."broken",
     "stock"."stock_location",
     "stock"."po_number",
-    "stock"."pr_number"`;
+	"stock"."pr_number"`;
 
 // Class Methods
 Item.changeStatus = async params => {
@@ -134,6 +134,17 @@ Item.checkStatus = (serial_no, status) => {
 			}
 		})
 		.catch(err => false);
+};
+Item.filter = data => {
+	const { broken, status, type } = data;
+	let brokenFilter = broken
+		? broken === "true"
+			? `"stock"."broken"`
+			: `NOT "stock"."broken"`
+		: null;
+	let typeFilter = type ? `"models"."type" = :type` : null;
+	let statusFilter = status ? `"stock"."status" = :status` : null;
+	return [brokenFilter, statusFilter, typeFilter].filter(e => e).join(" AND ");
 };
 
 // Associations
