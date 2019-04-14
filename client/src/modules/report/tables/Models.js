@@ -44,9 +44,9 @@ class ModelsTable extends React.Component {
 													this.setState({
 														showEdit: true,
 														selected: {
-															id: e.id,
-															name: e.name,
-															type: e.type
+															id: e.model_id,
+															name: e.model_name,
+															type: e.model_type
 														}
 													})
 												}
@@ -61,9 +61,9 @@ class ModelsTable extends React.Component {
 													this.setState({
 														showDeleteConfirm: true,
 														selected: {
-															id: e.id,
-															name: e.name,
-															type: e.type
+															id: e.model_id,
+															name: e.model_name,
+															type: e.model_type
 														}
 													})
 												}

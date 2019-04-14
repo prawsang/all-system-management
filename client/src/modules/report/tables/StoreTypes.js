@@ -32,8 +32,8 @@ class StoreTypesTable extends React.Component {
 					</thead>
 					<tbody>
 						{data &&
-							(data.types.length > 0 &&
-								data.types.map((e, i) => (
+							(data.rows.length > 0 &&
+								data.rows.map((e, i) => (
 									<tr key={i + e.store_type_name} className="is-short">
 										<td className="is-fullwidth has-no-line-break">
 											{e.store_type_name}
@@ -45,8 +45,8 @@ class StoreTypesTable extends React.Component {
 													this.setState({
 														showEdit: true,
 														selected: {
-															id: e.id,
-															name: e.name
+															id: e.store_type_id,
+															name: e.store_type_name
 														}
 													})
 												}
@@ -61,8 +61,8 @@ class StoreTypesTable extends React.Component {
 													this.setState({
 														showDeleteConfirm: true,
 														selected: {
-															id: e.id,
-															name: e.name
+															id: e.store_type_id,
+															name: e.store_type_name
 														}
 													})
 												}
