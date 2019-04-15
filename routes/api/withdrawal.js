@@ -109,14 +109,6 @@ router.get("/:id/details", (req, res) => {
 					model: Job,
 					as: "job"
 				}
-			},
-			{
-				model: Item,
-				as: "items",
-				include: {
-					model: Model,
-					as: "model"
-				}
 			}
 		]
 	})
@@ -126,6 +118,48 @@ router.get("/:id/details", (req, res) => {
 			})
 		)
 		.catch(err => res.status(500).json({ errors: err }));
+});
+
+router.get("/:id/items", async (req, res) => {
+	const { limit, page, search_col, search_term, type, broken, status } = req.query;
+	const { id } = req.params;
+	const filters = Item.filter({
+		status,
+		broken,
+		type
+	});
+
+	const q = await query({
+		limit,
+		page,
+		search_col,
+		search_term,
+		cols: `${Item.getColumns}, ${Model.getColumns}`,
+		tables: `"item_withdrawal"
+		JOIN "stock" ON "item_withdrawal"."serial_no" = "stock"."serial_no"
+		JOIN "models" ON "stock"."model_id" = "models"."id"
+		`,
+		where: `"item_withdrawal"."withdrawal_id" = :id ${filters ? `AND ${filters}` : ""}`,
+		replacements: {
+			id,
+			status,
+			broken,
+			type
+		},
+		availableCols: [
+			"serial_no",
+			"model_id",
+			"status",
+			"stock_location",
+			"po_number",
+			"pr_number"
+		]
+	});
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
+	}
 });
 
 // List of withdrawals of type INSTALLATION without a purchase order
