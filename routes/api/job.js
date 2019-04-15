@@ -7,7 +7,6 @@ const Customer = require("../../models/Customer");
 const Branch = require("../../models/Branch");
 const StoreType = require("../../models/StoreType");
 const BranchJob = require("../../models/junction/BranchJob");
-const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
 const { query } = require("../../utils/query");
 
@@ -37,9 +36,10 @@ router.get("/:job_code/branches", async (req, res) => {
 		page,
 		search_col,
 		search_term,
-		cols: `${Branch.getColumns}`,
+		cols: `${Branch.getColumns}, ${StoreType.getColumns}`,
 		tables: `"branch_job"
 		JOIN "branches" ON "branches"."id" = "branch_job"."branch_id"
+		JOIN "store_types" ON "store_types"."id" = "branches"."store_type_id"
 		`,
 		where: `"branch_job"."job_code" = :job_code`,
 		replacements: {

@@ -3,10 +3,8 @@ const router = express.Router();
 const Branch = require("../../models/Branch");
 const Job = require("../../models/Job");
 const PurchaseOrder = require("../../models/PurchaseOrder");
-const Withdrawal = require("../../models/Withdrawal");
 const Item = require("../../models/Item");
 const Model = require("../../models/Model");
-const ItemWithdrawal = require("../../models/junction/ItemWithdrawal");
 const BranchJob = require("../../models/junction/BranchJob");
 const BranchPO = require("../../models/junction/BranchPO");
 const Customer = require("../../models/Customer");
@@ -14,7 +12,6 @@ const StoreType = require("../../models/StoreType");
 const Sequelize = require("sequelize");
 const db = require("../../config/database");
 const Op = Sequelize.Op;
-const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
 const { query } = require("../../utils/query");
 
@@ -138,7 +135,6 @@ router.get("/no-install", async (req, res) => {
 	});
 	if (q.errors) {
 		res.status(500).json(q);
-		console.log(q.errors);
 	} else {
 		res.json(q);
 	}
@@ -147,32 +143,28 @@ router.get("/no-install", async (req, res) => {
 // List of po_number of a branch
 router.get("/:id/po", async (req, res) => {
 	const { id } = req.params;
-	let { limit, page, search, search_term } = req.query;
+	let { limit, page, search_col, search_term } = req.query;
 
-	const query = await tools.countAndQuery({
+	const q = await query({
 		limit,
 		page,
-		search,
+		search_col,
 		search_term,
-		where: {
-			branch_id: {
-				[Op.eq]: id
-			}
+		cols: PurchaseOrder.getColumns,
+		tables: `"purchase_orders"
+		JOIN "branch_po" ON "purchase_orders"."po_number" = "branch_po"."po_number"
+		`,
+		where: `"branch_po"."branch_id" = :id`,
+		replacements: {
+			id
 		},
-		include: [
-			{
-				model: PurchaseOrder,
-				as: "po"
-			}
-		],
-		search_junction: 0,
-		model: BranchPO
+		availableCols: ["po_number"]
 	});
-	if (query.errors) {
-		res.status(500).send(query.errors);
-		return;
+	if (q.errors) {
+		res.status(500).json(q);
+	} else {
+		res.json(q);
 	}
-	res.send(query);
 });
 
 const branchValidation = [

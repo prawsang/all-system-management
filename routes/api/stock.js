@@ -9,7 +9,6 @@ const Customer = require("../../models/Customer");
 const Withdrawal = require("../../models/Withdrawal");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const tools = require("../../utils/tools");
 const { check, validationResult } = require("express-validator/check");
 const { query } = require("../../utils/query");
 

@@ -183,7 +183,7 @@ router.delete("/:po_number/remove-branch", (req, res) => {
 // Add Branch to PO (if doesn't exist)
 router.post("/:po_number/add-branches", [check("branch_id").isArray()], async (req, res) => {
 	const { po_number } = req.params;
-	const { branch_id } = req.body;
+	const { branch_id, installed } = req.body;
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -198,7 +198,7 @@ router.post("/:po_number/add-branches", [check("branch_id").isArray()], async (r
 					po_number
 				},
 				defaults: {
-					installed: false
+					installed
 				}
 			}).catch(err => errors.push({ msg: `This branch (${id}) cannot be added to the PO.` }));
 		})

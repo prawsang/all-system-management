@@ -3,7 +3,6 @@ const router = express.Router();
 const Model = require("../../models/Model");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const tools = require("../../utils/tools");
 const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
 
