@@ -1,5 +1,6 @@
 import React from "react";
 import Axios from "axios";
+import { setSearchCol, setSearchTerm } from "@/actions/report";
 import { connect } from "react-redux";
 
 class FetchDataFromServer extends React.Component {
@@ -17,6 +18,8 @@ class FetchDataFromServer extends React.Component {
 			searchCol
 		} = this.props;
 		if (!disabled) {
+			this.props.setSearchCol(null);
+			this.props.setSearchTerm(null);
 			Axios.get(
 				`${url}?page=${currentPage}&limit=${currentLimit}${
 					searchTerm ? "&search_term=" + searchTerm : ""
@@ -55,6 +58,10 @@ class FetchDataFromServer extends React.Component {
 				searchTerm !== prevSearchTerm
 			) {
 				if (!disabled) {
+					if (url !== prevUrl) {
+						this.props.setSearchCol(null);
+						this.props.setSearchTerm(null);
+					}
 					Axios.get(
 						`${url}?page=${currentPage}&limit=${currentLimit}${
 							searchTerm ? "&search_term=" + searchTerm : ""
@@ -82,8 +89,12 @@ const mapStateToProps = state => ({
 	searchTerm: state.report.searchTerm,
 	searchCol: state.report.searchCol
 });
+const mapDispatchToProps = {
+	setSearchCol,
+	setSearchTerm
+};
 
 export default connect(
 	mapStateToProps,
-	null
+	mapDispatchToProps
 )(FetchDataFromServer);

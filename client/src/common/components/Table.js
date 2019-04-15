@@ -1,7 +1,7 @@
 import React from "react";
 import SearchBar from "@/common/components/SearchBar";
 import Pagination from "@/common/components/Pagination";
-import { setPage, setLimit, setSearchCol } from "@/actions/report";
+import { setPage, setLimit, setSearchCol, setSearchTerm } from "@/actions/report";
 import { connect } from "react-redux";
 import SearchSelect from "./SearchSelect";
 
@@ -9,11 +9,6 @@ class Table extends React.Component {
 	handleLimitChange(limit) {
 		this.props.setPage(1);
 		this.props.setLimit(limit);
-	}
-	componentDidMount() {
-		if (this.props.columns) {
-			this.props.setSearchCol(this.props.columns[0].col);
-		}
 	}
 	render() {
 		const { data, title, table, columns } = this.props;
@@ -53,7 +48,8 @@ class Table extends React.Component {
 const mapDispatchToProps = {
 	setPage,
 	setLimit,
-	setSearchCol
+	setSearchCol,
+	setSearchTerm
 };
 
 export default connect(

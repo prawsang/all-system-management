@@ -9,10 +9,10 @@ class SearchBar extends React.Component {
 		term: ""
 	};
 	render() {
-		const { placeholder, setSearchTerm } = this.props;
+		const { placeholder, setSearchTerm, searchCol } = this.props;
 		const { term } = this.state;
 		return (
-			<div className="is-flex is-ai-center">
+			<div className={`is-flex is-ai-center ${searchCol || "is-disabled"}`}>
 				<input
 					className="input"
 					placeholder={placeholder ? placeholder : "Search"}
@@ -26,11 +26,15 @@ class SearchBar extends React.Component {
 	}
 }
 
+const mapStateToProps = state => ({
+	searchCol: state.report.searchCol
+});
+
 const mapDispatchToProps = {
 	setSearchTerm
 };
 
 export default connect(
-	null,
+	mapStateToProps,
 	mapDispatchToProps
 )(SearchBar);

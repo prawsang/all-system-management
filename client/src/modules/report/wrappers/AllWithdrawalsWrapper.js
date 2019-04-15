@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import WithdrawalsTable from "@/common/tables/withdrawalStatic";
+import WithdrawalsTable from "@/common/tables/withdrawals";
 
 const AllWithdrawalsWrapper = () => (
 	<FetchDataFromServer
@@ -12,10 +12,6 @@ const AllWithdrawalsWrapper = () => (
 				table={data => <WithdrawalsTable data={data} />}
 				title="ใบเบิกทั้งหมด"
 				columns={[
-					{
-						col: "withdrawal_id",
-						name: "Withdrawal ID"
-					},
 					{
 						col: "do_number",
 						name: "DO Number"
@@ -41,8 +37,16 @@ const AllWithdrawalsWrapper = () => (
 						name: "Branch Code"
 					},
 					{
-						col: "type",
+						col: "withdrawal_type",
 						name: "Type"
+					},
+					{
+						col: "withdrawal_status",
+						name: "Status"
+					},
+					{
+						col: "staff_name",
+						name: "ผู้เบิก"
 					}
 				]}
 			/>

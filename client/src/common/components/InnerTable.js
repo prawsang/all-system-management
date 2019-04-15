@@ -10,11 +10,6 @@ class Table extends React.Component {
 		this.props.setPage(1);
 		this.props.setLimit(limit);
 	}
-	componentDidMount() {
-		if (this.props.columns) {
-			this.props.setSearchCol(this.props.columns[0].col);
-		}
-	}
 	render() {
 		const { title, className, table, data, noPage, columns } = this.props;
 		return (

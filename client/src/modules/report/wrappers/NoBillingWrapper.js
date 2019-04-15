@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import WithdrawalsTable from "@/common/tables/withdrawalStatic";
+import WithdrawalsTable from "@/common/tables/withdrawals";
 
 const NoBillingWrapper = () => (
 	<FetchDataFromServer
@@ -13,10 +13,6 @@ const NoBillingWrapper = () => (
 				table={data => <WithdrawalsTable data={data} />}
 				title="การติดตั้งที่ยังไม่ได้วางบิล"
 				columns={[
-					{
-						col: "withdrawal_id",
-						name: "Withdrawal ID"
-					},
 					{
 						col: "do_number",
 						name: "DO Number"
@@ -40,6 +36,14 @@ const NoBillingWrapper = () => (
 					{
 						col: "branch_code",
 						name: "Branch Code"
+					},
+					{
+						col: "withdrawal_status",
+						name: "Status"
+					},
+					{
+						col: "staff_name",
+						name: "ผู้เบิก"
 					}
 				]}
 			/>

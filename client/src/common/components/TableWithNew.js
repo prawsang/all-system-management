@@ -14,11 +14,6 @@ class Table extends React.Component {
 	state = {
 		showNewModal: false
 	};
-	componentDidMount() {
-		if (this.props.columns) {
-			this.props.setSearchCol(this.props.columns[0].col);
-		}
-	}
 	render() {
 		const { data, title, table, newModalContent, columns } = this.props;
 		const { showNewModal } = this.state;
