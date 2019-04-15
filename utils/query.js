@@ -10,25 +10,25 @@ const checkColName = (name, cols) => {
 const getFromAlias = col => {
 	switch (col) {
 		case "customer_name":
-			return `"customer"."name"`;
+			return `"customers"."name"`;
+		case "customer_code":
+			return `"customers"."customer_code"`;
 		case "job_name":
 			return `"jobs"."name"`;
 		case "branch_id":
-			return `"branch"."id"`;
+			return `"branches"."id"`;
 		case "branch_name":
-			return `"branch"."name"`;
+			return `"branches"."name"`;
 		case "po_date":
 			return `"purchase_orders"."date"`;
 		case "store_type_name":
-			return `"store_type"."name"`;
+			return `"store_types"."name"`;
 		case "model_id":
 			return `"models"."id"`;
 		case "model_name":
 			return `"models"."name"`;
 		case "model_type":
 			return `"models"."type"`;
-		case "withdrawal_id":
-			return `"withdrawal"."id"`;
 		case "withdrawal_type":
 			return `"withdrawals"."type"`;
 		case "withdrawal_date":
@@ -59,8 +59,9 @@ module.exports = {
 				pagesCount: 0
 			};
 		}
-		search_col = getFromAlias(search_col);
-
+		if (search_col) {
+			search_col = getFromAlias(search_col);
+		}
 		let count = 0;
 		let response = [];
 		let errors = [];
@@ -71,7 +72,6 @@ module.exports = {
 				search_col && search_term ? `LOWER(${search_col}) LIKE LOWER(:search_term)` : null;
 			whereString = `WHERE ${[where, search].filter(e => e).join(" AND ")}`;
 		}
-
 		await db
 			.query(
 				`SELECT COUNT(*) 

@@ -87,8 +87,8 @@ Withdrawal.getColumns = `"withdrawals"."id" AS "withdrawal_id",
     "withdrawals"."date" AS "withdrawal_date",
     "withdrawals"."install_date",
     "withdrawals"."return_by",
-    "withdrawals"."status",
-    "withdrawals"."remarks",
+    "withdrawals"."status" AS "withdrawal_status",
+    "withdrawals"."remarks" AS "withdrawal_remarks",
     "withdrawals"."billed"`;
 
 // Class Methods

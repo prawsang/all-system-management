@@ -28,10 +28,8 @@ router.get("/get-all", async (req, res) => {
 		install_to,
 		return_from,
 		return_to,
-		billed,
-		id
+		billed
 	} = req.query;
-
 	const q = await query({
 		limit,
 		page,
@@ -52,8 +50,7 @@ router.get("/get-all", async (req, res) => {
 			install_to,
 			return_from,
 			return_to,
-			billed,
-			id
+			billed
 		}),
 		replacements: {
 			from,
@@ -61,8 +58,7 @@ router.get("/get-all", async (req, res) => {
 			return_from,
 			return_to,
 			install_from,
-			install_to,
-			id
+			install_to
 		},
 		availableCols: [
 			"job_code",
@@ -173,8 +169,7 @@ router.get("/without-po", async (req, res) => {
 		to,
 		install_from,
 		install_to,
-		billed,
-		id
+		billed
 	} = req.query;
 
 	const filters = Withdrawal.filter({
@@ -182,8 +177,7 @@ router.get("/without-po", async (req, res) => {
 		to,
 		install_from,
 		install_to,
-		billed,
-		id
+		billed
 	});
 
 	const q = await query({
@@ -206,8 +200,7 @@ router.get("/without-po", async (req, res) => {
 			from,
 			to,
 			install_from,
-			install_to,
-			id
+			install_to
 		},
 		availableCols: [
 			"job_code",
