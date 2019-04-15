@@ -32,7 +32,7 @@ class BranchSearch extends React.Component {
 					placeholder="Branch Name"
 					searchUrl={`/customer/${selectedCustomer.customer_code}/branches`}
 					searchTerm={branch}
-					searchName="name"
+					searchName="branch_name"
 					disabled={disabled}
 					showResults={() => this.setState({ showResults: true })}
 					hideResults={() => this.setState({ showResults: false })}
@@ -43,17 +43,25 @@ class BranchSearch extends React.Component {
 								onClick={() => this.setState({ showResults: false })}
 							>
 								{data ? (
-									data.branches.length > 0 ? (
-										data.branches.map((e, i) => (
+									data.rows.length > 0 ? (
+										data.rows.map((e, i) => (
 											<span
-												key={e.name + i}
+												key={e.branch_name + i}
 												className="list-item is-clickable"
 												onClick={() => {
-													setSelectedBranches([...selectedBranches, e]);
+													setSelectedBranches([
+														...selectedBranches,
+														{
+															id: e.branch_id,
+															name: e.branch_name,
+															branch_code: e.branch_code
+														}
+													]);
 													this.setState({ branch: "" });
 												}}
 											>
-												{e.name} {e.branch_code && `(${e.branch_code})`}
+												{e.branch_name}{" "}
+												{e.branch_code && `(${e.branch_code})`}
 											</span>
 										))
 									) : (

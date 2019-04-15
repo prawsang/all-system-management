@@ -1,9 +1,6 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import CustomerSearch from "../components/search/CustomerSearch";
-import BranchSearch from "../components/search/BranchSearch";
 import JobSelect from "../components/JobSelect";
 import { connect } from "react-redux";
 import { setSelectedBranches, resetRecordData } from "@/actions/record";
@@ -12,13 +9,12 @@ import history from "@/common/history";
 class AddPO extends React.Component {
 	state = {
 		poNumber: "",
-		installed: false,
 		date: ""
 	};
 
 	async handleSubmit() {
-		const { selectedBranches, selectedJobCode } = this.props;
-		const { poNumber, installed, description, date } = this.state;
+		const { selectedJobCode } = this.props;
+		const { poNumber, description, date } = this.state;
 		await Axios.request({
 			url: "/po/add",
 			method: "POST",
@@ -26,25 +22,10 @@ class AddPO extends React.Component {
 				po_number: poNumber,
 				description,
 				date,
-				installed,
 				job_code: selectedJobCode
 			}
-		}).then(async res => {
-			let branchIds = [];
-			if (selectedBranches.length > 0) {
-				selectedBranches.map(e => branchIds.push(e.id));
-				await Axios.request({
-					method: "POST",
-					url: `/po/${poNumber}/add-branches`,
-					data: {
-						branch_id: branchIds
-					}
-				}).then(r => {
-					history.push(`/single/po/${poNumber}`);
-				});
-			} else {
-				history.push(`/single/po/${poNumber}`);
-			}
+		}).then(res => {
+			history.push(`/single/po/${poNumber}`);
 		});
 	}
 	componentDidMount() {
@@ -55,13 +36,8 @@ class AddPO extends React.Component {
 	}
 
 	render() {
-		const { poNumber, installed, description, date } = this.state;
-		const {
-			selectedCustomer,
-			selectedBranches,
-			setSelectedBranches,
-			selectedJobCode
-		} = this.props;
+		const { poNumber, description, date } = this.state;
+		const { selectedCustomer } = this.props;
 		return (
 			<div className="content">
 				<h3>บันทึกใบสั่งซื้อ (PO)</h3>
@@ -76,18 +52,6 @@ class AddPO extends React.Component {
 									value={poNumber}
 									onChange={e => this.setState({ poNumber: e.target.value })}
 								/>
-							</div>
-							<div className="field is-flex is-ai-flex-end has-ml-10">
-								<div className="is-flex is-ai-center">
-									<label className="label">ติดตั้งแล้ว:</label>
-									<input
-										className="checkbox"
-										onChange={() => this.setState({ installed: !installed })}
-										type="checkbox"
-										checked={installed}
-										name="installed"
-									/>
-								</div>
 							</div>
 						</div>
 						<label className="label">Description</label>
@@ -112,38 +76,6 @@ class AddPO extends React.Component {
 						<hr />
 						<CustomerSearch />
 						<JobSelect disabled={!selectedCustomer} />
-						<BranchSearch disabled={selectedJobCode === "" || !selectedJobCode} />
-						<div style={{ margin: "2em 0" }}>
-							<h6>สาขาที่เลือกไว้</h6>
-							{selectedBranches.length > 0 ? (
-								<ul className="no-mt">
-									{selectedBranches.map((e, i) => (
-										<li key={i + e.name}>
-											{e.name}
-											<span
-												className="danger has-ml-05 is-clickable"
-												onClick={() =>
-													setSelectedBranches(
-														selectedBranches
-															.slice(0, i)
-															.concat(
-																selectedBranches.slice(
-																	i + 1,
-																	selectedBranches.length
-																)
-															)
-													)
-												}
-											>
-												<FontAwesomeIcon icon={faTrash} />
-											</span>
-										</li>
-									))}
-								</ul>
-							) : (
-								<p className="is-gray-3">ยังไม่ได้เลือกสาขา</p>
-							)}
-						</div>
 						<div className="field">
 							<button
 								className="button"

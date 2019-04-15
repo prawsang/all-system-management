@@ -10,6 +10,7 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 class AddBranchModal extends React.Component {
 	async handleAddBranches() {
 		const { selectedBranches } = this.props;
+		const { installed } = this.state;
 		let branchIds = [];
 		if (selectedBranches.length > 0) {
 			selectedBranches.map(e => branchIds.push(e.id));
@@ -17,18 +18,34 @@ class AddBranchModal extends React.Component {
 				method: "POST",
 				url: `/po/${this.props.poNumber}/add-branches`,
 				data: {
-					branch_id: branchIds
+					branch_id: branchIds,
+					installed
 				}
 			});
 		}
 		window.location.reload();
 	}
-
+	state = {
+		installed: false
+	};
 	render() {
 		const { active, close, selectedBranches, setSelectedBranches } = this.props;
+		const { installed } = this.state;
 		return (
 			<Modal active={active} close={close} title="เพิ่มสาขา">
 				<div>
+					<div className="field is-flex is-ai-flex-end has-ml-10">
+						<div className="is-flex is-ai-center">
+							<label className="label">ติดตั้งแล้ว:</label>
+							<input
+								className="checkbox"
+								onChange={() => this.setState({ installed: !installed })}
+								type="checkbox"
+								checked={installed}
+								name="installed"
+							/>
+						</div>
+					</div>
 					<BranchSearch />
 					<h6>สาขาที่เลือกไว้</h6>
 					<div>

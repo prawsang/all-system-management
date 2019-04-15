@@ -96,7 +96,7 @@ class PO extends React.PureComponent {
 								render={d => (
 									<Table
 										data={d}
-										table={d => <BranchesTable data={d} />}
+										table={d => <BranchesTable data={d} showInstalled={true} />}
 										className="no-pt"
 										title="Branches"
 									/>

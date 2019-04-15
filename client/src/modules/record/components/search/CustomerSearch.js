@@ -21,14 +21,14 @@ class CustomerSearch extends React.Component {
 				placeholder="Customer Name"
 				searchUrl="/customer/get-all"
 				searchTerm={customer}
-				searchName="name"
+				searchName="customer_name"
 				disabled={disabled}
 				showResults={() => this.setState({ showResults: true })}
 				hideResults={() => this.setState({ showResults: false })}
 				list={data => (
 					<div className={`${showResults || "is-hidden"}`}>
 						<CustomerSearchList
-							customers={data && data.customers}
+							customers={data && data.rows}
 							hideResults={() => this.setState({ showResults: false })}
 						/>
 					</div>
@@ -45,11 +45,16 @@ const List = ({ customers, setSelectedCustomer, hideResults }) => {
 				customers.length > 0 ? (
 					customers.map((e, i) => (
 						<span
-							key={e.name + i}
+							key={e.customer_name + i}
 							className="list-item is-clickable"
-							onClick={() => setSelectedCustomer(e)}
+							onClick={() =>
+								setSelectedCustomer({
+									customer_code: e.customer_code,
+									name: e.customer_name
+								})
+							}
 						>
-							{e.name} ({e.customer_code})
+							{e.customer_name} ({e.customer_code})
 						</span>
 					))
 				) : (
