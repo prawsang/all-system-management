@@ -56,8 +56,7 @@ PurchaseOrder.getColumns = `
 	"purchase_orders"."po_number",
 	"purchase_orders"."job_code",
 	"purchase_orders"."description",
-	"purchase_orders"."date" AS "po_date",
-	"purchase_orders"."installed"
+	"purchase_orders"."date" AS "po_date"
 	`;
 
 PurchaseOrder.checkJob = (job_code, po_number) => {
