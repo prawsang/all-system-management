@@ -29,10 +29,6 @@ const PurchaseOrder = db.define("purchase_orders", {
 		validate: {
 			notEmpty: true
 		}
-	},
-	installed: {
-		type: Sequelize.BOOLEAN,
-		allowNull: false
 	}
 });
 

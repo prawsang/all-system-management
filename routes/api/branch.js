@@ -117,15 +117,14 @@ router.get("/no-install", async (req, res) => {
 			${Branch.getColumns},
 			${StoreType.getColumns},
 			${Customer.getColumns},
-			array_agg("purchase_orders"."po_number") AS "po_numbers"`,
+			array_agg("branch_po"."po_number") AS "po_numbers"`,
 		tables: `"branches"
 		JOIN "branch_po" ON "branch_po"."branch_id" = "branches"."id"
-		JOIN "purchase_orders" on "purchase_orders"."po_number" = "branch_po"."po_number"
 		JOIN "customers" ON "branches"."customer_code" = "customers"."customer_code"
 		JOIN "store_types" ON "branches"."store_type_id" = "store_types"."id"
-		WHERE NOT "purchase_orders"."installed"
-		GROUP BY "branches"."id","store_types"."id","customers"."customer_code"
 		`,
+		where: `NOT "branch_po"."installed"`,
+		groupBy: `GROUP BY "branches"."id","store_types"."id","customers"."customer_code"`,
 		availableCols: [
 			"branch_code",
 			"branch_name",

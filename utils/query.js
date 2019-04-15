@@ -46,7 +46,7 @@ const getFromAlias = col => {
 
 module.exports = {
 	query: async function(data) {
-		const { limit, page, cols, tables, availableCols, where, replacements } = data;
+		const { limit, page, cols, tables, availableCols, where, groupBy, replacements } = data;
 		let { search_col, search_term } = data;
 		if (search_term) {
 			search_term = search_term.toLowerCase();
@@ -76,7 +76,8 @@ module.exports = {
 			.query(
 				`SELECT COUNT(*) 
             FROM ${tables} 
-            ${whereString}
+			${whereString}
+			${groupBy ? groupBy : ""}
             `,
 				{
 					replacements: {
@@ -97,7 +98,8 @@ module.exports = {
 			.query(
 				`SELECT ${cols}
             FROM ${tables}
-            ${whereString}
+			${whereString}
+			${groupBy ? groupBy : ""}
             ${limit ? `LIMIT :limit` : ""}
             ${limit && page ? `OFFSET :offset` : ""}`,
 				{
