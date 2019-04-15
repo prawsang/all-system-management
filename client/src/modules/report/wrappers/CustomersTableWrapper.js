@@ -1,5 +1,5 @@
 import React from "react";
-import TableWithNew from "../components/TableWithNew";
+import TableWithNew from "@/common/components/TableWithNew";
 import CustomersTable from "../tables/Customers";
 import NewCustomer from "../modals/NewCustomer";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";

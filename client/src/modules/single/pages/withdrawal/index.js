@@ -1,6 +1,6 @@
 import React from "react";
-import Table from "@/modules/single/components/Table";
-import ItemsTable from "@/modules/single/tables/items";
+import Table from "@/common/components/InnerTable";
+import ItemsTable from "@/common/tables/items";
 import { BranchData, CustomerData, JobData } from "../../data/";
 import Modal from "@/common/components/Modal";
 import EditModal from "./EditModal";

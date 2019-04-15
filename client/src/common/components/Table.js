@@ -3,7 +3,7 @@ import SearchBar from "@/common/components/SearchBar";
 import Pagination from "@/common/components/Pagination";
 import { setPage, setLimit, setSearchCol } from "@/actions/report";
 import { connect } from "react-redux";
-import SearchSelect from "../../../common/components/SearchSelect";
+import SearchSelect from "./SearchSelect";
 
 class Table extends React.Component {
 	handleLimitChange(limit) {

@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import StoreTypesTable from "../tables/StoreTypes";
-import TableWithNew from "../components/TableWithNew";
+import TableWithNew from "@/common/components/TableWithNew";
 import StoreType from "../modals/StoreType";
 
 const StoreTypesWrapper = () => (

@@ -1,6 +1,6 @@
 import React from "react";
-import Table from "../../components/Table";
-import WithdrawalsTable from "../../tables/withdrawals";
+import Table from "@/common/components/InnerTable";
+import WithdrawalsTable from "@/common/tables/withdrawalStatic";
 import history from "@/common/history";
 import Edit from "./Edit";
 

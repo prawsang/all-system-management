@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../components/Table";
-import WithdrawalsTable from "@/modules/single/tables/withdrawals";
+import Table from "@/common/components/Table";
+import WithdrawalsTable from "@/common/tables/withdrawalStatic";
 
 const NoBillingWrapper = () => (
 	<FetchDataFromServer

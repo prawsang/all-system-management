@@ -1,9 +1,10 @@
 import React from "react";
 import SearchBar from "@/common/components/SearchBar";
 import Pagination from "@/common/components/Pagination";
-import { setPage, setLimit } from "@/actions/report";
+import { setPage, setLimit, setSearchCol } from "@/actions/report";
 import { connect } from "react-redux";
 import Modal from "@/common/components/Modal";
+import SearchSelect from "./SearchSelect";
 
 class Table extends React.Component {
 	handleLimitChange(limit) {
@@ -13,8 +14,13 @@ class Table extends React.Component {
 	state = {
 		showNewModal: false
 	};
+	componentDidMount() {
+		if (this.props.columns) {
+			this.props.setSearchCol(this.props.columns[0].col);
+		}
+	}
 	render() {
-		const { data, title, table, newModalContent } = this.props;
+		const { data, title, table, newModalContent, columns } = this.props;
 		const { showNewModal } = this.state;
 		return (
 			<React.Fragment>
@@ -30,8 +36,9 @@ class Table extends React.Component {
 				<div className="panel">
 					<div className="panel-content">
 						<div className="is-flex is-jc-space-between is-wrap">
-							<div className="col-6 has-mb-05">
+							<div className="col-6 has-mb-05 is-flex is-ai-center">
 								<SearchBar />
+								{columns && <SearchSelect columns={columns} />}
 							</div>
 							<div className="col-6 is-flex is-ai-center is-jc-flex-end">
 								<div className="select no-mb">
@@ -65,7 +72,8 @@ class Table extends React.Component {
 
 const mapDispatchToProps = {
 	setPage,
-	setLimit
+	setLimit,
+	setSearchCol
 };
 
 export default connect(

@@ -1,6 +1,6 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../components/Table";
+import Table from "@/common/components/Table";
 import AllPO from "../tables/AllPO";
 
 const AllPOWrapper = () => (

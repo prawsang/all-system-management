@@ -1,10 +1,10 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../../components/Table";
+import Table from "@/common/components/InnerTable";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
-import JobsTable from "../../tables/jobs";
-import BranchesTable from "../../tables/branches";
+import JobsTable from "@/common/tables/jobs";
+import BranchesTable from "@/common/tables/branches";
 import AddBranch from "./AddBranch";
 import AddJob from "./AddJob";
 import Edit from "./Edit";

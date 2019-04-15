@@ -1,10 +1,10 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../../components/Table";
-import ItemsTable from "../../tables/items";
+import Table from "@/common/components/InnerTable";
+import ItemsTable from "@/common/tables/items";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
-import POTable from "../../tables/po";
+import POTable from "@/common/tables/po";
 import history from "@/common/history";
 import { CustomerData } from "../../data";
 import Edit from "./Edit";

@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import ModelsTable from "../tables/Models";
-import TableWithNew from "../components/TableWithNew";
+import TableWithNew from "@/common/components/TableWithNew";
 import Model from "../modals/Model";
 
 const ModelsWrapper = () => (
