@@ -88,7 +88,7 @@ const WithdrawalWrapper = props => {
 	return (
 		<FetchDataFromServer
 			url={`/withdrawal/${id}/details`}
-			render={data => <Withdrawal data={data} />}
+			render={data => <Withdrawal data={data} id={id} />}
 		/>
 	);
 };

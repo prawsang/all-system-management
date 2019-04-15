@@ -16,8 +16,7 @@ class Edititem extends React.Component {
 	getModelsOfType = type => {
 		if (type !== "") {
 			Axios.get(`/model/type/${type}`).then(res => {
-				this.setState({ models: res.data.models });
-				console.log(res);
+				this.setState({ models: res.data.rows });
 			});
 		}
 	};
@@ -89,8 +88,8 @@ class Edititem extends React.Component {
 								<option disabled={true}>เลือกรุ่น</option>
 								{models.length > 0 ? (
 									models.map((e, i) => (
-										<option value={e.id} key={e.id + i}>
-											{e.name}
+										<option value={e.model_id} key={e.model_id + i}>
+											{e.model_name}
 										</option>
 									))
 								) : (

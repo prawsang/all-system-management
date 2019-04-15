@@ -18,7 +18,7 @@ export const setItems = data => {
 		maxCount: 0
 	};
 	data.forEach(e => {
-		switch (e.model.type) {
+		switch (e.model_type) {
 			case "POS":
 				items.pos.push(e.serial_no);
 				if (items.pos.length > items.maxCount) items.maxCount = items.pos.length;

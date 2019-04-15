@@ -16,15 +16,15 @@ const POTable = ({ data }) => (
 					data.rows.map((e, i) => (
 						<tr
 							className="is-hoverable is-clickable"
-							key={i + e.po.po_number}
+							key={i + e.po_number}
 							onClick={event => {
-								history.push(`/single/po/${e.po.po_number}`);
+								history.push(`/single/po/${e.po_number}`);
 								event.stopPropagation();
 							}}
 						>
-							<td>{e.po.po_number}</td>
-							<td>{e.po.description}</td>
-							<td>{e.po.date}</td>
+							<td>{e.po_number}</td>
+							<td>{e.description}</td>
+							<td>{e.po_date}</td>
 						</tr>
 					)))}
 		</tbody>

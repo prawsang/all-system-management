@@ -12,9 +12,7 @@ const removeItemFromWithdrawal = (serialNo, withdrawalId) => {
 		data: {
 			serial_no: [serialNo]
 		}
-	})
-		.then(res => window.location.reload())
-		
+	}).then(res => window.location.reload());
 };
 
 const ConfirmModal = ({ active, close, onConfirm, currentSerial }) => (
@@ -55,8 +53,8 @@ class ItemsTable extends React.Component {
 					</thead>
 					<tbody className="is-hoverable">
 						{data &&
-							(data.items.length > 0 &&
-								data.items.map((e, i) => (
+							(data.rows.length > 0 &&
+								data.rows.map((e, i) => (
 									<tr
 										className={`is-hoverable is-clickable ${showDelete &&
 											"is-short"}`}
@@ -67,9 +65,9 @@ class ItemsTable extends React.Component {
 										}}
 									>
 										<td>{e.serial_no}</td>
-										<td>{e.model.name}</td>
-										<td>{e.model.type}</td>
-										{showInstallDate && <td>{e.withdrawal.install_date}</td>}
+										<td>{e.model_name}</td>
+										<td>{e.model_type}</td>
+										{showInstallDate && <td>{e.install_date}</td>}
 										{showDelete && (
 											<td>
 												<button

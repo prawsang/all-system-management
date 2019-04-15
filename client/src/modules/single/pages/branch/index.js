@@ -1,8 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "../../components/Table";
-import ItemsTable from "../../tables/itemsJunction";
-import ReservedItemsTable from "../../tables/reserved";
+import ItemsTable from "../../tables/items";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
 import POTable from "../../tables/po";
@@ -176,7 +175,7 @@ class Branch extends React.Component {
 									render={d => (
 										<Table
 											data={d}
-											table={d => <ReservedItemsTable data={d} />}
+											table={d => <ItemsTable data={d} />}
 											className="no-pt"
 											title="Reserved Items"
 										/>

@@ -7,7 +7,6 @@ import EditModal from "./EditModal";
 import RemarksModal from "./RemarksModal";
 import ChangeCustomer from "./ChangeCustomer";
 import BillingModal from "./BillingModal";
-
 import Axios from "axios";
 import { Link } from "react-router-dom";
 import history from "@/common/history";
@@ -22,7 +21,8 @@ class Withdrawal extends React.PureComponent {
 		showDeleteConfirm: false,
 		editRemarks: false,
 		changeCustomer: false,
-		editBilling: false
+		editBilling: false,
+		items: null
 	};
 
 	cancelWithdrawal() {
@@ -47,7 +47,17 @@ class Withdrawal extends React.PureComponent {
 	handlePrint() {
 		const { data } = this.props;
 		this.props.setCurrentWithdrawal(data.withdrawal);
-		this.props.setItems(data.withdrawal.items);
+		this.props.setItems(this.state.items.rows);
+	}
+
+	componentDidMount() {
+		const { id } = this.props;
+		Axios.request({
+			method: "GET",
+			url: `/withdrawal/${id}/items`
+		}).then(res => {
+			this.setState({ items: res.data });
+		});
 	}
 
 	render() {
@@ -58,7 +68,8 @@ class Withdrawal extends React.PureComponent {
 			editRemarks,
 			changeCustomer,
 			showDeleteConfirm,
-			editBilling
+			editBilling,
+			items
 		} = this.state;
 		if (data) {
 			if (!data.withdrawal) return <p>ไม่พบรายการ</p>;
@@ -245,17 +256,16 @@ class Withdrawal extends React.PureComponent {
 								</Link>
 							</div>
 							<Table
-								data={data}
-								table={data => (
+								data={items}
+								table={d => (
 									<ItemsTable
-										data={data.withdrawal}
+										data={d}
 										showDelete={data.withdrawal.status === "PENDING"}
 										withdrawalId={data.withdrawal.id}
 									/>
 								)}
 								className="no-pt"
 								title="Items"
-								noPage={true}
 							/>
 							<div className="panel-content">
 								<h4>พิมพ์</h4>

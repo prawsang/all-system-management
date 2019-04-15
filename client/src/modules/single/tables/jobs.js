@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 import history from "@/common/history";
 
 const JobsTable = ({ data }) => (
-    <table className="is-fullwidth is-rounded">
+	<table className="is-fullwidth is-rounded">
 		<thead>
 			<tr>
 				<td>Job Code</td>
@@ -22,7 +22,7 @@ const JobsTable = ({ data }) => (
 							}}
 						>
 							<td>{e.job_code}</td>
-							<td>{e.name}</td>
+							<td>{e.job_name}</td>
 						</tr>
 					)))}
 		</tbody>

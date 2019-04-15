@@ -13,19 +13,19 @@ const BranchesTable = ({ data }) => (
 		</thead>
 		<tbody className="is-hoverable">
 			{data &&
-				(data.branches.length > 0 &&
-					data.branches.map((e, i) => (
+				(data.rows.length > 0 &&
+					data.rows.map((e, i) => (
 						<tr
 							className="is-hoverable is-clickable"
 							key={i + e.branch_code}
 							onClick={event => {
-								history.push(`/single/branch/${e.id}`);
+								history.push(`/single/branch/${e.branch_id}`);
 								event.stopPropagation();
 							}}
 						>
 							<td>{e.branch_code}</td>
-							<td>{e.name}</td>
-							<td>{e.store_type.name}</td>
+							<td>{e.branch_name}</td>
+							<td>{e.store_type_name}</td>
 							<td>{e.province}</td>
 						</tr>
 					)))}

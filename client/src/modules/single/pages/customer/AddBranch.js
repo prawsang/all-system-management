@@ -14,7 +14,7 @@ class AddBranch extends React.Component {
 		shortCode: ""
 	};
 	componentDidMount() {
-		Axios.get("/store-type/get-all").then(res => this.setState({ storeTypes: res.data.types }));
+		Axios.get("/store-type/get-all").then(res => this.setState({ storeTypes: res.data.rows }));
 	}
 
 	addBranch() {
@@ -108,8 +108,8 @@ class AddBranch extends React.Component {
 								value={storeTypeId}
 							>
 								{storeTypes.map((e, i) => (
-									<option value={e.id} key={i + e.id}>
-										{e.name}
+									<option value={e.store_type_id} key={i + e.store_type_id}>
+										{e.store_type_name}
 									</option>
 								))}
 							</select>
