@@ -181,9 +181,9 @@ router.delete("/:po_number/remove-branch", (req, res) => {
 });
 
 // Add Branch to PO (if doesn't exist)
-router.post("/:po_number/add-branches", [check("branch_id").isArray()], async (req, res) => {
+router.post("/:po_number/add-branches", [check("branches").isArray()], async (req, res) => {
 	const { po_number } = req.params;
-	const { branch_id, installed } = req.body;
+	const { branches } = req.body;
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -191,16 +191,18 @@ router.post("/:po_number/add-branches", [check("branch_id").isArray()], async (r
 
 	let errors = [];
 	await Promise.all(
-		branch_id.map(async id => {
+		branches.map(async e => {
 			BranchPO.findOrCreate({
 				where: {
-					branch_id: id,
+					branch_id: e.id,
 					po_number
 				},
 				defaults: {
-					installed
+					installed: e.installed
 				}
-			}).catch(err => errors.push({ msg: `This branch (${id}) cannot be added to the PO.` }));
+			}).catch(err =>
+				errors.push({ msg: `This branch (${e.id}) cannot be added to the PO.` })
+			);
 		})
 	);
 	if (errors.length > 0) {
@@ -211,9 +213,9 @@ router.post("/:po_number/add-branches", [check("branch_id").isArray()], async (r
 });
 
 // Edit branch installation in a PO
-router.put("/:po_number/edit-installed", [check("branch_id").isArray()], async (req, res) => {
+router.put("/:po_number/edit-installed", [check("branches").isArray()], async (req, res) => {
 	const { po_number } = req.params;
-	const { branch_id, installed } = req.body;
+	const { branches } = req.body;
 	const validationErrors = validationResult(req);
 	if (!validationErrors.isEmpty()) {
 		return res.status(422).json({ errors: validationErrors.array() });
@@ -221,10 +223,10 @@ router.put("/:po_number/edit-installed", [check("branch_id").isArray()], async (
 
 	let errors = [];
 	await Promise.all(
-		branch_id.map(async id => {
+		branches.map(async e => {
 			BranchPO.update(
 				{
-					installed
+					installed: e.installed
 				},
 				{
 					where: {
@@ -232,11 +234,11 @@ router.put("/:po_number/edit-installed", [check("branch_id").isArray()], async (
 							[Op.eq]: po_number
 						},
 						branch_id: {
-							[Op.eq]: id
+							[Op.eq]: e.id
 						}
 					}
 				}
-			).catch(err => errors.push({ msg: `This branch (${id}) cannot be edited.` }));
+			).catch(err => errors.push({ msg: `This branch (${e.id}) cannot be edited.` }));
 		})
 	);
 	if (errors.length > 0) {
