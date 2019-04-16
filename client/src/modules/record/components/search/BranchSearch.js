@@ -51,7 +51,8 @@ class BranchSearch extends React.Component {
 														{
 															id: e.branch_id,
 															name: e.branch_name,
-															branch_code: e.branch_code
+															branch_code: e.branch_code,
+															installed: false
 														}
 													]);
 													this.setState({ branch: "" });
@@ -60,7 +61,8 @@ class BranchSearch extends React.Component {
 														{
 															id: e.branch_id,
 															name: e.branch_name,
-															branch_code: e.branch_code
+															branch_code: e.branch_code,
+															installed: false
 														}
 													]);
 													this.setState({ branch: e.branch_name });
