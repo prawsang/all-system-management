@@ -10,52 +10,59 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 class AddBranchModal extends React.Component {
 	async handleAddBranches() {
 		const { selectedBranches } = this.props;
-		const { installed } = this.state;
-		let branchIds = [];
 		if (selectedBranches.length > 0) {
-			selectedBranches.map(e => branchIds.push(e.id));
 			await Axios.request({
 				method: "POST",
 				url: `/po/${this.props.poNumber}/add-branches`,
 				data: {
-					branch_id: branchIds,
-					installed
+					branches: selectedBranches
 				}
 			});
 		}
 		window.location.reload();
 	}
-	state = {
-		installed: false
-	};
 	render() {
 		const { active, close, selectedBranches, setSelectedBranches } = this.props;
-		const { installed } = this.state;
 		return (
 			<Modal active={active} close={close} title="เพิ่มสาขา">
 				<div>
-					<div className="field is-flex is-ai-flex-end has-ml-10">
-						<div className="is-flex is-ai-center">
-							<label className="label">ติดตั้งแล้ว:</label>
-							<input
-								className="checkbox"
-								onChange={() => this.setState({ installed: !installed })}
-								type="checkbox"
-								checked={installed}
-								name="installed"
-							/>
-						</div>
-					</div>
 					<BranchSearch />
 					<h6>สาขาที่เลือกไว้</h6>
 					<div>
 						{selectedBranches.length > 0 ? (
-							<ul className="no-mt">
-								{selectedBranches.map((e, i) => (
-									<li key={i + e.name}>
-										{e.name}
+							selectedBranches.map((e, i) => (
+								<div
+									key={i + e.name}
+									className="is-flex is-jc-space-between is-ai-center snippet"
+								>
+									<span>{e.name}</span>
+									<div className="is-flex is-ai-center">
+										<div className="field is-flex has-mr-10 no-mb">
+											<div className="is-flex is-ai-center">
+												<label className="label">ติดตั้งแล้ว:</label>
+												<input
+													className="checkbox"
+													onChange={() =>
+														setSelectedBranches([
+															...selectedBranches.slice(0, i),
+															{
+																...e,
+																installed: !e.installed
+															},
+															...selectedBranches.slice(
+																i + 1,
+																selectedBranches.length
+															)
+														])
+													}
+													type="checkbox"
+													checked={e.installed}
+													name="installed"
+												/>
+											</div>
+										</div>
 										<span
-											className="danger has-ml-05 is-clickable"
+											className="danger is-clickable"
 											onClick={() =>
 												setSelectedBranches(
 													selectedBranches
@@ -71,9 +78,9 @@ class AddBranchModal extends React.Component {
 										>
 											<FontAwesomeIcon icon={faTrash} />
 										</span>
-									</li>
-								))}
-							</ul>
+									</div>
+								</div>
+							))
 						) : (
 							<p className="is-gray-3 has-mb-10">ยังไม่ได้เลือกสาขา</p>
 						)}

@@ -53,3 +53,17 @@ table {
 		color: $gray-4;
 	}
 }
+
+.snippet {
+	background-color: $gray-5;
+	border: 1px solid $gray-4;
+	border-radius: 4px;
+	margin-bottom: 0.5em;
+	padding: 0.5em 1em;
+	.checkbox {
+		border: 1px solid $gray-3;
+		&:checked {
+			border: 1px solid $primary;
+		}
+	}
+}

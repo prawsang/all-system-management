@@ -28,13 +28,15 @@ const BranchesTable = ({ data, showInstalled }) => (
 							<td>{e.branch_name}</td>
 							<td>{e.store_type_name}</td>
 							<td>{e.province}</td>
-							<td>
-								{e.installed ? (
-									<span>Installed</span>
-								) : (
-									<span className="is-bold danger">Not Installed</span>
-								)}
-							</td>
+							{showInstalled && (
+								<td>
+									{e.installed ? (
+										<span>Installed</span>
+									) : (
+										<span className="is-bold danger">Not Installed</span>
+									)}
+								</td>
+							)}
 						</tr>
 					)))}
 		</tbody>
