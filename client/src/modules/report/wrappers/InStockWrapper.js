@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import InStock from "../tables/InStock";
+import InStock from "@/common/tables/items";
 
 class InStockWrapper extends React.Component {
 	state = {

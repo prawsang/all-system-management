@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import Broken from "../tables/Broken";
+import Broken from "@/common/tables/items";
 
 const BrokenWrapper = () => (
 	<FetchDataFromServer
@@ -24,10 +24,6 @@ const BrokenWrapper = () => (
 					{
 						col: "model_type",
 						name: "Model Type"
-					},
-					{
-						col: "status",
-						name: "Status"
 					}
 				]}
 			/>

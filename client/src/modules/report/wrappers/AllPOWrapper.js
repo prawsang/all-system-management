@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import AllPO from "../tables/AllPO";
+import POTable from "@/common/tables/po";
 
 const AllPOWrapper = () => (
 	<FetchDataFromServer
@@ -9,7 +9,7 @@ const AllPOWrapper = () => (
 		render={data => (
 			<Table
 				data={data}
-				table={data => <AllPO data={data} />}
+				table={data => <POTable data={data} showCustomer={true} />}
 				title="PO ทั้งหมด"
 				columns={[
 					{

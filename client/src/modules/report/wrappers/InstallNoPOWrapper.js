@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import InstallWoPO from "../tables/InstallWoPO";
+import InstallWoPO from "@/common/tables/withdrawals";
 
 const InstallNoPOWrapper = () => (
 	<FetchDataFromServer
