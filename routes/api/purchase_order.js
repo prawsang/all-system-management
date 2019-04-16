@@ -68,7 +68,12 @@ router.get("/:po_number/details", (req, res) => {
 // get branches for po
 router.get("/:po_number/branches", async (req, res) => {
 	const { po_number } = req.params;
-	let { limit, page, search_col, search_term } = req.query;
+	let { limit, page, search_col, search_term, installed } = req.query;
+
+	let filters = null;
+	if (installed) {
+		filters = installed === "true" ? `"branch_po"."installed"` : `NOT "branch_po"."installed`;
+	}
 
 	const q = await query({
 		limit,
@@ -88,7 +93,7 @@ router.get("/:po_number/branches", async (req, res) => {
 			"gl_branch",
 			"short_code"
 		],
-		where: `"branch_po"."po_number" = :po_number`,
+		where: `"branch_po"."po_number" = :po_number ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
 			po_number
 		}
