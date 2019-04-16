@@ -3,7 +3,7 @@ import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
 import InstallWoPO from "@/common/tables/withdrawals";
 
-const InstallNoPOWrapper = () => (
+const InstallNoPO = () => (
 	<FetchDataFromServer
 		url="/withdrawal/without-po"
 		render={data => (
@@ -42,4 +42,4 @@ const InstallNoPOWrapper = () => (
 	/>
 );
 
-export default InstallNoPOWrapper;
+export default InstallNoPO;

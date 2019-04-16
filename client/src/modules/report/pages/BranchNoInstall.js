@@ -1,15 +1,15 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import BranchNoInstall from "../tables/BranchNoInstall";
+import BranchNoInstallTable from "../tables/BranchNoInstall";
 
-const BranchNoInstallWrapper = () => (
+const BranchNoInstall = () => (
 	<FetchDataFromServer
 		url="/branch/no-install"
 		render={data => (
 			<Table
 				data={data}
-				table={data => <BranchNoInstall data={data} />}
+				table={data => <BranchNoInstallTable data={data} />}
 				title="สาขาที่ยังไม่ได้ติดตั้ง"
 				columns={[
 					{
@@ -50,4 +50,4 @@ const BranchNoInstallWrapper = () => (
 	/>
 );
 
-export default BranchNoInstallWrapper;
+export default BranchNoInstall;

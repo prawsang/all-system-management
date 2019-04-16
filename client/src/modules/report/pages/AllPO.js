@@ -3,7 +3,7 @@ import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
 import POTable from "@/common/tables/po";
 
-const AllPOWrapper = () => (
+const AllPO = () => (
 	<FetchDataFromServer
 		url="/po/get-all"
 		render={data => (
@@ -38,4 +38,4 @@ const AllPOWrapper = () => (
 	/>
 );
 
-export default AllPOWrapper;
+export default AllPO;

@@ -4,7 +4,7 @@ import StoreTypesTable from "../tables/StoreTypes";
 import TableWithNew from "@/common/components/TableWithNew";
 import StoreType from "../modals/StoreType";
 
-const StoreTypesWrapper = () => (
+const StoreTypes = () => (
 	<FetchDataFromServer
 		url="/store-type/get-all"
 		render={data => (
@@ -24,4 +24,4 @@ const StoreTypesWrapper = () => (
 	/>
 );
 
-export default StoreTypesWrapper;
+export default StoreTypes;

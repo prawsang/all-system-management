@@ -4,7 +4,7 @@ import ModelsTable from "../tables/Models";
 import TableWithNew from "@/common/components/TableWithNew";
 import Model from "../modals/Model";
 
-const ModelsWrapper = () => (
+const Models = () => (
 	<FetchDataFromServer
 		url="/model/get-all"
 		render={data => (
@@ -28,4 +28,4 @@ const ModelsWrapper = () => (
 	/>
 );
 
-export default ModelsWrapper;
+export default Models;

@@ -4,7 +4,7 @@ import CustomersTable from "../tables/Customers";
 import NewCustomer from "../modals/NewCustomer";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
-const CustomersTableWrapper = () => (
+const Customers = () => (
 	<FetchDataFromServer
 		url="/customer/get-all"
 		render={data => (
@@ -28,4 +28,4 @@ const CustomersTableWrapper = () => (
 	/>
 );
 
-export default CustomersTableWrapper;
+export default Customers;

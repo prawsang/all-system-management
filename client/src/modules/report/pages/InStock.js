@@ -1,9 +1,9 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import InStock from "@/common/tables/items";
+import ItemsTable from "@/common/tables/items";
 
-class InStockWrapper extends React.Component {
+class InStock extends React.Component {
 	state = {
 		type: "ALL"
 	};
@@ -37,7 +37,7 @@ class InStockWrapper extends React.Component {
 						</div>
 						<Table
 							data={data}
-							table={data => <InStock data={data} />}
+							table={data => <ItemsTable data={data} />}
 							title="Stock คงเหลือ"
 							columns={[
 								{
@@ -57,4 +57,4 @@ class InStockWrapper extends React.Component {
 	}
 }
 
-export default InStockWrapper;
+export default InStock;

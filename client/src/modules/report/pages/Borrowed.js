@@ -1,29 +1,24 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
-import Broken from "@/common/tables/items";
+import BorrowedTable from "../tables/Borrowed";
 
-const BrokenWrapper = () => (
+const Borrowed = () => (
 	<FetchDataFromServer
-		url="/stock/get-all"
-		params="broken=true"
+		url="/stock/borrowed"
 		render={data => (
 			<Table
 				data={data}
-				table={data => <Broken data={data} />}
-				title="ของเสีย"
+				table={data => <BorrowedTable data={data} />}
+				title="ของยืม"
 				columns={[
 					{
 						col: "serial_no",
-						name: "Serial No"
+						name: "Serial No."
 					},
 					{
 						col: "model_name",
 						name: "Model Name"
-					},
-					{
-						col: "model_type",
-						name: "Model Type"
 					}
 				]}
 			/>
@@ -31,4 +26,4 @@ const BrokenWrapper = () => (
 	/>
 );
 
-export default BrokenWrapper;
+export default Borrowed;

@@ -3,15 +3,14 @@ import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 import Table from "@/common/components/Table";
 import WithdrawalsTable from "@/common/tables/withdrawals";
 
-const NoBillingWrapper = () => (
+const AllWithdrawals = () => (
 	<FetchDataFromServer
 		url="/withdrawal/get-all"
-		params="billed=false"
 		render={data => (
 			<Table
 				data={data}
 				table={data => <WithdrawalsTable data={data} />}
-				title="การติดตั้งที่ยังไม่ได้วางบิล"
+				title="ใบเบิกทั้งหมด"
 				columns={[
 					{
 						col: "do_number",
@@ -38,6 +37,10 @@ const NoBillingWrapper = () => (
 						name: "Branch Code"
 					},
 					{
+						col: "withdrawal_type",
+						name: "Type"
+					},
+					{
 						col: "withdrawal_status",
 						name: "Status"
 					},
@@ -51,4 +54,4 @@ const NoBillingWrapper = () => (
 	/>
 );
 
-export default NoBillingWrapper;
+export default AllWithdrawals;

@@ -15,35 +15,31 @@ class Single extends React.Component {
 		return (
 			<div className="content">
 				<Switch>
-					<Route path="/single/po/:po_number" component={POWrapper} />
-					<Route path="/single/branch/:branch_id" component={BranchWrapper} />
-					<Route path="/single/job/:job_code" component={JobWrapper} />
-					<Route path="/single/item/:serial_no" component={ItemWrapper} />
-					<Route
-						path="/single/customer/:customer_code"
-						component={CustomerWrapper}
-					/>{" "}
-					<Route path="/single/customer/:customer_code" component={CustomerWrapper} />
+					<Route path="/single/po/:po_number" component={POPage} />
+					<Route path="/single/branch/:branch_id" component={BranchPage} />
+					<Route path="/single/job/:job_code" component={JobPage} />
+					<Route path="/single/item/:serial_no" component={ItemPage} />
+					<Route path="/single/customer/:customer_code" component={CustomerPage} />
 					<Route path="/single/withdrawal/:id/print" component={Print} />
 					<Route
 						path="/single/withdrawal/:id/add-items"
 						component={AddItemsToWithdrawal}
 					/>
-					<Route path="/single/withdrawal/:id" component={WithdrawalWrapper} />
+					<Route path="/single/withdrawal/:id" component={WithdrawalPage} />
 				</Switch>
 			</div>
 		);
 	}
 }
 
-const POWrapper = props => {
+const POPage = props => {
 	const { po_number } = props.match.params;
 	return (
 		<FetchDataFromServer url={`/po/${po_number}/details`} render={data => <PO data={data} />} />
 	);
 };
 
-const BranchWrapper = props => {
+const BranchPage = props => {
 	const { branch_id } = props.match.params;
 	return (
 		<FetchDataFromServer
@@ -53,7 +49,7 @@ const BranchWrapper = props => {
 	);
 };
 
-const JobWrapper = props => {
+const JobPage = props => {
 	const { job_code } = props.match.params;
 	return (
 		<FetchDataFromServer
@@ -63,7 +59,7 @@ const JobWrapper = props => {
 	);
 };
 
-const ItemWrapper = props => {
+const ItemPage = props => {
 	const { serial_no } = props.match.params;
 	return (
 		<FetchDataFromServer
@@ -73,7 +69,7 @@ const ItemWrapper = props => {
 	);
 };
 
-const CustomerWrapper = props => {
+const CustomerPage = props => {
 	const { customer_code } = props.match.params;
 	return (
 		<FetchDataFromServer
@@ -83,7 +79,7 @@ const CustomerWrapper = props => {
 	);
 };
 
-const WithdrawalWrapper = props => {
+const WithdrawalPage = props => {
 	const { id } = props.match.params;
 	return (
 		<FetchDataFromServer
