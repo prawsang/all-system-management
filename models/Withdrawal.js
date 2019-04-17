@@ -173,31 +173,33 @@ Withdrawal.changeStatus = (id, status) => {
 };
 
 Withdrawal.filter = data => {
-	const { from, to, install_from, install_to, return_from, return_to, billed, id } = data;
+	const { from, to, install_from, install_to, return_from, return_to, billed } = data;
 
 	let dateFilter = null;
 	let returnDateFilter = null;
 	let installDateFilter = null;
 	let billedFilter = null;
-	let searchById = null;
 
 	if (from && to) {
-		dateFilter = `"withdrawals"."date" >= :from AND "withdrawals"."date" <= :to`;
+		const f = from ? `"withdrawals"."date" >= :from` : null;
+		const t = to ? `"withdrawals"."date" <= :to` : null;
+		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (install_from && install_to) {
-		installDateFilter = `"withdrawals"."install_date" >= :install_from AND "withdrawals"."install_date" <= :install_to`;
+		const f = from ? `"withdrawals"."install_date" >= :install_from` : null;
+		const t = to ? `"withdrawals"."install_date" <= :install_to` : null;
+		installDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (return_from && return_to) {
-		returnDateFilter = `"withdrawals"."return_by" >= :return_from AND "withdrawals"."return_by" <= :return_to`;
+		const f = from ? `"withdrawals"."return_by" >= :return_from` : null;
+		const t = to ? `"withdrawals"."return_by" <= :return_to` : null;
+		returnDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (billed) {
 		billedFilter = billed == "true" ? `"withdrawals"."billed"` : `NOT "withdrawals"."billed"`;
 	}
-	if (id) {
-		searchById = `"withdrawals"."id" = :id`;
-	}
 
-	return [dateFilter, returnDateFilter, installDateFilter, billedFilter, searchById]
+	return [dateFilter, returnDateFilter, installDateFilter, billedFilter]
 		.filter(e => e)
 		.join(" AND ");
 };

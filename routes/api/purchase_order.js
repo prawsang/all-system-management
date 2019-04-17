@@ -17,10 +17,9 @@ router.get("/get-all", async (req, res) => {
 
 	let filters = null;
 	if (from && to) {
-		filters =
-			from && to
-				? `"purchase_orders"."date" >= :from AND "purchase_orders"."date" <= :to`
-				: null;
+		const f = from ? `"purchase_orders"."date" >= :from` : null;
+		const t = to ? `"purchase_orders"."date" <= :to` : null;
+		filters = [f, t].filter(e => e).join(" AND ");
 	}
 
 	const q = await query({
