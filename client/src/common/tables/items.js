@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
 import Modal from "@/common/components/Modal";
+import Filters from "../filters/";
 
 const removeItemFromWithdrawal = (serialNo, withdrawalId) => {
 	Axios.request({
@@ -41,6 +42,7 @@ class ItemsTable extends React.Component {
 		const { showConfirm, currentSerial } = this.state;
 		return (
 			<React.Fragment>
+				<Filters active={true} />
 				<table className="is-fullwidth is-rounded">
 					<thead>
 						<tr>

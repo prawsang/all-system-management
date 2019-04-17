@@ -1,11 +1,29 @@
-import { SET_PAGE, SET_LIMIT, SET_SEARCH_TERM, SET_SEARCH_COL } from "@/common/action-types";
+import {
+	SET_PAGE,
+	SET_LIMIT,
+	SET_SEARCH_TERM,
+	SET_SEARCH_COL,
+	SET_FILTERS
+} from "@/common/action-types";
 
 const initialState = {
 	data: {},
 	currentPage: 1,
 	currentLimit: 25,
 	searchTerm: "",
-	searchCol: ""
+	searchCol: "",
+	filters: {
+		from: null,
+		to: null,
+		installed: null,
+		broken: null,
+		status: null,
+		type: null,
+		install_from: null,
+		install_to: null,
+		return_from: null,
+		return_to: null
+	}
 };
 
 const report = (state = initialState, action) => {
@@ -29,6 +47,14 @@ const report = (state = initialState, action) => {
 			return {
 				...state,
 				searchCol: action.payload.searchCol
+			};
+		case SET_FILTERS:
+			return {
+				...state,
+				filters: {
+					...state.filters,
+					...action.payload.filters
+				}
 			};
 		default:
 			return state;

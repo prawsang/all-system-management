@@ -14,17 +14,21 @@ class FetchDataFromServer extends React.Component {
 			currentLimit,
 			disabled,
 			params,
+			filters,
 			searchTerm,
 			searchCol
 		} = this.props;
+
+		const link = `${url}?page=${currentPage}&limit=${currentLimit}
+		${searchTerm ? "&search_term=" + searchTerm : ""}
+		${searchCol ? "&search_col=" + searchCol : ""}
+		${params ? "&" + params : ""}
+		${filters ? "&" + filters : ""}`;
+
 		if (!disabled) {
 			this.props.setSearchCol(null);
 			this.props.setSearchTerm(null);
-			Axios.get(
-				`${url}?page=${currentPage}&limit=${currentLimit}${
-					searchTerm ? "&search_term=" + searchTerm : ""
-				}${searchCol ? "&search_col=" + searchCol : ""}${params ? "&" + params : ""}`
-			).then(res => {
+			Axios.get(link).then(res => {
 				this.setState({ data: res.data });
 				console.log(res);
 			});
@@ -39,7 +43,8 @@ class FetchDataFromServer extends React.Component {
 				disabled,
 				params,
 				searchTerm,
-				searchCol
+				searchCol,
+				filters
 			} = this.props;
 			const {
 				url: prevUrl,
@@ -47,7 +52,8 @@ class FetchDataFromServer extends React.Component {
 				currentLimit: prevCurrentLimit,
 				disabled: prevDisabled,
 				params: prevParams,
-				searchTerm: prevSearchTerm
+				searchTerm: prevSearchTerm,
+				filters: prevFilters
 			} = prevProps;
 			if (
 				url !== prevUrl ||
@@ -55,20 +61,21 @@ class FetchDataFromServer extends React.Component {
 				currentLimit !== prevCurrentLimit ||
 				disabled !== prevDisabled ||
 				params !== prevParams ||
-				searchTerm !== prevSearchTerm
+				searchTerm !== prevSearchTerm ||
+				filters !== prevFilters
 			) {
 				if (!disabled) {
 					if (url !== prevUrl) {
 						this.props.setSearchCol(null);
 						this.props.setSearchTerm(null);
 					}
-					Axios.get(
-						`${url}?page=${currentPage}&limit=${currentLimit}${
-							searchTerm ? "&search_term=" + searchTerm : ""
-						}${searchCol ? "&search_col=" + searchCol : ""}${
-							params ? "&" + params : ""
-						}`
-					).then(res => {
+					const link = `${url}?page=${currentPage}&limit=${currentLimit}
+					${searchTerm ? "&search_term=" + searchTerm : ""}
+					${searchCol ? "&search_col=" + searchCol : ""}
+					${params ? "&" + params : ""}
+					${filters ? "&" + filters : ""}`;
+
+					Axios.get(link).then(res => {
 						this.setState({ data: res.data });
 						console.log(res);
 					});
