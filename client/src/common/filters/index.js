@@ -67,7 +67,7 @@ class Filters extends React.Component {
 				{filters.itemType && (
 					<Filter
 						onChange={() => setFilters({ type: this.toggleFilter(type) })}
-						value={type === null ? "" : type}
+						value={type === null ? false : true}
 						render={value => (
 							<Select
 								disabled={!value}
@@ -107,7 +107,7 @@ class Filters extends React.Component {
 				{filters.withdrawalType && (
 					<Filter
 						onChange={() => setFilters({ type: this.toggleFilter(type) })}
-						value={type === null ? "" : type}
+						value={type === null ? false : true}
 						render={value => (
 							<Select
 								disabled={!value}
@@ -124,8 +124,8 @@ class Filters extends React.Component {
 										value: "TRANSFER"
 									},
 									{
-										name: "Printers",
-										value: "PRINTER"
+										name: "Borrow",
+										value: "BORROW"
 									}
 								]}
 							/>
@@ -135,7 +135,7 @@ class Filters extends React.Component {
 				{filters.itemStatus && (
 					<Filter
 						onChange={() => setFilters({ status: this.toggleFilter(status) })}
-						value={status === null ? "" : status}
+						value={status === null ? false : true}
 						render={value => (
 							<Select
 								disabled={!value}
@@ -171,11 +171,11 @@ class Filters extends React.Component {
 				{filters.withdrawalStatus && (
 					<Filter
 						onChange={() => setFilters({ status: this.toggleFilter(status) })}
-						value={status === null ? "" : status}
+						value={status === null ? false : true}
 						render={value => (
 							<Select
 								disabled={!value}
-								label="Item Status"
+								label="Status"
 								value={status}
 								onChange={e => setFilters({ status: e.target.value })}
 								options={[
@@ -217,7 +217,7 @@ class Filters extends React.Component {
 						)}
 					/>
 				)}
-				{filters.installDate && (
+				{filters.installDate && type === "INSTALLATION" && (
 					<Filter
 						onChange={() =>
 							setFilters({
@@ -225,11 +225,11 @@ class Filters extends React.Component {
 								install_to: this.toggleDateFilter(install_to)
 							})
 						}
-						value={from === null || to === null ? false : true}
+						value={install_from === null || install_to === null ? false : true}
 						render={value => (
 							<Date
 								disabled={!value}
-								label="Date"
+								label="Installation Date"
 								fromValue={install_from}
 								fromOnChange={e => setFilters({ install_from: e.target.value })}
 								toValue={install_to}
@@ -238,7 +238,7 @@ class Filters extends React.Component {
 						)}
 					/>
 				)}
-				{filters.returnDate && (
+				{filters.returnDate && type === "BORROW" && (
 					<Filter
 						onChange={() =>
 							setFilters({
@@ -246,11 +246,11 @@ class Filters extends React.Component {
 								return_to: this.toggleDateFilter(return_to)
 							})
 						}
-						value={from === null || to === null ? false : true}
+						value={return_from === null || return_to === null ? false : true}
 						render={value => (
 							<Date
 								disabled={!value}
-								label="Date"
+								label="Return Date"
 								fromValue={return_from}
 								fromOnChange={e => setFilters({ return_from: e.target.value })}
 								toValue={return_to}

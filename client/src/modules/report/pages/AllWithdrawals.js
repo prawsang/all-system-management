@@ -11,6 +11,13 @@ const AllWithdrawals = () => (
 				data={data}
 				table={data => <WithdrawalsTable data={data} />}
 				title="ใบเบิกทั้งหมด"
+				filters={{
+					date: true,
+					returnDate: true,
+					installDate: true,
+					withdrawalType: true,
+					withdrawalStatus: true
+				}}
 				columns={[
 					{
 						col: "do_number",

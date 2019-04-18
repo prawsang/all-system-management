@@ -2,7 +2,6 @@ import React from "react";
 import Axios from "axios";
 import { setSearchCol, setSearchTerm, setFilters } from "@/actions/report";
 import { connect } from "react-redux";
-import { formatDate } from "@/common/date";
 
 class FetchDataFromServer extends React.Component {
 	state = {
@@ -20,16 +19,16 @@ class FetchDataFromServer extends React.Component {
 			string.push(`from=${filters.from}`);
 		}
 		if (filters.install_to) {
-			string.push(`to=${filters.install_to}`);
+			string.push(`install_to=${filters.install_to}`);
 		}
 		if (filters.install_from) {
-			string.push(`from=${filters.install_from}`);
+			string.push(`install_from=${filters.install_from}`);
 		}
 		if (filters.return_to) {
-			string.push(`to=${filters.return_to}`);
+			string.push(`return_to=${filters.return_to}`);
 		}
-		if (filters.return_form) {
-			string.push(`from=${filters.return_form}`);
+		if (filters.return_from) {
+			string.push(`return_from=${filters.return_from}`);
 		}
 
 		// Boolean Filters
@@ -121,7 +120,7 @@ class FetchDataFromServer extends React.Component {
 					${searchCol ? "&search_col=" + searchCol : ""}
 					${params ? "&" + params : ""}
 					${filters ? "&" + this.makeFilterString(filters) : ""}`;
-
+					console.log(link);
 					Axios.get(link).then(res => {
 						this.setState({ data: res.data });
 						console.log(res);
