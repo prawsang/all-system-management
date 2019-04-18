@@ -1,12 +1,59 @@
 import React from "react";
 import Axios from "axios";
-import { setSearchCol, setSearchTerm } from "@/actions/report";
+import { setSearchCol, setSearchTerm, setFilters } from "@/actions/report";
 import { connect } from "react-redux";
+import { formatDate } from "@/common/date";
 
 class FetchDataFromServer extends React.Component {
 	state = {
 		data: null
 	};
+
+	makeFilterString() {
+		const { filters } = this.props;
+		let string = [];
+		// Date Filters
+		if (filters.to) {
+			string.push(`to=${filters.to}`);
+		}
+		if (filters.from) {
+			string.push(`from=${filters.from}`);
+		}
+		if (filters.install_to) {
+			string.push(`to=${filters.install_to}`);
+		}
+		if (filters.install_from) {
+			string.push(`from=${filters.install_from}`);
+		}
+		if (filters.return_to) {
+			string.push(`to=${filters.return_to}`);
+		}
+		if (filters.return_form) {
+			string.push(`from=${filters.return_form}`);
+		}
+
+		// Boolean Filters
+		if (filters.broken !== null) {
+			string.push(filters.broken ? "broken=true" : "broken=false");
+		}
+		if (filters.installed !== null) {
+			string.push(filters.installed ? "installed=true" : "installed=false");
+		}
+
+		// Text Filters
+		if (filters.type !== null) {
+			string.push(`type=${filters.type}`);
+		}
+		if (filters.status !== null) {
+			string.push(`status=${filters.status}`);
+		}
+
+		if (string.length > 0) {
+			return string.join("&");
+		}
+		return null;
+	}
+
 	componentDidMount() {
 		const {
 			url,
@@ -23,7 +70,7 @@ class FetchDataFromServer extends React.Component {
 		${searchTerm ? "&search_term=" + searchTerm : ""}
 		${searchCol ? "&search_col=" + searchCol : ""}
 		${params ? "&" + params : ""}
-		${filters ? "&" + filters : ""}`;
+		${filters ? "&" + this.makeFilterString(filters) : ""}`;
 
 		if (!disabled) {
 			this.props.setSearchCol(null);
@@ -73,7 +120,7 @@ class FetchDataFromServer extends React.Component {
 					${searchTerm ? "&search_term=" + searchTerm : ""}
 					${searchCol ? "&search_col=" + searchCol : ""}
 					${params ? "&" + params : ""}
-					${filters ? "&" + filters : ""}`;
+					${filters ? "&" + this.makeFilterString(filters) : ""}`;
 
 					Axios.get(link).then(res => {
 						this.setState({ data: res.data });
@@ -94,11 +141,13 @@ const mapStateToProps = state => ({
 	currentPage: state.report.currentPage,
 	currentLimit: state.report.currentLimit,
 	searchTerm: state.report.searchTerm,
-	searchCol: state.report.searchCol
+	searchCol: state.report.searchCol,
+	filters: state.report.filters
 });
 const mapDispatchToProps = {
 	setSearchCol,
-	setSearchTerm
+	setSearchTerm,
+	setFilters
 };
 
 export default connect(

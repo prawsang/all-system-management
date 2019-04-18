@@ -5,6 +5,7 @@ import { setPage, setLimit, setSearchCol } from "@/actions/report";
 import { connect } from "react-redux";
 import Modal from "@/common/components/Modal";
 import SearchSelect from "./SearchSelect";
+import Filters from "../filters/";
 
 class Table extends React.Component {
 	handleLimitChange(limit) {
@@ -12,21 +13,39 @@ class Table extends React.Component {
 		this.props.setLimit(limit);
 	}
 	state = {
-		showNewModal: false
+		showNewModal: false,
+		showFilterModal: false
 	};
 	render() {
-		const { data, title, table, newModalContent, columns } = this.props;
-		const { showNewModal } = this.state;
+		const { data, title, table, newModalContent, columns, filters } = this.props;
+		const { showNewModal, showFilterModal } = this.state;
 		return (
 			<React.Fragment>
+				{filters && (
+					<Filters
+						active={showFilterModal}
+						close={() => this.setState({ showFilterModal: false })}
+						filters={filters}
+					/>
+				)}
 				<div className="is-flex is-jc-space-between is-ai-center">
 					<h3>{title}</h3>
-					<button
-						className="button"
-						onClick={() => this.setState({ showNewModal: true })}
-					>
-						Add New
-					</button>
+					<div className="buttons">
+						{filters && (
+							<button
+								className="button"
+								onClick={() => this.setState({ showFilterModal: true })}
+							>
+								Filters
+							</button>
+						)}
+						<button
+							className="button"
+							onClick={() => this.setState({ showNewModal: true })}
+						>
+							Add New
+						</button>
+					</div>
 				</div>
 				<div className="panel">
 					<div className="panel-content">

@@ -6,7 +6,7 @@ export const Checkbox = ({ label, checked, onChange, disabled }) => (
 		<input
 			className="checkbox"
 			type="checkbox"
-			checked={checked}
+			checked={checked === null ? false : checked}
 			onChange={onChange}
 			disabled={disabled}
 		/>
@@ -15,24 +15,28 @@ export const Checkbox = ({ label, checked, onChange, disabled }) => (
 
 export const Date = ({ fromValue, fromOnChange, toValue, toOnChange, label, disabled }) => (
 	<div className="field no-mb">
+		<label className="label">{label}</label>
 		<div className="is-flex">
-			<label className="label">{label}</label>
-			<div className="col-6">
-				<label className="label">From:</label>
+			<div className="col-6 has-mr-05">
+				<small className="has-mb-05" style={{ display: "block" }}>
+					From:
+				</small>
 				<input
-					className="is-fullwidth"
+					className="input is-fullwidth"
 					type="date"
-					value={fromValue}
+					value={fromValue === null ? "" : fromValue}
 					onChange={fromOnChange}
 					disabled={disabled}
 				/>
 			</div>
-			<div className="col-6">
-				<label className="label">From:</label>
+			<div className="col-6 has-ml-05">
+				<small className="has-mb-05" style={{ display: "block" }}>
+					To:
+				</small>
 				<input
-					className="is-fullwidth"
+					className="input is-fullwidth"
 					type="date"
-					value={toValue}
+					value={toValue === null ? "" : toValue}
 					onChange={toOnChange}
 					disabled={disabled}
 				/>
@@ -45,8 +49,8 @@ export const Select = ({ options, label, value, onChange, disabled }) => (
 	<div className="field no-mb">
 		<label className="label">{label}</label>
 		<div className="select">
-			<select value={value} onChange={onChange} disabled={disabled}>
-				<option value={null}>-- Select --</option>
+			<select value={value === null ? "" : value} onChange={onChange} disabled={disabled}>
+				<option value="">-- Select --</option>
 				{options.map((e, i) => (
 					<option value={e.value}>{e.name}</option>
 				))}

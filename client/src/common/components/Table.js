@@ -4,17 +4,39 @@ import Pagination from "@/common/components/Pagination";
 import { setPage, setLimit, setSearchCol, setSearchTerm } from "@/actions/report";
 import { connect } from "react-redux";
 import SearchSelect from "./SearchSelect";
+import Filters from "../filters/";
 
 class Table extends React.Component {
 	handleLimitChange(limit) {
 		this.props.setPage(1);
 		this.props.setLimit(limit);
 	}
+	state = {
+		showFilterModal: false
+	};
 	render() {
-		const { data, title, table, columns } = this.props;
+		const { data, title, table, columns, filters } = this.props;
+		const { showFilterModal } = this.state;
 		return (
 			<React.Fragment>
+				{filters && (
+					<Filters
+						active={showFilterModal}
+						close={() => this.setState({ showFilterModal: false })}
+						filters={filters}
+					/>
+				)}
 				<h3>{title}</h3>
+				{filters && (
+					<div style={{ float: "right" }}>
+						<button
+							className="button"
+							onClick={() => this.setState({ showFilterModal: true })}
+						>
+							Filters
+						</button>
+					</div>
+				)}
 				<div className="panel">
 					<div className="panel-content">
 						<div className="is-flex is-jc-space-between is-wrap">

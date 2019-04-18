@@ -11,6 +11,9 @@ const AllPO = () => (
 				data={data}
 				table={data => <POTable data={data} showCustomer={true} />}
 				title="PO ทั้งหมด"
+				filters={{
+					date: true
+				}}
 				columns={[
 					{
 						col: "po_number",
