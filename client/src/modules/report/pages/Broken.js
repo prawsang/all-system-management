@@ -12,6 +12,9 @@ const Broken = () => (
 				data={data}
 				table={data => <BrokenTable data={data} />}
 				title="ของเสีย"
+				filters={{
+					itemType: true
+				}}
 				columns={[
 					{
 						col: "serial_no",

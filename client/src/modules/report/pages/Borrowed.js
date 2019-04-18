@@ -11,6 +11,10 @@ const Borrowed = () => (
 				data={data}
 				table={data => <BorrowedTable data={data} />}
 				title="ของยืม"
+				filters={{
+					itemType: true,
+					returnDate: true
+				}}
 				columns={[
 					{
 						col: "serial_no",

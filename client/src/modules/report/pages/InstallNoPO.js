@@ -11,6 +11,11 @@ const InstallNoPO = () => (
 				data={data}
 				table={data => <InstallWoPO data={data} />}
 				title="การติดตั้งที่ยังไม่ได้รับ PO"
+				filters={{
+					date: true,
+					installDate: true,
+					billed: true
+				}}
 				columns={[
 					{
 						col: "id",

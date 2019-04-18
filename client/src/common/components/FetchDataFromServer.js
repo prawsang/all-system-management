@@ -31,6 +31,14 @@ class FetchDataFromServer extends React.Component {
 			string.push(`return_from=${filters.return_from}`);
 		}
 
+		// Type enforcement
+		if (filters.install_to || filters.install_from) {
+			string.push(`"withdrawals"."type" = 'INSTALLATION'`);
+		}
+		if (filters.return_to || filters.return_from) {
+			string.push(`"withdrawals"."type" = 'BORROW'`);
+		}
+
 		// Boolean Filters
 		if (filters.broken !== null) {
 			string.push(filters.broken ? "broken=true" : "broken=false");
@@ -74,6 +82,19 @@ class FetchDataFromServer extends React.Component {
 		if (!disabled) {
 			this.props.setSearchCol(null);
 			this.props.setSearchTerm(null);
+			this.props.setFilters({
+				from: null,
+				to: null,
+				installed: null,
+				broken: null,
+				status: null,
+				type: null,
+				install_from: null,
+				install_to: null,
+				return_from: null,
+				return_to: null
+			});
+
 			Axios.get(link).then(res => {
 				this.setState({ data: res.data });
 				console.log(res);
@@ -114,13 +135,25 @@ class FetchDataFromServer extends React.Component {
 					if (url !== prevUrl) {
 						this.props.setSearchCol(null);
 						this.props.setSearchTerm(null);
+						this.props.setFilters({
+							from: null,
+							to: null,
+							installed: null,
+							broken: null,
+							status: null,
+							type: null,
+							install_from: null,
+							install_to: null,
+							return_from: null,
+							return_to: null
+						});
 					}
 					const link = `${url}?page=${currentPage}&limit=${currentLimit}
 					${searchTerm ? "&search_term=" + searchTerm : ""}
 					${searchCol ? "&search_col=" + searchCol : ""}
 					${params ? "&" + params : ""}
 					${filters ? "&" + this.makeFilterString(filters) : ""}`;
-					console.log(link);
+
 					Axios.get(link).then(res => {
 						this.setState({ data: res.data });
 						console.log(res);

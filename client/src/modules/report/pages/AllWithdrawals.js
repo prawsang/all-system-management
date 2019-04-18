@@ -16,7 +16,8 @@ const AllWithdrawals = () => (
 					returnDate: true,
 					installDate: true,
 					withdrawalType: true,
-					withdrawalStatus: true
+					withdrawalStatus: true,
+					billed: true
 				}}
 				columns={[
 					{

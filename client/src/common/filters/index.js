@@ -217,7 +217,7 @@ class Filters extends React.Component {
 						)}
 					/>
 				)}
-				{filters.installDate && type === "INSTALLATION" && (
+				{filters.installDate && (
 					<Filter
 						onChange={() =>
 							setFilters({
@@ -238,7 +238,7 @@ class Filters extends React.Component {
 						)}
 					/>
 				)}
-				{filters.returnDate && type === "BORROW" && (
+				{filters.returnDate && (
 					<Filter
 						onChange={() =>
 							setFilters({

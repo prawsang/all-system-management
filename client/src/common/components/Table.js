@@ -26,17 +26,19 @@ class Table extends React.Component {
 						filters={filters}
 					/>
 				)}
-				<h3>{title}</h3>
-				{filters && (
-					<div style={{ float: "right" }}>
-						<button
-							className="button"
-							onClick={() => this.setState({ showFilterModal: true })}
-						>
-							Filters
-						</button>
+				<div className="is-flex is-jc-space-between is-ai-center">
+					<h3>{title}</h3>
+					<div className="buttons">
+						{filters && (
+							<button
+								className="button"
+								onClick={() => this.setState({ showFilterModal: true })}
+							>
+								Filters
+							</button>
+						)}
 					</div>
-				)}
+				</div>
 				<div className="panel">
 					<div className="panel-content">
 						<div className="is-flex is-jc-space-between is-wrap">

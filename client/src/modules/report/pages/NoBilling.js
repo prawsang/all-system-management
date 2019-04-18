@@ -12,6 +12,10 @@ const NoBilling = () => (
 				data={data}
 				table={data => <WithdrawalsTable data={data} />}
 				title="การติดตั้งที่ยังไม่ได้วางบิล"
+				filters={{
+					date: true,
+					installDate: true
+				}}
 				columns={[
 					{
 						col: "do_number",

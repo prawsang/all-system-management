@@ -17,8 +17,8 @@ const BranchNoInstall = ({ data }) => (
 					data.rows.map((e, i) => (
 						<tr
 							className="is-hoverable is-clickable"
-							key={i + e.id}
-							onClick={() => history.push(`/single/branch/${e.id}`)}
+							key={i + " " + e.branch_id}
+							onClick={() => history.push(`/single/branch/${e.branch_id}`)}
 						>
 							<td>{e.branch_code}</td>
 							<td>{e.branch_name}</td>
