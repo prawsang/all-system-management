@@ -185,8 +185,6 @@ Withdrawal.filter = data => {
 		status
 	} = data;
 
-	console.log(data);
-
 	let dateFilter = null;
 	let returnDateFilter = null;
 	let installDateFilter = null;
@@ -194,17 +192,17 @@ Withdrawal.filter = data => {
 	let statusFilter = null;
 	let typeFilter = null;
 
-	if (from && to) {
+	if (from || to) {
 		const f = from ? `"withdrawals"."date" >= :from` : null;
 		const t = to ? `"withdrawals"."date" <= :to` : null;
 		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
-	if (install_from && install_to) {
+	if (install_from || install_to) {
 		const f = install_from ? `"withdrawals"."install_date" >= :install_from` : null;
 		const t = install_to ? `"withdrawals"."install_date" <= :install_to` : null;
 		installDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
-	if (return_from && return_to) {
+	if (return_from || return_to) {
 		const f = return_from ? `"withdrawals"."return_by" >= :return_from` : null;
 		const t = return_to ? `"withdrawals"."return_by" <= :return_to` : null;
 		returnDateFilter = [f, t].filter(e => e).join(" AND ");

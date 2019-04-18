@@ -105,11 +105,10 @@ router.get("/borrowed", async (req, res) => {
 	const typeFilter = Item.filter({ type });
 
 	let filters = null;
-	if ((return_to || return_from) && status.toUpperCase() == "BORROWED") {
-		filters = `"withdrawals"."return_by" >= :return_from AND "withdrawals"."return_by" <= :return_to`;
-	} else if (return_to) {
-		// for overdue items
-		filters = `"withdrawals"."return_by" <= :return_to`;
+	if (return_from || return_to) {
+		const f = return_from ? `"withdrawals"."return_by" >= :return_from` : null;
+		const t = return_to ? `"withdrawals"."return_by" <= :return_to` : null;
+		filters = [f, t].filter(e => e).join(" AND ");
 	}
 
 	const q = await query({
@@ -144,7 +143,6 @@ router.get("/borrowed", async (req, res) => {
 	});
 	if (q.errors) {
 		res.status(500).json(q);
-		console.log(q.errors);
 	} else {
 		res.json(q);
 	}
