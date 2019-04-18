@@ -173,12 +173,26 @@ Withdrawal.changeStatus = (id, status) => {
 };
 
 Withdrawal.filter = data => {
-	const { from, to, install_from, install_to, return_from, return_to, billed } = data;
+	const {
+		from,
+		to,
+		install_from,
+		install_to,
+		return_from,
+		return_to,
+		billed,
+		type,
+		status
+	} = data;
+
+	console.log(data);
 
 	let dateFilter = null;
 	let returnDateFilter = null;
 	let installDateFilter = null;
 	let billedFilter = null;
+	let statusFilter = null;
+	let typeFilter = null;
 
 	if (from && to) {
 		const f = from ? `"withdrawals"."date" >= :from` : null;
@@ -186,20 +200,26 @@ Withdrawal.filter = data => {
 		dateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (install_from && install_to) {
-		const f = from ? `"withdrawals"."install_date" >= :install_from` : null;
-		const t = to ? `"withdrawals"."install_date" <= :install_to` : null;
+		const f = install_from ? `"withdrawals"."install_date" >= :install_from` : null;
+		const t = install_to ? `"withdrawals"."install_date" <= :install_to` : null;
 		installDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (return_from && return_to) {
-		const f = from ? `"withdrawals"."return_by" >= :return_from` : null;
-		const t = to ? `"withdrawals"."return_by" <= :return_to` : null;
+		const f = return_from ? `"withdrawals"."return_by" >= :return_from` : null;
+		const t = return_to ? `"withdrawals"."return_by" <= :return_to` : null;
 		returnDateFilter = [f, t].filter(e => e).join(" AND ");
 	}
 	if (billed) {
 		billedFilter = billed == "true" ? `"withdrawals"."billed"` : `NOT "withdrawals"."billed"`;
 	}
+	if (type) {
+		typeFilter = `"withdrawals"."type" = :type`;
+	}
+	if (status) {
+		statusFilter = `"withdrawals"."status" = :status`;
+	}
 
-	return [dateFilter, returnDateFilter, installDateFilter, billedFilter]
+	return [dateFilter, returnDateFilter, installDateFilter, billedFilter, typeFilter, statusFilter]
 		.filter(e => e)
 		.join(" AND ");
 };

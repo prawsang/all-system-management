@@ -28,7 +28,9 @@ router.get("/get-all", async (req, res) => {
 		install_to,
 		return_from,
 		return_to,
-		billed
+		billed,
+		type,
+		status
 	} = req.query;
 	const q = await query({
 		limit,
@@ -50,7 +52,9 @@ router.get("/get-all", async (req, res) => {
 			install_to,
 			return_from,
 			return_to,
-			billed
+			billed,
+			type,
+			status
 		}),
 		replacements: {
 			from,
@@ -58,7 +62,9 @@ router.get("/get-all", async (req, res) => {
 			return_from,
 			return_to,
 			install_from,
-			install_to
+			install_to,
+			type,
+			status
 		},
 		availableCols: [
 			"job_code",
@@ -69,9 +75,7 @@ router.get("/get-all", async (req, res) => {
 			"branch_name",
 			"po_number",
 			"do_number",
-			"staff_name",
-			"withdrawal_type",
-			"withdrawal_status"
+			"staff_name"
 		]
 	});
 	if (q.errors) {
@@ -169,7 +173,8 @@ router.get("/without-po", async (req, res) => {
 		to,
 		install_from,
 		install_to,
-		billed
+		billed,
+		status
 	} = req.query;
 
 	const filters = Withdrawal.filter({
@@ -177,7 +182,8 @@ router.get("/without-po", async (req, res) => {
 		to,
 		install_from,
 		install_to,
-		billed
+		billed,
+		status
 	});
 
 	const q = await query({
