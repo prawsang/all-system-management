@@ -197,10 +197,9 @@ router.get("/reserved", async (req, res) => {
 // Get all items reserved by branch
 router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 	const { branch_id } = req.params;
-	const { limit, page, search_col, search_term } = req.query;
+	const { limit, page, search_col, search_term, type } = req.query;
 
 	const filters = Item.filter({
-		broken,
 		type
 	});
 
@@ -213,15 +212,14 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 		tables: `"stock"
 		JOIN "models" ON "stock"."model_id" = "models"."id"
 		`,
-		where: `"stock"."reserved_branch_id" = :branch_id ${filters ? `AND ${filters}` : ""}`,
+		where: `"stock"."reserve_branch_id" = :branch_id ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
 			branch_id,
-			broken,
 			type
 		},
 		availableCols: [
 			"serial_no",
-			"model_id",
+			"model_name",
 			"status",
 			"stock_location",
 			"po_number",
@@ -238,10 +236,9 @@ router.get("/reserve-branch-id/:branch_id", async (req, res) => {
 // Get all items reserved by job
 router.get("/reserve-job-code/:job_code", async (req, res) => {
 	const { job_code } = req.params;
-	const { limit, page, search_col, search_term } = req.query;
+	const { limit, page, search_col, search_term, type } = req.query;
 
 	const filters = Item.filter({
-		broken,
 		type
 	});
 
@@ -254,7 +251,7 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 		tables: `"stock"
 		JOIN "models" ON "stock"."model_id" = "models"."id"
 		`,
-		where: `"stock"."reserved_job_code" = :job_code ${filters ? `AND ${filters}` : ""}`,
+		where: `"stock"."reserve_job_code" = :job_code ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
 			job_code,
 			broken,
@@ -262,7 +259,7 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 		},
 		availableCols: [
 			"serial_no",
-			"model_id",
+			"model_name",
 			"status",
 			"stock_location",
 			"po_number",

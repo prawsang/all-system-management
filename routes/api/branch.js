@@ -5,6 +5,7 @@ const Job = require("../../models/Job");
 const PurchaseOrder = require("../../models/PurchaseOrder");
 const Item = require("../../models/Item");
 const Model = require("../../models/Model");
+const Withdrawal = require("../../models/Withdrawal");
 const BranchJob = require("../../models/junction/BranchJob");
 const BranchPO = require("../../models/junction/BranchPO");
 const Customer = require("../../models/Customer");
@@ -71,13 +72,34 @@ router.get("/:id/details", (req, res) => {
 // List of items in a branch
 router.get("/:id/items/", async (req, res) => {
 	const { id } = req.params;
-	const { limit, page, search_col, search_term, broken } = req.query;
+	const {
+		limit,
+		page,
+		search_col,
+		search_term,
+		broken,
+		type,
+		install_from,
+		install_to,
+		return_from,
+		return_to
+	} = req.query;
+	const filters = Item.filter({
+		broken,
+		type
+	});
+	const withdrawalFilters = Withdrawal.filter({
+		install_to,
+		install_from,
+		return_to,
+		return_from
+	});
 	const q = await query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: `${Item.getColumns}, ${Model.getColumns}`,
+		cols: `${Item.getColumns}, ${Model.getColumns}, ${Withdrawal.getColumns}`,
 		tables: `"item_withdrawal"
 			JOIN "stock" ON "stock"."serial_no" = "item_withdrawal"."serial_no"
 			JOIN "withdrawals" ON "withdrawals"."id" = "item_withdrawal"."withdrawal_id"
@@ -88,10 +110,19 @@ router.get("/:id/items/", async (req, res) => {
 			NOT "stock"."status" = 'IN_STOCK' 
 			AND NOT "stock"."status" = 'RESERVED'
 			AND "branches"."id" = :id
-			${broken ? (broken === "true" ? `AND "stock"."broken"` : `AND NOT "stock"."broken"`) : ""}`,
+			${filters ? `AND ${filters}` : ""}
+			${withdrawalFilters ? `AND ${withdrawalFilters}` : ""}
+			`,
 		replacements: {
-			id
-		}
+			id,
+			type,
+			broken,
+			install_to,
+			install_from,
+			return_to,
+			return_from
+		},
+		availableCols: ["serial_no", "model_name"]
 	});
 	if (q.errors) {
 		res.status(500).json(q);
@@ -143,20 +174,34 @@ router.get("/no-install", async (req, res) => {
 // List of po_number of a branch
 router.get("/:id/po", async (req, res) => {
 	const { id } = req.params;
-	let { limit, page, search_col, search_term } = req.query;
+	let { limit, page, search_col, search_term, from, to, installed } = req.query;
+
+	let filters = null;
+	const f = from ? `"purchase_orders"."date" >= :from` : null;
+	const t = to ? `"purchase_orders"."date" <= :to` : null;
+	const i = installed
+		? installed === "true"
+			? `"branch_po"."installed"`
+			: `NOT "branch_po"."installed"`
+		: null;
+	filters = [f, t, i].filter(e => e).join(" AND ");
 
 	const q = await query({
 		limit,
 		page,
 		search_col,
 		search_term,
-		cols: PurchaseOrder.getColumns,
+		cols: `${PurchaseOrder.getColumns}, "branch_po"."installed"`,
 		tables: `"purchase_orders"
 		JOIN "branch_po" ON "purchase_orders"."po_number" = "branch_po"."po_number"
 		`,
-		where: `"branch_po"."branch_id" = :id`,
+		where: `"branch_po"."branch_id" = :id
+		${filters ? `AND ${filters}` : ""}
+		`,
 		replacements: {
-			id
+			id,
+			from,
+			to
 		},
 		availableCols: ["po_number"]
 	});

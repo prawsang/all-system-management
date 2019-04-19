@@ -39,6 +39,8 @@ const getFromAlias = col => {
 			return `"store_types"."name"`;
 		case "serial_no":
 			return `"stock"."serial_no"`;
+		case "po_number":
+			return `"purchase_orders"."po_number"`;
 		default:
 			return `"${col}"`;
 	}
@@ -52,12 +54,9 @@ module.exports = {
 			search_term = search_term.toLowerCase();
 		}
 
-		if (search_col && !checkColName(search_col, availableCols)) {
-			return {
-				rows: [],
-				count: 0,
-				pagesCount: 0
-			};
+		if (search_col && !checkColName(search_col, availableCols) && search_term) {
+			search_col = null;
+			search_term = null;
 		}
 		if (search_col) {
 			search_col = getFromAlias(search_col);
