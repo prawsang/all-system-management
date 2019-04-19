@@ -12,13 +12,14 @@ class AddItems extends React.Component {
 		poNumber: "",
 		prNumber: "",
 		serialNos: [],
-		serialNo: ""
+		serialNo: "",
+		stockLocation: ""
 	};
 
 	getModelsOfType = type => {
 		if (type !== "") {
 			Axios.get(`/model/type/${type}`).then(res => {
-				this.setState({ models: res.data.models });
+				this.setState({ models: res.data.rows });
 				console.log(res);
 			});
 		}
@@ -33,7 +34,7 @@ class AddItems extends React.Component {
 	}
 
 	handleSubmit() {
-		const { model, remarks, serialNos, poNumber, prNumber } = this.state;
+		const { model, remarks, serialNos, poNumber, prNumber, stockLocation } = this.state;
 		Axios.request({
 			method: "POST",
 			url: "/stock/add",
@@ -42,7 +43,8 @@ class AddItems extends React.Component {
 				serial_no: serialNos,
 				remarks,
 				po_number: poNumber,
-				pr_number: prNumber
+				pr_number: prNumber,
+				stock_location: stockLocation
 			}
 		}).then(res => this.resetPage());
 	}
@@ -56,7 +58,8 @@ class AddItems extends React.Component {
 			poNumber: "",
 			prNumber: "",
 			serialNos: [],
-			serialNo: ""
+			serialNo: "",
+			stockLocation: ""
 		});
 	}
 
@@ -69,7 +72,8 @@ class AddItems extends React.Component {
 			poNumber,
 			prNumber,
 			serialNos,
-			serialNo
+			serialNo,
+			stockLocation
 		} = this.state;
 
 		return (
@@ -108,8 +112,8 @@ class AddItems extends React.Component {
 									<option value="">เลือกรุ่น</option>
 									{models.length > 0 ? (
 										models.map((e, i) => (
-											<option value={e.id} key={e.id + i}>
-												{e.name}
+											<option value={e.model_id} key={e.model_id + i}>
+												{e.model_name}
 											</option>
 										))
 									) : (
@@ -119,6 +123,15 @@ class AddItems extends React.Component {
 									)}
 								</select>
 							</div>
+						</div>
+						<div className="field">
+							<label className="label">Stock Location:</label>
+							<input
+								className="input is-fullwidth"
+								placeholder="Stock Location"
+								value={stockLocation}
+								onChange={e => this.setState({ stockLocation: e.target.value })}
+							/>
 						</div>
 						<div className="field">
 							<label className="label">PO Number:</label>

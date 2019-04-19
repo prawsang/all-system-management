@@ -162,7 +162,7 @@ router.put("/return", checkSerial, async (req, res) => {
 
 	const { serial_no } = req.body;
 	const r = await returnItems(serial_no);
-	if (r.errors) {
+	if (r.errors.length > 0) {
 		res.status(400).json({ errors: r.errors });
 	} else {
 		res.sendStatus(200);

@@ -284,16 +284,29 @@ router.post("/add", checkWithdrawal, async (req, res) => {
 		res.status(400).send(moreValidation.errors);
 		return;
 	}
-	const checkJobCode = await PurchaseOrder.checkJob(job_code, po_number);
-	if (!checkJobCode) {
-		res.status(400).json({
-			errors: [
-				{
-					msg: "The provided PO is for a different job."
-				}
-			]
-		});
-		return;
+	if (po_number) {
+		const checkJobCode = await PurchaseOrder.checkJob(job_code, po_number);
+		if (!checkJobCode) {
+			res.status(400).json({
+				errors: [
+					{
+						msg: "The provided PO is for a different job."
+					}
+				]
+			});
+			return;
+		}
+		const checkBranch = await PurchaseOrder.checkBranchInPo(branch_id, po_number);
+		if (!checkBranch) {
+			res.status(400).json({
+				errors: [
+					{
+						msg: "The provided branch is not in the PO."
+					}
+				]
+			});
+			return;
+		}
 	}
 
 	// po_number and job_code cannot coexist
@@ -349,16 +362,30 @@ router.put("/:id/edit", checkWithdrawal, async (req, res) => {
 		res.status(400).json({ errors });
 		return;
 	}
-	const checkJobCode = await PurchaseOrder.checkJob(job_code, po_number);
-	if (!checkJobCode) {
-		res.status(400).json({
-			errors: [
-				{
-					msg: "The provided PO is for a different job."
-				}
-			]
-		});
-		return;
+
+	if (po_number) {
+		const checkJobCode = await PurchaseOrder.checkJob(job_code, po_number);
+		if (!checkJobCode) {
+			res.status(400).json({
+				errors: [
+					{
+						msg: "The provided PO is for a different job."
+					}
+				]
+			});
+			return;
+		}
+		const checkBranch = await PurchaseOrder.checkBranchInPo(branch_id, po_number);
+		if (!checkBranch) {
+			res.status(400).json({
+				errors: [
+					{
+						msg: "The provided branch is not in the PO."
+					}
+				]
+			});
+			return;
+		}
 	}
 
 	// Check if Pending
@@ -578,7 +605,7 @@ router.put("/:id/remove-items", checkSerial, async (req, res) => {
 			await ItemWithdrawal.destroy({
 				where: {
 					serial_no: {
-						[Op.eq]: serial_no
+						[Op.eq]: no
 					},
 					withdrawal_id: {
 						[Op.eq]: id
