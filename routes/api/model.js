@@ -7,7 +7,11 @@ const { query } = require("../../utils/query");
 const { check, validationResult } = require("express-validator/check");
 
 router.route("/get-all").get(async (req, res) => {
-	const { limit, page, search_col, search_term } = req.query;
+	const { limit, page, search_col, search_term, type } = req.query;
+	let filters = null;
+	if (type) {
+		filters = `"models"."type" = :type`;
+	}
 	const q = await query({
 		limit,
 		page,
@@ -15,7 +19,11 @@ router.route("/get-all").get(async (req, res) => {
 		search_term,
 		cols: Model.getColumns,
 		tables: `"models"`,
-		availableCols: ["model_id", "model_name"]
+		where: filters ? filters : null,
+		availableCols: ["model_id", "model_name"],
+		replacements: {
+			type
+		}
 	});
 	if (q.errors) {
 		res.status(500).json(q);

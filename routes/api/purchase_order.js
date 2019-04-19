@@ -71,7 +71,7 @@ router.get("/:po_number/branches", async (req, res) => {
 
 	let filters = null;
 	if (installed) {
-		filters = installed === "true" ? `"branch_po"."installed"` : `NOT "branch_po"."installed`;
+		filters = installed === "true" ? `"branch_po"."installed"` : `NOT "branch_po"."installed"`;
 	}
 
 	const q = await query({

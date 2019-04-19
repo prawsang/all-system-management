@@ -254,7 +254,6 @@ router.get("/reserve-job-code/:job_code", async (req, res) => {
 		where: `"stock"."reserve_job_code" = :job_code ${filters ? `AND ${filters}` : ""}`,
 		replacements: {
 			job_code,
-			broken,
 			type
 		},
 		availableCols: [
