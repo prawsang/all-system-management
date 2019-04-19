@@ -32,7 +32,7 @@ class Menu extends React.Component {
 					<FontAwesomeIcon icon={faTimes} />
 				</button>
 				<div className="side-bar-head is-ta-center">
-					<img
+					{/* <img
 						src={logo}
 						alt="logo"
 						// className="is-hidden-mobile"
@@ -43,8 +43,8 @@ class Menu extends React.Component {
 							margin: "auto",
 							marginBottom: 10
 						}}
-					/>
-					<small className="is-6 is-bold">All System Corporation</small>
+					/> */}
+					<small className="is-6 is-bold">Stock Management</small>
 				</div>
 				<ul className="side-bar-menu">
 					<SideBarLink link="/search-item">

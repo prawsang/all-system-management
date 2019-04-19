@@ -1,7 +1,7 @@
 {
-	"name": "all-system",
+	"name": "stock-management",
 	"version": "1.0.0",
-	"description": "All System Management",
+	"description": "Stock Management",
 	"main": "app.js",
 	"scripts": {
 		"dev": "concurrently \"npm run server\" \"npm run client\"",
