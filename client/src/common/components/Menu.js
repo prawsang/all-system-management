@@ -13,7 +13,7 @@ import {
 	faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import history from "@/common/history";
-import logo from "@/assets/logo.png";
+// import logo from "@/assets/logo.png";
 
 class Menu extends React.Component {
 	state = {
