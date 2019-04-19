@@ -90,6 +90,27 @@ class PO extends React.PureComponent {
 										table={d => <BranchesTable data={d} showInstalled={true} />}
 										className="no-pt"
 										title="Branches"
+										filters={{
+											installed: true
+										}}
+										columns={[
+											{
+												col: "branch_code",
+												name: "Branch Code"
+											},
+											{
+												col: "branch_name",
+												name: "Branch Name"
+											},
+											{
+												col: "store_type_name",
+												name: "Store Type"
+											},
+											{
+												col: "province",
+												name: "Province"
+											}
+										]}
 									/>
 								)}
 							/>

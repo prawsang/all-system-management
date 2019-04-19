@@ -13,14 +13,13 @@ const Models = () => (
 				table={data => <ModelsTable data={data} />}
 				title="All Models"
 				newModalContent={data => <Model />}
+				filters={{
+					itemType: true
+				}}
 				columns={[
 					{
 						col: "model_name",
 						name: "Model Name"
-					},
-					{
-						col: "model_type",
-						name: "Type"
 					}
 				]}
 			/>

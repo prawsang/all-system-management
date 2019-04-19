@@ -13,6 +13,7 @@ import history from "@/common/history";
 import { setCurrentWithdrawal, setItems } from "@/actions/withdrawal";
 import { connect } from "react-redux";
 import { formatDate } from "@/common/date";
+import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
 class Withdrawal extends React.PureComponent {
 	state = {
@@ -50,16 +51,6 @@ class Withdrawal extends React.PureComponent {
 		this.props.setItems(this.state.items.rows);
 	}
 
-	componentDidMount() {
-		const { id } = this.props;
-		Axios.request({
-			method: "GET",
-			url: `/withdrawal/${id}/items`
-		}).then(res => {
-			this.setState({ items: res.data });
-		});
-	}
-
 	render() {
 		const { data } = this.props;
 		const {
@@ -68,8 +59,7 @@ class Withdrawal extends React.PureComponent {
 			editRemarks,
 			changeCustomer,
 			showDeleteConfirm,
-			editBilling,
-			items
+			editBilling
 		} = this.state;
 		if (data) {
 			if (!data.withdrawal) return <p>ไม่พบรายการ</p>;
@@ -255,17 +245,35 @@ class Withdrawal extends React.PureComponent {
 									</button>
 								</Link>
 							</div>
-							<Table
-								data={items}
-								table={d => (
-									<ItemsTable
+							<FetchDataFromServer
+								url={data && `/withdrawal/${data.withdrawal.id}/items`}
+								render={d => (
+									<Table
 										data={d}
-										showDelete={data.withdrawal.status === "PENDING"}
-										withdrawalId={data.withdrawal.id}
+										table={d => (
+											<ItemsTable
+												data={d}
+												showDelete={data.withdrawal.status === "PENDING"}
+												withdrawalId={data.withdrawal.id}
+											/>
+										)}
+										className="no-pt"
+										title="Items"
+										filters={{
+											itemType: true
+										}}
+										columns={[
+											{
+												col: "serial_no",
+												name: "Serial No."
+											},
+											{
+												col: "model_name",
+												name: "Model Name"
+											}
+										]}
 									/>
 								)}
-								className="no-pt"
-								title="Items"
 							/>
 							<div className="panel-content">
 								<h4>พิมพ์</h4>

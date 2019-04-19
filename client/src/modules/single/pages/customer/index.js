@@ -113,6 +113,24 @@ class Customer extends React.Component {
 											table={d => <BranchesTable data={d} />}
 											className="no-pt"
 											title="Branches"
+											columns={[
+												{
+													col: "branch_code",
+													name: "Branch Code"
+												},
+												{
+													col: "branch_name",
+													name: "Branch Name"
+												},
+												{
+													col: "store_type_name",
+													name: "Store Type"
+												},
+												{
+													col: "province",
+													name: "Province"
+												}
+											]}
 										/>
 									)}
 								/>
