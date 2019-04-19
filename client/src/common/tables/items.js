@@ -37,7 +37,7 @@ class ItemsTable extends React.Component {
 		currentSerial: ""
 	};
 	render() {
-		const { data, showInstallDate, showDelete, withdrawalId } = this.props;
+		const { data, showInstallDate, showDelete, withdrawalId, showReturnDate } = this.props;
 		const { showConfirm, currentSerial } = this.state;
 		return (
 			<React.Fragment>
@@ -48,6 +48,7 @@ class ItemsTable extends React.Component {
 							<td>Model Name</td>
 							<td>Type</td>
 							{showInstallDate && <td>Installation Date</td>}
+							{showReturnDate && <td>Return Date</td>}
 							{showDelete && <td>Remove</td>}
 						</tr>
 					</thead>
@@ -68,6 +69,7 @@ class ItemsTable extends React.Component {
 										<td>{e.model_name}</td>
 										<td>{e.model_type}</td>
 										{showInstallDate && <td>{e.install_date}</td>}
+										{showReturnDate && <td>{e.return_by}</td>}
 										{showDelete && (
 											<td>
 												<button

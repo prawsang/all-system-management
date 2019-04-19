@@ -1,7 +1,8 @@
 import React from "react";
 import history from "@/common/history";
+import { formatDate } from "@/common/date";
 
-const POTable = ({ data, showCustomer }) => (
+const POTable = ({ data, showCustomer, showInstalled }) => (
 	<table className="is-fullwidth is-rounded">
 		<thead>
 			<tr>
@@ -9,6 +10,7 @@ const POTable = ({ data, showCustomer }) => (
 				{showCustomer && <td>Customer</td>}
 				{showCustomer && <td>Job</td>}
 				<td>Date</td>
+				{showInstalled && <td>Installed</td>}
 			</tr>
 		</thead>
 		<tbody className="is-hoverable">
@@ -34,7 +36,16 @@ const POTable = ({ data, showCustomer }) => (
 									{e.job_name} ({e.job_code})
 								</td>
 							)}
-							<td>{e.po_date}</td>
+							<td>{formatDate(e.po_date)}</td>
+							{showInstalled && (
+								<td>
+									{e.installed ? (
+										<span>Installed</span>
+									) : (
+										<span className="is-bold danger">Not Installed</span>
+									)}
+								</td>
+							)}
 						</tr>
 					)))}
 		</tbody>

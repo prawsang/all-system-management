@@ -22,7 +22,7 @@ const JobsTable = ({ data }) => (
 							}}
 						>
 							<td>{e.job_code}</td>
-							<td>{e.job_name}</td>
+							<td>{e.name}</td>
 						</tr>
 					)))}
 		</tbody>

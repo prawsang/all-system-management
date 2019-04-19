@@ -147,9 +147,28 @@ class Branch extends React.Component {
 									render={d => (
 										<Table
 											data={d}
+											filters={{
+												itemType: true,
+												installDate: true,
+												returnDate: true
+											}}
 											table={d => (
-												<ItemsTable data={d} showInstallDate={true} />
+												<ItemsTable
+													data={d}
+													showInstallDate={true}
+													showReturnDate={true}
+												/>
 											)}
+											columns={[
+												{
+													col: "serial_no",
+													name: "Serial No."
+												},
+												{
+													col: "model_name",
+													name: "Model Name"
+												}
+											]}
 											className="no-pt"
 											title="Items"
 										/>
@@ -162,9 +181,19 @@ class Branch extends React.Component {
 									render={d => (
 										<Table
 											data={d}
-											table={d => <POTable data={d} />}
+											table={d => <POTable data={d} showInstalled={true} />}
 											className="no-pt"
 											title="POs"
+											filters={{
+												date: true,
+												installed: true
+											}}
+											columns={[
+												{
+													col: "po_number",
+													name: "PO Number"
+												}
+											]}
 										/>
 									)}
 								/>
@@ -176,6 +205,19 @@ class Branch extends React.Component {
 										<Table
 											data={d}
 											table={d => <ItemsTable data={d} />}
+											filters={{
+												itemType: true
+											}}
+											columns={[
+												{
+													col: "serial_no",
+													name: "Serial No."
+												},
+												{
+													col: "model_name",
+													name: "Model Name"
+												}
+											]}
 											className="no-pt"
 											title="Reserved Items"
 										/>

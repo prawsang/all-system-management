@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import React from "react";
 import Axios from "axios";
 import { setSearchCol, setSearchTerm, setFilters } from "@/actions/report";
@@ -61,6 +62,66 @@ class FetchDataFromServer extends React.Component {
 		return null;
 	}
 
+	compareFilters(prev, curr) {
+		const {
+			from,
+			to,
+			installed,
+			broken,
+			status,
+			type,
+			install_from,
+			install_to,
+			return_from,
+			return_to
+		} = curr;
+		const {
+			from_prev,
+			to_prev,
+			installed_prev,
+			broken_prev,
+			status_prev,
+			type_prev,
+			install_from_prev,
+			install_to_prev,
+			return_from_prev,
+			return_to_prev
+		} = prev;
+		if (
+			from == from_prev &&
+			to == to_prev &&
+			installed == installed_prev &&
+			broken == broken_prev &&
+			status == status_prev &&
+			type == type_prev &&
+			install_from == install_from_prev &&
+			install_to == install_to_prev &&
+			return_from == return_from_prev &&
+			return_to == return_to_prev
+		) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	resetFilters() {
+		this.props.setSearchCol(null);
+		this.props.setSearchTerm(null);
+		this.props.setFilters({
+			from: null,
+			to: null,
+			installed: null,
+			broken: null,
+			status: null,
+			type: null,
+			install_from: null,
+			install_to: null,
+			return_from: null,
+			return_to: null
+		});
+	}
+
 	componentDidMount() {
 		const {
 			url,
@@ -80,20 +141,7 @@ class FetchDataFromServer extends React.Component {
 		${filters ? "&" + this.makeFilterString(filters) : ""}`;
 
 		if (!disabled) {
-			this.props.setSearchCol(null);
-			this.props.setSearchTerm(null);
-			this.props.setFilters({
-				from: null,
-				to: null,
-				installed: null,
-				broken: null,
-				status: null,
-				type: null,
-				install_from: null,
-				install_to: null,
-				return_from: null,
-				return_to: null
-			});
+			this.resetFilters();
 
 			Axios.get(link).then(res => {
 				this.setState({ data: res.data });
@@ -129,31 +177,20 @@ class FetchDataFromServer extends React.Component {
 				disabled !== prevDisabled ||
 				params !== prevParams ||
 				searchTerm !== prevSearchTerm ||
-				filters !== prevFilters
+				!this.compareFilters(prevFilters, filters)
 			) {
+				if (prevDisabled !== disabled) {
+					this.resetFilters();
+				}
 				if (!disabled) {
 					if (url !== prevUrl) {
-						this.props.setSearchCol(null);
-						this.props.setSearchTerm(null);
-						this.props.setFilters({
-							from: null,
-							to: null,
-							installed: null,
-							broken: null,
-							status: null,
-							type: null,
-							install_from: null,
-							install_to: null,
-							return_from: null,
-							return_to: null
-						});
+						this.resetFilters();
 					}
 					const link = `${url}?page=${currentPage}&limit=${currentLimit}
 					${searchTerm ? "&search_term=" + searchTerm : ""}
 					${searchCol ? "&search_col=" + searchCol : ""}
 					${params ? "&" + params : ""}
 					${filters ? "&" + this.makeFilterString(filters) : ""}`;
-
 					Axios.get(link).then(res => {
 						this.setState({ data: res.data });
 						console.log(res);

@@ -10,8 +10,8 @@ const initialState = {
 	data: {},
 	currentPage: 1,
 	currentLimit: 25,
-	searchTerm: "",
-	searchCol: "",
+	searchTerm: null,
+	searchCol: null,
 	filters: {
 		from: null,
 		to: null,
