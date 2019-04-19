@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./Header";
+// import Header from "./Header";
 import Items from "./Items";
 import { connect } from "react-redux";
 import { formatDate } from "@/common/date";
@@ -9,8 +9,11 @@ const GeneralPage = ({ currentWithdrawal, start, end, items, pageNumber }) => {
 		<div className="print-preview">
 			<div className="print-preview-page">
 				<p style={{ float: "right" }}>หน้า {pageNumber}</p>
-				<Header />
-				<div className="block header is-fullwidth is-ta-center has-mb-10">
+				{/* <Header /> */}
+				<div
+					className="block header is-fullwidth is-ta-center has-mb-10"
+					style={{ marginTop: "10mm" }}
+				>
 					<h3>ใบเบิกสินค้า</h3>
 				</div>
 				<div className="is-flex is-jc-space-between is-ai-flex-start has-mb-10">

@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./Header";
+// import Header from "./Header";
 import Items from "./Items";
 
 const DOPage = ({ currentWithdrawal, start, end, items, pageNumber }) => {
@@ -7,8 +7,8 @@ const DOPage = ({ currentWithdrawal, start, end, items, pageNumber }) => {
 		<div className="print-preview">
 			<div className="print-preview-page">
 				<p style={{ float: "right" }}>หน้า {pageNumber}</p>
-				<Header />
-				<div className="block has-mb-10 is-ta-center">
+				{/* <Header /> */}
+				<div className="block has-mb-10 is-ta-center" style={{ marginTop: "10mm" }}>
 					<h3>ใบส่งสินค้า (Delivery Order)</h3>
 				</div>
 				<table className="has-mb-10 is-fullwidth">

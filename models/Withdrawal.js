@@ -93,7 +93,7 @@ Withdrawal.getColumns = `"withdrawals"."id" AS "withdrawal_id",
 
 // Class Methods
 Withdrawal.validate = data => {
-	const { type, return_by, install_date, do_number } = data;
+	const { type, return_by, install_date, do_number, po_number } = data;
 	let errors = [];
 	if (type == "BORROW" && (!return_by || return_by == "")) {
 		errors.push({ msg: "Return date is required for borrowing." });

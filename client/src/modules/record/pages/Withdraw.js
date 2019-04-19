@@ -5,6 +5,7 @@ import BranchSearch from "../components/search/BranchSearch";
 import { connect } from "react-redux";
 import Axios from "axios";
 import { resetRecordData } from "@/actions/record";
+import history from "@/common/history";
 
 const INSTALLATION = "INSTALLATION";
 const BORROW = "BORROW";
@@ -51,7 +52,7 @@ class Withdraw extends React.Component {
 				billed: false,
 				staff_name: staffName
 			}
-		});
+		}).then(res => history.push(`/single/withdrawal/${res.data.id}`));
 	}
 
 	componentDidMount() {

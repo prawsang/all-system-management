@@ -45,10 +45,15 @@ class Withdrawal extends React.PureComponent {
 		}).then(res => history.push("/"));
 	}
 
-	handlePrint() {
+	async handlePrint() {
 		const { data } = this.props;
 		this.props.setCurrentWithdrawal(data.withdrawal);
-		this.props.setItems(this.state.items.rows);
+		await Axios.request({
+			method: "GET",
+			url: `/withdrawal/${data.withdrawal.id}/items`
+		}).then(res => {
+			this.props.setItems(res.data.rows);
+		});
 	}
 
 	render() {
@@ -219,18 +224,7 @@ class Withdrawal extends React.PureComponent {
 									<CustomerData data={data.withdrawal.branch.customer} />
 								</div>
 								<div style={{ marginBottom: "2em" }}>
-									{data.po ? (
-										data.po.job_code === data.job_code ? (
-											<JobData data={data.job_code} />
-										) : (
-											<p className="is-bold accent">
-												Job Code ใน PO ไม่ตรงกับ Job Code ในใบเบิก
-												กรุณาแก้ไข
-											</p>
-										)
-									) : (
-										<JobData data={data.job_code} />
-									)}
+									<JobData data={data.withdrawal.job} />
 								</div>
 								<div style={{ marginBottom: "2em" }}>
 									<BranchData data={data.withdrawal.branch} />

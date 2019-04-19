@@ -63,13 +63,15 @@ class ChangeCustomer extends React.Component {
 
 		return (
 			<Modal close={close} active={active}>
-				<div className="field">
-					<label className="label has-mb-05">Customer Name:</label>
-					<CustomerSearch />
-				</div>
-				<div className="field">
-					<label className="label has-mb-05">Job:</label>
-					<JobSelect disabled={!selectedCustomer} />
+				<div className="is-disabled">
+					<div className="field">
+						<label className="label has-mb-05">Customer Name:</label>
+						<CustomerSearch />
+					</div>
+					<div className="field">
+						<label className="label has-mb-05">Job:</label>
+						<JobSelect disabled={!selectedCustomer} />
+					</div>
 				</div>
 				<div className="field">
 					<label className="label has-mb-05">Branch Name:</label>

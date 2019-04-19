@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./Header";
+// import Header from "./Header";
 import Items from "./Items";
 
 const ServiceReportPage = ({ currentWithdrawal, start, end, items, pageNumber }) => {
@@ -7,8 +7,11 @@ const ServiceReportPage = ({ currentWithdrawal, start, end, items, pageNumber })
 		<div className="print-preview">
 			<div className="print-preview-page">
 				<p style={{ float: "right" }}>หน้า {pageNumber}</p>
-				<Header />
-				<div className="block header is-fullwidth is-ta-center has-mb-10">
+				{/* <Header /> */}
+				<div
+					className="block header is-fullwidth is-ta-center has-mb-10"
+					style={{ marginTop: "10mm" }}
+				>
 					<h3>SERVICE REPORT</h3>
 				</div>
 				<table className="is-fullwidth has-mb-10">
