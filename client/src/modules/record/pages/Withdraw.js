@@ -5,6 +5,7 @@ import BranchSearch from "../components/search/BranchSearch";
 import { connect } from "react-redux";
 import Axios from "axios";
 import { resetRecordData } from "@/actions/record";
+import history from "@/common/history";
 
 const INSTALLATION = "INSTALLATION";
 const BORROW = "BORROW";
@@ -48,11 +49,10 @@ class Withdraw extends React.Component {
 				job_code: selectedJobCode,
 				branch_id: selectedBranches[0].id,
 				remarks,
-				has_po: type === INSTALLATION,
 				billed: false,
 				staff_name: staffName
 			}
-		});
+		}).then(res => history.push(`/single/withdrawal/${res.data.id}`));
 	}
 
 	componentDidMount() {
@@ -119,29 +119,31 @@ class Withdraw extends React.Component {
 							/>
 						)}
 						{type === INSTALLATION && (
-							<Field
-								type="date"
-								placeholder="Install Date"
-								label="Install Date"
-								value={installDate}
-								onChange={e => this.setState({ installDate: e.target.value })}
-							/>
+							<React.Fragment>
+								<Field
+									type="date"
+									placeholder="Install Date"
+									label="Install Date"
+									value={installDate}
+									onChange={e => this.setState({ installDate: e.target.value })}
+								/>
+								<hr />
+								<Field
+									type="text"
+									placeholder="PO Number"
+									label="PO Number"
+									value={poNumber}
+									onChange={e => this.setState({ poNumber: e.target.value })}
+								/>
+								<Field
+									type="text"
+									placeholder="DO Number"
+									label="DO Number"
+									value={doNumber}
+									onChange={e => this.setState({ doNumber: e.target.value })}
+								/>
+							</React.Fragment>
 						)}
-						<hr />
-						<Field
-							type="text"
-							placeholder="PO Number"
-							label="PO Number"
-							value={poNumber}
-							onChange={e => this.setState({ poNumber: e.target.value })}
-						/>
-						<Field
-							type="text"
-							placeholder="DO Number"
-							label="DO Number"
-							value={doNumber}
-							onChange={e => this.setState({ doNumber: e.target.value })}
-						/>
 						<hr />
 						<CustomerSearch />
 						<JobSelect disabled={!selectedCustomer} />

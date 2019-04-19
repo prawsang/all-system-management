@@ -1,7 +1,7 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../../components/Table";
-import BranchesTable from "../../tables/branchJunction";
+import Table from "@/common/components/InnerTable";
+import BranchesTable from "@/common/tables/branches";
 import Modal from "@/common/components/Modal";
 import Field from "../../components/Field";
 import Axios from "axios";
@@ -14,11 +14,10 @@ import { formatDate } from "@/common/date";
 class PO extends React.PureComponent {
 	state = {
 		edit: false,
-		installed: false,
 		description: ""
 	};
 	handleFormSubmit() {
-		const { description, installed } = this.state;
+		const { description } = this.state;
 		const { data } = this.props;
 		Axios.request({
 			method: "PUT",
@@ -26,7 +25,6 @@ class PO extends React.PureComponent {
 			data: {
 				date: data.po.date,
 				description,
-				installed,
 				job_code: data.po.job_code
 			}
 		});
@@ -35,7 +33,7 @@ class PO extends React.PureComponent {
 
 	render() {
 		const { data, setSelectedJobCode } = this.props;
-		const { edit, installed, description, showAddBranches } = this.state;
+		const { edit, description, showAddBranches } = this.state;
 		if (data) {
 			if (!data.po) return <p>ไม่พบรายการ</p>;
 		}
@@ -54,7 +52,6 @@ class PO extends React.PureComponent {
 											onClick={() =>
 												this.setState({
 													edit: true,
-													installed: data.po.installed,
 													description: data.po.description
 												})
 											}
@@ -65,12 +62,6 @@ class PO extends React.PureComponent {
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Date:</label>
 										<span>{formatDate(data.po.date)}</span>
-									</div>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Installed:</label>
-										<span>
-											{data.po.installed ? "Installed" : "Not Installed"}
-										</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Description:</label>
@@ -96,9 +87,30 @@ class PO extends React.PureComponent {
 								render={d => (
 									<Table
 										data={d}
-										table={d => <BranchesTable data={d} />}
+										table={d => <BranchesTable data={d} showInstalled={true} />}
 										className="no-pt"
 										title="Branches"
+										filters={{
+											installed: true
+										}}
+										columns={[
+											{
+												col: "branch_code",
+												name: "Branch Code"
+											},
+											{
+												col: "branch_name",
+												name: "Branch Name"
+											},
+											{
+												col: "store_type_name",
+												name: "Store Type"
+											},
+											{
+												col: "province",
+												name: "Province"
+											}
+										]}
 									/>
 								)}
 							/>
@@ -118,14 +130,6 @@ class PO extends React.PureComponent {
 									editable={false}
 									value={data.po.date}
 									label="Date"
-								/>
-								<Field
-									editable={true}
-									name="installed"
-									type="checkbox"
-									label="Installed"
-									value={installed}
-									onChange={() => this.setState({ installed: !installed })}
 								/>
 								<Field
 									editable={true}

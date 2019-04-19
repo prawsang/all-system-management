@@ -34,11 +34,11 @@ const Item = db.define(
 		},
 		status: {
 			type: Sequelize.ENUM,
-			values: ["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "IN_SERVICE_STOCK"],
+			values: ["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "TRANSFERRED"],
 			allowNull: false,
 			validate: {
 				notEmpty: true,
-				isIn: [["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "IN_SERVICE_STOCK"]]
+				isIn: [["IN_STOCK", "INSTALLED", "RESERVED", "BORROWED", "TRANSFERRED"]]
 			}
 		},
 		broken: {
@@ -51,12 +51,32 @@ const Item = db.define(
 			validate: {
 				notEmpty: true
 			}
+		},
+		po_number: {
+			type: Sequelize.STRING,
+			allowNull: false,
+			validate: {
+				notEmpty: true
+			}
+		},
+		pr_number: {
+			type: Sequelize.STRING
 		}
 	},
 	{
 		freezeTableName: "stock"
 	}
 );
+Item.getColumns = `"stock"."serial_no",
+    "stock"."model_id",
+    "stock"."remarks",
+    "stock"."reserve_job_code",
+    "stock"."reserve_branch_id",
+    "stock"."status",
+    "stock"."broken",
+    "stock"."stock_location",
+    "stock"."po_number",
+	"stock"."pr_number"`;
 
 // Class Methods
 Item.changeStatus = async params => {
@@ -114,6 +134,17 @@ Item.checkStatus = (serial_no, status) => {
 			}
 		})
 		.catch(err => false);
+};
+Item.filter = data => {
+	const { broken, status, type } = data;
+	let brokenFilter = broken
+		? broken === "true"
+			? `"stock"."broken"`
+			: `NOT "stock"."broken"`
+		: null;
+	let typeFilter = type ? `"models"."type" = :type` : null;
+	let statusFilter = status ? `"stock"."status" = :status` : null;
+	return [brokenFilter, statusFilter, typeFilter].filter(e => e).join(" AND ");
 };
 
 // Associations

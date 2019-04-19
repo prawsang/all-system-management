@@ -21,6 +21,10 @@ const BranchPO = db.define(
 			validate: {
 				notEmpty: true
 			}
+		},
+		installed: {
+			type: Sequelize.BOOLEAN,
+			allowNull: false
 		}
 	},
 	{

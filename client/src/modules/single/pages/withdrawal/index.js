@@ -1,19 +1,19 @@
 import React from "react";
-import Table from "@/modules/single/components/Table";
-import ItemsTable from "@/modules/single/tables/items";
+import Table from "@/common/components/InnerTable";
+import ItemsTable from "@/common/tables/items";
 import { BranchData, CustomerData, JobData } from "../../data/";
 import Modal from "@/common/components/Modal";
 import EditModal from "./EditModal";
 import RemarksModal from "./RemarksModal";
 import ChangeCustomer from "./ChangeCustomer";
 import BillingModal from "./BillingModal";
-
 import Axios from "axios";
 import { Link } from "react-router-dom";
 import history from "@/common/history";
 import { setCurrentWithdrawal, setItems } from "@/actions/withdrawal";
 import { connect } from "react-redux";
 import { formatDate } from "@/common/date";
+import FetchDataFromServer from "@/common/components/FetchDataFromServer";
 
 class Withdrawal extends React.PureComponent {
 	state = {
@@ -22,7 +22,8 @@ class Withdrawal extends React.PureComponent {
 		showDeleteConfirm: false,
 		editRemarks: false,
 		changeCustomer: false,
-		editBilling: false
+		editBilling: false,
+		items: null
 	};
 
 	cancelWithdrawal() {
@@ -33,9 +34,7 @@ class Withdrawal extends React.PureComponent {
 			data: {
 				status: "CANCELLED"
 			}
-		})
-			.then(res => window.location.reload())
-			
+		}).then(res => window.location.reload());
 	}
 
 	deleteWithdrawal() {
@@ -43,15 +42,18 @@ class Withdrawal extends React.PureComponent {
 		Axios.request({
 			method: "DELETE",
 			url: `/withdrawal/${data.withdrawal.id}`
-		})
-			.then(res => history.push("/"))
-			
+		}).then(res => history.push("/"));
 	}
 
-	handlePrint() {
+	async handlePrint() {
 		const { data } = this.props;
 		this.props.setCurrentWithdrawal(data.withdrawal);
-		this.props.setItems(data.withdrawal.items);
+		await Axios.request({
+			method: "GET",
+			url: `/withdrawal/${data.withdrawal.id}/items`
+		}).then(res => {
+			this.props.setItems(res.data.rows);
+		});
 	}
 
 	render() {
@@ -110,6 +112,10 @@ class Withdrawal extends React.PureComponent {
 										</span>
 									</h5>
 									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Type:</label>
+										<span>{data.withdrawal.type}</span>
+									</div>
+									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Status:</label>
 										<span>{data.withdrawal.status}</span>
 									</div>
@@ -120,24 +126,26 @@ class Withdrawal extends React.PureComponent {
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">PO:</label>
 										<span>
-											{data.withdrawal.has_po
+											{data.withdrawal.type === "INSTALLATION"
 												? data.withdrawal.po_number
 													? data.withdrawal.po_number
 													: "ยังไม่ได้รับ PO"
-												: "ไม่มี PO"}
+												: "N/A"}
 										</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">DO Number:</label>
-										<span>{data.withdrawal.do_number}</span>
+										<span>
+											{data.withdrawal.type === "INSTALLATION"
+												? data.withdrawal.do_number
+													? data.withdrawal.do_number
+													: "-"
+												: "N/A"}
+										</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">ผู้เบิก:</label>
 										<span>{data.withdrawal.staff_name}</span>
-									</div>
-									<div className="has-mb-10">
-										<label className="is-bold has-mr-05">Type:</label>
-										<span>{data.withdrawal.type}</span>
 									</div>
 									{data.withdrawal.type === "BORROW" && (
 										<div className="has-mb-10">
@@ -216,14 +224,7 @@ class Withdrawal extends React.PureComponent {
 									<CustomerData data={data.withdrawal.branch.customer} />
 								</div>
 								<div style={{ marginBottom: "2em" }}>
-									{data.po && <small>ข้อมูล Job มาจาก PO</small>}
-									<JobData
-										data={
-											data.withdrawal.po
-												? data.withdrawal.po.job
-												: data.withdrawal.job
-										}
-									/>
+									<JobData data={data.withdrawal.job} />
 								</div>
 								<div style={{ marginBottom: "2em" }}>
 									<BranchData data={data.withdrawal.branch} />
@@ -238,18 +239,35 @@ class Withdrawal extends React.PureComponent {
 									</button>
 								</Link>
 							</div>
-							<Table
-								data={data}
-								table={data => (
-									<ItemsTable
-										data={data.withdrawal}
-										showDelete={data.withdrawal.status === "PENDING"}
-										withdrawalId={data.withdrawal.id}
+							<FetchDataFromServer
+								url={data && `/withdrawal/${data.withdrawal.id}/items`}
+								render={d => (
+									<Table
+										data={d}
+										table={d => (
+											<ItemsTable
+												data={d}
+												showDelete={data.withdrawal.status === "PENDING"}
+												withdrawalId={data.withdrawal.id}
+											/>
+										)}
+										className="no-pt"
+										title="Items"
+										filters={{
+											itemType: true
+										}}
+										columns={[
+											{
+												col: "serial_no",
+												name: "Serial No."
+											},
+											{
+												col: "model_name",
+												name: "Model Name"
+											}
+										]}
 									/>
 								)}
-								className="no-pt"
-								title="Items"
-								noPage={true}
 							/>
 							<div className="panel-content">
 								<h4>พิมพ์</h4>

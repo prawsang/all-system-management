@@ -1,36 +1,24 @@
 import React from "react";
-import Header from "./Header";
+// import Header from "./Header";
 import Items from "./Items";
-import { connect } from "react-redux";
-import history from "@/common/history";
 
-const DO = ({ currentWithdrawal, match }) => {
-	if (
-		!currentWithdrawal ||
-		currentWithdrawal.type !== "INSTALLATION" ||
-		!currentWithdrawal.do_number ||
-		currentWithdrawal.do_number === ""
-	) {
-		history.push(`/single/withdrawal/${match.params.id}`);
-		return <p />;
-	}
+const DOPage = ({ currentWithdrawal, start, end, items, pageNumber }) => {
 	return (
 		<div className="print-preview">
 			<div className="print-preview-page">
-				<Header />
-				<div className="block has-mb-10 is-ta-center">
+				<p style={{ float: "right" }}>หน้า {pageNumber}</p>
+				{/* <Header /> */}
+				<div className="block has-mb-10 is-ta-center" style={{ marginTop: "10mm" }}>
 					<h3>ใบส่งสินค้า (Delivery Order)</h3>
 				</div>
 				<table className="has-mb-10 is-fullwidth">
 					<tbody>
 						<tr>
-							<td colspan="2">
+							<td style={{ width: "50%" }}>
 								<b>DO Number: </b>
 								{currentWithdrawal.do_number}
 							</td>
-						</tr>
-						<tr>
-							<td colspan="2">
+							<td style={{ width: "50%" }}>
 								<b>PO Number: </b>
 								{currentWithdrawal.po_number
 									? currentWithdrawal.po_number
@@ -38,29 +26,29 @@ const DO = ({ currentWithdrawal, match }) => {
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2">
+							<td colSpan="2">
 								<b>Customer Name:</b> {currentWithdrawal.branch.customer.name}
 							</td>
 						</tr>
 						<tr>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>Branch Name: </b>
 								{currentWithdrawal.branch.name}
 							</td>
-							<td>
+							<td style={{ width: "50%" }}>
 								<b>Branch Code: </b>
 								{currentWithdrawal.branch.branch_code}
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2">
+							<td colSpan="2">
 								<b>Address: </b>
 								{currentWithdrawal.branch.address}
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<Items />
+				<Items start={start} end={end} items={items} />
 				<div className="block has-mb-10">
 					<b>Remarks: </b>
 					{currentWithdrawal.remarks}
@@ -82,11 +70,4 @@ const DO = ({ currentWithdrawal, match }) => {
 	);
 };
 
-const mapStateToProps = state => ({
-	currentWithdrawal: state.withdrawal.currentWithdrawal
-});
-
-export default connect(
-	mapStateToProps,
-	null
-)(DO);
+export default DOPage;

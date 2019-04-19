@@ -5,9 +5,15 @@ import * as serviceWorker from "./serviceWorker";
 import AppRouter from "./common/routes";
 import "./common/style/index.scss";
 import store from "./common/store";
+import { setAuth } from "./actions/auth";
 import initHttp from "./common/http";
 
 initHttp();
+
+const token = localStorage.getItem("token");
+if (token) {
+	store.dispatch(setAuth(true));
+}
 
 ReactDOM.render(
 	<Provider store={store}>

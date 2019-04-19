@@ -1,8 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const Customer = require("./Customer");
-const Branch = require("./Branch");
-const Op = Sequelize.Op;
 
 const Job = db.define("jobs", {
 	job_code: {
@@ -28,6 +26,9 @@ const Job = db.define("jobs", {
 		}
 	}
 });
+Job.getColumns = `"jobs"."job_code", 
+	"jobs"."name" AS "job_name", 
+	"jobs"."customer_code"`;
 
 // Associations
 Job.belongsTo(Customer, {

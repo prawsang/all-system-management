@@ -1,5 +1,6 @@
 import React from "react";
 import history from "@/common/history";
+import moment from "moment";
 
 const Borrowed = ({ data }) => (
 	<table className="is-fullwidth is-rounded">
@@ -8,39 +9,31 @@ const Borrowed = ({ data }) => (
 				<td>Serial No.</td>
 				<td>Model Name</td>
 				<td>Type</td>
-				<td>Branch</td>
-				<td>Job</td>
-				<td>Customer</td>
 				<td>Return By</td>
+				<td>Overdue</td>
 			</tr>
 		</thead>
 		<tbody className="is-hoverable">
 			{data &&
-				(data.items.length > 0 &&
-					data.items.map((e, i) => {
-						const { serial_no, model, withdrawals } = e;
-						const { branch, job, return_by } = withdrawals[0];
+				(data.rows.length > 0 &&
+					data.rows.map((e, i) => {
 						return (
 							<tr
 								className="is-hoverable is-clickable"
 								key={i + e.serial_no}
-								onClick={() => 
-									history.push(`/single/item/${e.serial_no}`)
-								}
+								onClick={() => history.push(`/single/item/${e.serial_no}`)}
 							>
-								<td>{serial_no}</td>
-								<td>{model.name}</td>
-								<td>{model.type}</td>
+								<td>{e.serial_no}</td>
+								<td>{e.model_name}</td>
+								<td>{e.model_type}</td>
+								<td>{e.return_by}</td>
 								<td>
-									{branch.name} {branch.branch_code && `(${branch.branch_code})`}
+									{moment(e.return_by).isBefore() ? (
+										<span className="is-bold danger">Overdue</span>
+									) : (
+										<span>No</span>
+									)}
 								</td>
-								<td>
-									{job.name} ({job.job_code})
-								</td>
-								<td>
-									{branch.customer.name} ({branch.customer.customer_code})
-								</td>
-								<td>{return_by}</td>
 							</tr>
 						);
 					}))}

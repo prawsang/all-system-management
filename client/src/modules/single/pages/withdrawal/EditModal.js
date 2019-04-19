@@ -54,9 +54,7 @@ class EditModal extends React.Component {
 				has_po: data.has_po,
 				staff_name: staffName
 			}
-		})
-			.then(res => window.location.reload())
-			
+		}).then(res => window.location.reload());
 	}
 
 	render() {
@@ -103,7 +101,6 @@ class EditModal extends React.Component {
 					type="text"
 					label="PO Number"
 					value={poNumber}
-					text={data.has_po || "ไม่มี PO"}
 					onChange={e => this.setState({ poNumber: e.target.value })}
 				/>
 				{data.type === "INSTALLATION" && (

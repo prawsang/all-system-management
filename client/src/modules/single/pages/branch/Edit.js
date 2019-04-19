@@ -9,11 +9,21 @@ class EditBranch extends React.Component {
 		address: "",
 		province: "",
 		storeTypeId: 0,
-		storeTypes: []
+		storeTypes: [],
+		glBranch: "",
+		shortCode: ""
 	};
 
 	edit() {
-		const { branchCode, name, address, province, storeTypeId } = this.state;
+		const {
+			branchCode,
+			name,
+			address,
+			province,
+			storeTypeId,
+			glBranch,
+			shortCode
+		} = this.state;
 		const { branch } = this.props;
 		Axios.request({
 			method: "PUT",
@@ -24,25 +34,38 @@ class EditBranch extends React.Component {
 				address,
 				province,
 				store_type_id: storeTypeId,
-				customer_code: branch.customer_code
+				customer_code: branch.customer_code,
+				gl_branch: glBranch,
+				short_code: shortCode
 			}
 		}).then(res => window.location.reload());
 	}
 
 	componentDidMount() {
 		const { branch } = this.props;
-		Axios.get("/store-type/get-all").then(res => this.setState({ storeTypes: res.data.types }));
+		Axios.get("/store-type/get-all").then(res => this.setState({ storeTypes: res.data.rows }));
 		this.setState({
 			name: branch.name,
 			branchCode: branch.branch_code,
 			address: branch.address,
 			province: branch.province,
-			storeTypeId: branch.store_type_id
+			storeTypeId: branch.store_type_id,
+			glBranch: branch.gl_branch,
+			shortCode: branch.short_code
 		});
 	}
 
 	render() {
-		const { branchCode, name, address, province, storeTypeId, storeTypes } = this.state;
+		const {
+			branchCode,
+			name,
+			address,
+			province,
+			storeTypeId,
+			storeTypes,
+			glBranch,
+			shortCode
+		} = this.state;
 		const { close, active } = this.props;
 
 		return (
@@ -93,12 +116,30 @@ class EditBranch extends React.Component {
 								value={storeTypeId}
 							>
 								{storeTypes.map((e, i) => (
-									<option value={e.id} key={i + e.id}>
-										{e.name}
+									<option value={e.store_type_id} key={i + e.store_type_id}>
+										{e.store_type_name}
 									</option>
 								))}
 							</select>
 						</div>
+					</div>
+					<div className="field">
+						<label className="label">GL Branch</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="GL Branch"
+							onChange={e => this.setState({ glBranch: e.target.value })}
+							value={glBranch}
+						/>
+					</div>
+					<div className="field">
+						<label className="label">Short Code</label>
+						<input
+							className="input is-fullwidth"
+							placeholder="Short Code"
+							onChange={e => this.setState({ shortCode: e.target.value })}
+							value={shortCode}
+						/>
 					</div>
 					<div className="buttons">
 						<button className="button" onClick={() => this.edit()}>

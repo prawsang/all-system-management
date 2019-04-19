@@ -1,6 +1,9 @@
 // Report
 export const SET_PAGE = "SET_PAGE";
 export const SET_LIMIT = "SET_LIMIT";
+export const SET_SEARCH_TERM = "SET_SEARCH_TERM";
+export const SET_SEARCH_COL = "SET_SEARCH_COL";
+export const SET_FILTERS = "SET_FILTERS";
 
 // Record
 export const SET_SELECTED_CUSTOMER = "SET_SELECTED_CUSTOMER";
@@ -17,3 +20,6 @@ export const SET_ITEMS = "SET_ITEMS";
 
 // Error
 export const SET_ERROR = "SET_ERROR";
+
+// Auth
+export const SET_AUTH = "SET_AUTH";

@@ -1,6 +1,6 @@
 import React from "react";
-import Table from "../../components/Table";
-import WithdrawalsTable from "../../tables/withdrawals";
+import Table from "@/common/components/InnerTable";
+import WithdrawalsTable from "@/common/tables/withdrawalStatic";
 import history from "@/common/history";
 import Edit from "./Edit";
 
@@ -50,6 +50,14 @@ class Item extends React.Component {
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Stock Location:</label>
 										<span>{data.item.stock_location}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">PO Number:</label>
+										<span>{data.item.po_number}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">PR Number:</label>
+										<span>{data.item.pr_number}</span>
 									</div>
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">เสีย:</label>

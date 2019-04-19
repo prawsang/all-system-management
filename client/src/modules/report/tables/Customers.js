@@ -11,8 +11,8 @@ const CustomersTable = ({ data }) => (
 		</thead>
 		<tbody className="is-hoverable">
 			{data &&
-				(data.customers.length > 0 &&
-					data.customers.map((e, i) => (
+				(data.rows.length > 0 &&
+					data.rows.map((e, i) => (
 						<tr
 							className="is-hoverable is-clickable"
 							key={i + e.customer_code}
@@ -22,7 +22,7 @@ const CustomersTable = ({ data }) => (
 							}}
 						>
 							<td>{e.customer_code}</td>
-							<td>{e.name}</td>
+							<td>{e.customer_name}</td>
 						</tr>
 					)))}
 		</tbody>

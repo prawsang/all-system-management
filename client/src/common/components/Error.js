@@ -13,13 +13,17 @@ const Error = ({ error, setError }) => {
 				style={{ zIndex: 9999 }}
 			>
 				{error.data.errors ? (
-					<ul>
-						{error.data.errors.map((e, i) => {
-							if (e.msg) return <li key={i}>{e.msg}</li>;
-							if (e.message) return <li key={i}>{e.message}</li>;
-							return <li key={i}>An unknown error as occured.</li>;
-						})}
-					</ul>
+					error.data.errors.length > 0 ? (
+						<ul>
+							{error.data.errors.map((e, i) => {
+								if (e.msg) return <li key={i}>{e.msg}</li>;
+								if (e.message) return <li key={i}>{e.message}</li>;
+								return <li key={i}>An unknown error as occured.</li>;
+							})}
+						</ul>
+					) : (
+						<p>An unknown error has occured. Status code {error.status}</p>
+					)
 				) : (
 					<p>An unknown error has occured. Status code {error.status}</p>
 				)}

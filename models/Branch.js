@@ -36,8 +36,25 @@ const Branch = db.define("branches", {
 		validate: {
 			notEmpty: true
 		}
+	},
+	gl_branch: {
+		type: Sequelize.STRING
+	},
+	short_code: {
+		type: Sequelize.STRING
 	}
 });
+
+Branch.getColumns = `
+	"branches"."id" AS "branch_id",
+	"branches"."branch_code",
+	"branches"."name" AS "branch_name",
+	"branches"."address",
+	"branches"."province",
+	"branches"."store_type_id",
+	"branches"."gl_branch",
+	"branches"."short_code"
+`;
 
 Branch.belongsTo(Customer, {
 	foreignKey: "customer_code",

@@ -25,16 +25,25 @@ class ChangeCustomer extends React.Component {
 
 	handleEdit() {
 		const { data, selectedJobCode, selectedBranches } = this.props;
-		const { po, po_number, do_number, type, return_by, date, install_date, has_po } = data;
+		const {
+			po_number,
+			do_number,
+			type,
+			return_by,
+			date,
+			install_date,
+			has_po,
+			staff_name
+		} = data;
 		Axios.request({
 			method: "PUT",
 			url: `/withdrawal/${data.id}/edit`,
 			data: {
-				job_code: po ? po.job_code : selectedJobCode,
+				job_code: selectedJobCode,
 				branch_id: selectedBranches[0].id,
 				po_number: po_number,
 				do_number: do_number,
-				staff_code: "020", //hard code
+				staff_name: staff_name,
 				type: type,
 				return_by: return_by,
 				date: date,
@@ -54,17 +63,19 @@ class ChangeCustomer extends React.Component {
 
 		return (
 			<Modal close={close} active={active}>
-				<div className="field">
-					<label className="label has-mb-05">Customer Name:</label>
-					<CustomerSearch disabled={data.po} />
-				</div>
-				<div className="field">
-					<label className="label has-mb-05">Job:</label>
-					<JobSelect disabled={!selectedCustomer || data.po} />
+				<div className="is-disabled">
+					<div className="field">
+						<label className="label has-mb-05">Customer Name:</label>
+						<CustomerSearch />
+					</div>
+					<div className="field">
+						<label className="label has-mb-05">Job:</label>
+						<JobSelect disabled={!selectedCustomer} />
+					</div>
 				</div>
 				<div className="field">
 					<label className="label has-mb-05">Branch Name:</label>
-					<BranchSearch single={true} disabled={!selectedJobCode && !data.po} />
+					<BranchSearch single={true} disabled={!selectedJobCode} />
 				</div>
 				<div className="buttons no-mb">
 					<button className="button" onClick={() => this.handleEdit()}>

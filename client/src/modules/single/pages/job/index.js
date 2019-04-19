@@ -1,10 +1,10 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../../components/Table";
-import ReservedItemsTable from "../../tables/reserved";
+import Table from "@/common/components/InnerTable";
+import ItemsTable from "@/common/tables/items";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
-import BranchesTable from "../../tables/branchJunction";
+import BranchesTable from "@/common/tables/branches";
 import { CustomerData } from "../../data";
 import Edit from "./Edit";
 import AddBranch from "./AddBranch";
@@ -98,6 +98,24 @@ class Job extends React.Component {
 											table={d => <BranchesTable data={d} />}
 											className="no-pt"
 											title="Branches"
+											columns={[
+												{
+													col: "branch_code",
+													name: "Branch Code"
+												},
+												{
+													col: "branch_name",
+													name: "Branch Name"
+												},
+												{
+													col: "store_type_name",
+													name: "Store Type"
+												},
+												{
+													col: "province",
+													name: "Province"
+												}
+											]}
 										/>
 									)}
 								/>
@@ -108,9 +126,19 @@ class Job extends React.Component {
 									render={d => (
 										<Table
 											data={d}
-											table={d => <ReservedItemsTable data={d} />}
+											table={d => <ItemsTable data={d} />}
 											className="no-pt"
 											title="Reserved Items"
+											columns={[
+												{
+													col: "serial_no",
+													name: "Serial No."
+												},
+												{
+													col: "model_name",
+													name: "Model Name"
+												}
+											]}
 										/>
 									)}
 								/>

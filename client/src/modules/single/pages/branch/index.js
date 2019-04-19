@@ -1,11 +1,10 @@
 import React from "react";
 import FetchDataFromServer from "@/common/components/FetchDataFromServer";
-import Table from "../../components/Table";
-import ItemsTable from "../../tables/itemsJunction";
-import ReservedItemsTable from "../../tables/reserved";
+import Table from "@/common/components/InnerTable";
+import ItemsTable from "@/common/tables/items";
 import { setPage } from "@/actions/report";
 import { connect } from "react-redux";
-import POTable from "../../tables/po";
+import POTable from "@/common/tables/po";
 import history from "@/common/history";
 import { CustomerData } from "../../data";
 import Edit from "./Edit";
@@ -59,6 +58,14 @@ class Branch extends React.Component {
 									<div className="has-mb-10">
 										<label className="is-bold has-mr-05">Store Type:</label>
 										<span>{data.branch.store_type.name}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Gl Branch:</label>
+										<span>{data.branch.gl_branch}</span>
+									</div>
+									<div className="has-mb-10">
+										<label className="is-bold has-mr-05">Short Code:</label>
+										<span>{data.branch.short_code}</span>
 									</div>
 								</div>
 								<hr />
@@ -140,9 +147,28 @@ class Branch extends React.Component {
 									render={d => (
 										<Table
 											data={d}
+											filters={{
+												itemType: true,
+												installDate: true,
+												returnDate: true
+											}}
 											table={d => (
-												<ItemsTable data={d} showInstallDate={true} />
+												<ItemsTable
+													data={d}
+													showInstallDate={true}
+													showReturnDate={true}
+												/>
 											)}
+											columns={[
+												{
+													col: "serial_no",
+													name: "Serial No."
+												},
+												{
+													col: "model_name",
+													name: "Model Name"
+												}
+											]}
 											className="no-pt"
 											title="Items"
 										/>
@@ -155,9 +181,19 @@ class Branch extends React.Component {
 									render={d => (
 										<Table
 											data={d}
-											table={d => <POTable data={d} />}
+											table={d => <POTable data={d} showInstalled={true} />}
 											className="no-pt"
 											title="POs"
+											filters={{
+												date: true,
+												installed: true
+											}}
+											columns={[
+												{
+													col: "po_number",
+													name: "PO Number"
+												}
+											]}
 										/>
 									)}
 								/>
@@ -168,7 +204,20 @@ class Branch extends React.Component {
 									render={d => (
 										<Table
 											data={d}
-											table={d => <ReservedItemsTable data={d} />}
+											table={d => <ItemsTable data={d} />}
+											filters={{
+												itemType: true
+											}}
+											columns={[
+												{
+													col: "serial_no",
+													name: "Serial No."
+												},
+												{
+													col: "model_name",
+													name: "Model Name"
+												}
+											]}
 											className="no-pt"
 											title="Reserved Items"
 										/>

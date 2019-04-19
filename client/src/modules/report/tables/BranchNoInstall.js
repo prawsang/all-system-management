@@ -13,30 +13,32 @@ const BranchNoInstall = ({ data }) => (
 		</thead>
 		<tbody className="is-hoverable">
 			{data &&
-				(data.branches.length > 0 &&
-					data.branches.map((e, i) => (
+				(data.rows.length > 0 &&
+					data.rows.map((e, i) => (
 						<tr
 							className="is-hoverable is-clickable"
-							key={i + e.id}
-							onClick={() => 
-								history.push(`/single/branch/${e.id}`)
-							}
+							key={i + " " + e.branch_id}
+							onClick={() => history.push(`/single/branch/${e.branch_id}`)}
 						>
 							<td>{e.branch_code}</td>
-							<td>{e.name}</td>
-							<td>{e.customer.name} ({e.customer.customer_code})</td>
-							<td>{e.purchase_orders.map((f,i) => (
-								<span 
-									key={i} 
-									className="accent is-clickable has-mr-05"
-									onClick={(event) => {
-										history.push(`/single/po/${f.po_number}`);
-										event.stopPropagation();
-									}}
-								>
-									{f.po_number}
-								</span>)
-							)}</td>
+							<td>{e.branch_name}</td>
+							<td>
+								{e.customer_name} ({e.customer_code})
+							</td>
+							<td>
+								{e.po_numbers.map((f, i) => (
+									<span
+										key={i}
+										className="accent is-clickable has-mr-05"
+										onClick={event => {
+											history.push(`/single/po/${f}`);
+											event.stopPropagation();
+										}}
+									>
+										{f}
+									</span>
+								))}
+							</td>
 						</tr>
 					)))}
 		</tbody>

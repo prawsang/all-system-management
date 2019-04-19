@@ -1,12 +1,10 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 const PO = require("./PurchaseOrder");
-const User = require("./User");
 const Job = require("./Job");
 const Branch = require("./Branch");
 const Item = require("./Item");
 const Op = Sequelize.Op;
-const returnItems = require("../routes/stock_status").returnItems;
 
 const Withdrawal = db.define("withdrawals", {
 	id: {
@@ -22,7 +20,11 @@ const Withdrawal = db.define("withdrawals", {
 		}
 	},
 	job_code: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING,
+		allowNull: false,
+		validate: {
+			notEmpty: true
+		}
 	},
 	po_number: {
 		type: Sequelize.STRING
@@ -70,19 +72,28 @@ const Withdrawal = db.define("withdrawals", {
 	return_by: {
 		type: Sequelize.DATE
 	},
-	has_po: {
-		type: Sequelize.BOOLEAN,
-		allowNull: false
-	},
 	billed: {
 		type: Sequelize.BOOLEAN,
 		allowNull: false
 	}
 });
+Withdrawal.getColumns = `"withdrawals"."id" AS "withdrawal_id",
+    "withdrawals"."branch_id",
+    "withdrawals"."job_code",
+    "withdrawals"."po_number",
+    "withdrawals"."do_number",
+    "withdrawals"."staff_name",
+    "withdrawals"."type" AS "withdrawal_type",
+    "withdrawals"."date" AS "withdrawal_date",
+    "withdrawals"."install_date",
+    "withdrawals"."return_by",
+    "withdrawals"."status" AS "withdrawal_status",
+    "withdrawals"."remarks" AS "withdrawal_remarks",
+    "withdrawals"."billed"`;
 
 // Class Methods
 Withdrawal.validate = data => {
-	const { type, return_by, install_date, po_number, do_number, job_code, has_po } = data;
+	const { type, return_by, install_date, do_number, po_number } = data;
 	let errors = [];
 	if (type == "BORROW" && (!return_by || return_by == "")) {
 		errors.push({ msg: "Return date is required for borrowing." });
@@ -90,19 +101,11 @@ Withdrawal.validate = data => {
 	if (type == "INSTALLATION" && (!install_date || install_date == "")) {
 		errors.push({ msg: "Installation date is required for installation." });
 	}
-	if (type == "INSTALLATION" && !has_po) {
-		errors.push({ msg: "Installation must have PO." });
-	}
-	if (type !== "INSTALLATION" && has_po) {
+	if (type !== "INSTALLATION" && (po_number && po_number !== "")) {
 		errors.push({ msg: "Withdrawals of types other than installation cannot have PO." });
 	}
 	if (type !== "INSTALLATION" && (do_number && do_number !== "")) {
 		errors.push({ msg: "Withdrawals of types other than installation cannot have DO." });
-	}
-	if (job_code && job_code !== "" && (po_number && po_number !== "")) {
-		errors.push({ msg: "Specify either job code or PO number, but not both." });
-	} else if ((!job_code || job_code === "") && (!po_number || po_number === "")) {
-		errors.push({ msg: "Either job code or PO number must be provided." });
 	}
 	return { errors };
 };
@@ -167,6 +170,56 @@ Withdrawal.changeStatus = (id, status) => {
 	)
 		.then(rows => ({ errors: [] }))
 		.catch(err => ({ errors: [err] }));
+};
+
+Withdrawal.filter = data => {
+	const {
+		from,
+		to,
+		install_from,
+		install_to,
+		return_from,
+		return_to,
+		billed,
+		type,
+		status
+	} = data;
+
+	let dateFilter = null;
+	let returnDateFilter = null;
+	let installDateFilter = null;
+	let billedFilter = null;
+	let statusFilter = null;
+	let typeFilter = null;
+
+	if (from || to) {
+		const f = from ? `"withdrawals"."date" >= :from` : null;
+		const t = to ? `"withdrawals"."date" <= :to` : null;
+		dateFilter = [f, t].filter(e => e).join(" AND ");
+	}
+	if (install_from || install_to) {
+		const f = install_from ? `"withdrawals"."install_date" >= :install_from` : null;
+		const t = install_to ? `"withdrawals"."install_date" <= :install_to` : null;
+		installDateFilter = [f, t].filter(e => e).join(" AND ");
+	}
+	if (return_from || return_to) {
+		const f = return_from ? `"withdrawals"."return_by" >= :return_from` : null;
+		const t = return_to ? `"withdrawals"."return_by" <= :return_to` : null;
+		returnDateFilter = [f, t].filter(e => e).join(" AND ");
+	}
+	if (billed) {
+		billedFilter = billed == "true" ? `"withdrawals"."billed"` : `NOT "withdrawals"."billed"`;
+	}
+	if (type) {
+		typeFilter = `"withdrawals"."type" = :type`;
+	}
+	if (status) {
+		statusFilter = `"withdrawals"."status" = :status`;
+	}
+
+	return [dateFilter, returnDateFilter, installDateFilter, billedFilter, typeFilter, statusFilter]
+		.filter(e => e)
+		.join(" AND ");
 };
 
 // Associations

@@ -29,10 +29,6 @@ const PurchaseOrder = db.define("purchase_orders", {
 		validate: {
 			notEmpty: true
 		}
-	},
-	installed: {
-		type: Sequelize.BOOLEAN,
-		allowNull: false
 	}
 });
 
@@ -54,6 +50,24 @@ PurchaseOrder.checkBranchInPo = (branch_id, po_number) => {
 		}
 	})
 		.then(count => (count == 0 ? false : true))
+		.catch(err => false);
+};
+PurchaseOrder.getColumns = `
+	"purchase_orders"."po_number",
+	"purchase_orders"."job_code",
+	"purchase_orders"."description",
+	"purchase_orders"."date" AS "po_date"
+	`;
+
+PurchaseOrder.checkJob = (job_code, po_number) => {
+	return PurchaseOrder.findOne({
+		where: {
+			po_number: {
+				[Op.eq]: po_number
+			}
+		}
+	})
+		.then(r => (r.job_code == job_code ? true : false))
 		.catch(err => false);
 };
 
